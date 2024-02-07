@@ -170,12 +170,7 @@ function PermissionPage() {
       </StyledPermissionWrap>
       <StyledButtonWrap>
         {allPermissionIsReady && (
-          <Button
-            onClick={() =>
-              // 이전 페이지로 이동
-              navigate("/postureCheck")
-            }
-          >
+          <Button onClick={() => navigate("/postureCheck")}>
             다음으로 가기
           </Button>
         )}

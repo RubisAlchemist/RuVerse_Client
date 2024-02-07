@@ -57,7 +57,7 @@ export const PostureCheckPage = () => {
             color="primary"
             style={{ marginTop: 20 }}
             onClick={() => {
-              navigate("/");
+              navigate("/videocallPage");
             }}
           >
             온라인회의하러가기
