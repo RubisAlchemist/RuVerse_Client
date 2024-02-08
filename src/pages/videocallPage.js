@@ -29,38 +29,74 @@ export default function VideocallPage() {
   //   );
 
   useEffect(() => {
-    // Create Agora client
     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    subscribeToEvents();
+    return () => {
+      if (localVideoTrack) {
+        localVideoTrack.close();
+      }
+      if (localAudioTrack) {
+        localAudioTrack.close();
+      }
+      client.current && client.current.leave();
+    };
   }, []);
 
-  const handleJoin = async () => {
-    // Join the channel with the user provided channel name and uid
-    await client.current.join(appId, channelName, null, uid || null);
+  const subscribeToEvents = () => {
+    client.current.on("user-published", async (user, mediaType) => {
+      await client.current.subscribe(user, mediaType);
+      if (mediaType === "video") {
+        const videoTrack = user.videoTrack;
+        const playerContainer = document.createElement("div");
+        playerContainer.id = `user-container-${user.uid}`;
+        playerContainer.style.width = "320px";
+        playerContainer.style.height = "240px";
+        document.getElementById("remote-container").append(playerContainer);
+        videoTrack.play(playerContainer);
+      }
+      if (mediaType === "audio") {
+        user.audioTrack.play();
+      }
+    });
 
-    // Create and publish the local video and audio tracks
+    client.current.on("user-unpublished", (user, mediaType) => {
+      if (mediaType === "video") {
+        document.getElementById(`user-container-${user.uid}`)?.remove();
+      }
+    });
+
+    client.current.on("user-left", (user) => {
+      document.getElementById(`user-container-${user.uid}`)?.remove();
+    });
+  };
+
+  const handleJoin = async () => {
+    if (!client.current) return;
+    await client.current.join(appId, channelName, null, uid || null);
     const videoTrack = await AgoraRTC.createCameraVideoTrack();
     const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-
     await client.current.publish([videoTrack, audioTrack]);
-
-    // Set the local video track to be rendered in the local video component
     setLocalVideoTrack(videoTrack);
     setLocalAudioTrack(audioTrack);
-
     setJoinState(true);
+
+    videoTrack.play("local-player");
   };
 
   const handleLeave = async () => {
-    // Destroy the local audio and video tracks.
-    localVideoTrack?.close();
-    localAudioTrack?.close();
-
-    // Leave the channel.
+    if (localVideoTrack) {
+      localVideoTrack.stop();
+      localVideoTrack.close();
+    }
+    if (localAudioTrack) {
+      localAudioTrack.stop();
+      localAudioTrack.close();
+    }
     await client.current.leave();
-
     setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
+    document.getElementById("remote-container").innerHTML = "";
   };
 
   return (
@@ -84,17 +120,10 @@ export default function VideocallPage() {
         Leave
       </button>
       <div id="local-player" style={{ width: "320px", height: "240px" }}></div>
-      {/* Render local video track */}
-      {localVideoTrack && (
-        <div
-          id="local_video"
-          style={{ width: "320px", height: "240px" }}
-          ref={(ref) => {
-            // Play the local video track
-            localVideoTrack.play(ref);
-          }}
-        />
-      )}
+      <div
+        id="remote-container"
+        style={{ width: "320px", height: "240px" }}
+      ></div>
     </div>
   );
 }
