@@ -35,7 +35,6 @@ export default function VideocallPage() {
 
   const handleJoin = async () => {
     // Join the channel with the user provided channel name and uid
-    console.log(process.env.REACT_APP_AGORA_RTC_APP_ID_KEY);
     await client.current.join(appId, channelName, null, uid || null);
 
     // Create and publish the local video and audio tracks
