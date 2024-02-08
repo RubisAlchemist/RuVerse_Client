@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 // import { useHistory } from "react-router-dom";
-// import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EasySeeso from "seeso/easy-seeso";
 import { UserStatusOption } from "seeso";
 
-// import { calibrationSuccess } from "@store/actions";
+import { calibrationSuccess } from "../store/actions";
 
 const licenseKey = process.env.REACT_APP_EYETRACKING_LICENSE_KEY;
 
@@ -32,17 +32,17 @@ let calibrationDataReceived = null;
 let eyeTracker = null;
 
 const EyetrackerInit = ({ groupId, onSuccess, setIsCalibrationComplete }) => {
-  //   const dispatch = useDispatch();
-  // let eyeTracker = useSelector(state => state.eyeTracker);
+  const dispatch = useDispatch();
+  let eyeTracker = useSelector((state) => state.eyeTracker);
   const [showCanvas, setShowCanvas] = useState(false);
-  //   const history = useHistory();
+  // const history = useHistory();
   useEffect(() => {
     main();
 
     return () => {
       //store에 eyetracker넣어놓기
-      // console.log("calibrationdata", calibrationDataReceived) //받아온 데이터
-      // dispatch(calibrationSuccess(calibrationDataReceived));
+      console.log("calibrationdata", calibrationDataReceived); //받아온 데이터
+      dispatch(calibrationSuccess(calibrationDataReceived));
     };
   }, []);
 
@@ -79,7 +79,7 @@ const EyetrackerInit = ({ groupId, onSuccess, setIsCalibrationComplete }) => {
           await eyeTracker.startTracking(onGaze, onDebug);
           eyeTracker.showImage();
           eyeTracker.setUserStatusCallback(onAttention, onBlink, onDrowsiness);
-          // console.log("eyeTracker: ", eyeTracker);
+          console.log("eyeTracker: ", eyeTracker);
           calibration();
           //store에 eyetracker넣어놓기
         },
@@ -165,10 +165,10 @@ const EyetrackerInit = ({ groupId, onSuccess, setIsCalibrationComplete }) => {
     eyeTracker.showImage();
     setShowCanvas(false);
     calibrationDataReceived = calibrationData;
-    // dispatch(calibrationSuccess(calibrationDataReceived));
+    dispatch(calibrationSuccess(calibrationDataReceived));
     onSuccess(true);
     setIsCalibrationComplete(true);
-    // console.log(calibrationDataReceived)
+    console.log(calibrationDataReceived);
   };
 
   const showFocusText = () => {
