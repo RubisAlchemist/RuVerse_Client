@@ -119,7 +119,7 @@ function PermissionPage() {
   return (
     <StyledContainer>
       <StyledTitle>
-        포커스팡 이용을 진행하려면 아래 권한들이 필요해요.
+        RuVerse 이용을 진행하려면 아래 권한들이 필요해요.
       </StyledTitle>
       <StyledPermissionWrap>
         {PERMISSION.map((permission) => (
@@ -170,8 +170,8 @@ function PermissionPage() {
       </StyledPermissionWrap>
       <StyledButtonWrap>
         {allPermissionIsReady && (
-          <Button onClick={() => navigate("/postureCheck")}>
-            다음으로 가기
+          <Button onClick={() => navigate("/videocallPage")}>
+            온라인 상담하러 가기
           </Button>
         )}
       </StyledButtonWrap>

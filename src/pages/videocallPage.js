@@ -1,8 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import EyetrackingContext from "./eyetrackingContext";
 
 export default function VideocallPage() {
   //   const { RtcTokenBuilder, RtcRole } = require("agora-token");
+
+  const { gazeData, isWebgazerInitialized } = useContext(EyetrackingContext);
+
+  const gazeCircleStyle = {
+    position: "fixed",
+    left: `${gazeData.x}px`,
+    top: `${gazeData.y}px`,
+    width: "20px",
+    height: "20px",
+    borderRadius: "50%",
+    backgroundColor: "red",
+    pointerEvents: "none",
+    transform: "translate(-50%, -50%)",
+    zIndex: 9999, // Make sure the circle is above all other elements
+  };
 
   const client = useRef(null);
   const [channelName, setChannelName] = useState("");
@@ -29,18 +45,20 @@ export default function VideocallPage() {
   //   );
 
   useEffect(() => {
-    client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    subscribeToEvents();
-    return () => {
-      if (localVideoTrack) {
-        localVideoTrack.close();
-      }
-      if (localAudioTrack) {
-        localAudioTrack.close();
-      }
-      client.current && client.current.leave();
-    };
-  }, []);
+    if (isWebgazerInitialized) {
+      client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      subscribeToEvents();
+      return () => {
+        if (localVideoTrack) {
+          localVideoTrack.close();
+        }
+        if (localAudioTrack) {
+          localAudioTrack.close();
+        }
+        client.current && client.current.leave();
+      };
+    }
+  }, [isWebgazerInitialized]);
 
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
@@ -124,6 +142,7 @@ export default function VideocallPage() {
         id="remote-container"
         style={{ width: "320px", height: "240px" }}
       ></div>
+      {/* <div style={gazeCircleStyle}></div> */}
     </div>
   );
 }
