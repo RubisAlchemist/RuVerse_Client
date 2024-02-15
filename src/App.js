@@ -8,6 +8,10 @@ import { PostureCheckPage } from "./pages/postureCheckPage";
 import VideocallPage from "./pages/videocallPage";
 import EyetrackingLogger from "./component/eyetrackingLogger";
 import { Home } from "./pages/home";
+// import EyetrackingLogger from "./component/eyetrackingLogger";
+import GPSLogger from "./component/gpsLogger";
+import AccelGyroLogger from "./component/accelgyroLogger";
+import TouchLoggerContainer from "./component/touchLogger";
 
 const theme = createTheme({
   palette: {
@@ -29,7 +33,13 @@ function App() {
             path="/videocallPage"
             element={
               <EyetrackingLogger>
-                <VideocallPage />
+                <GPSLogger>
+                  <AccelGyroLogger>
+                    {/* <TouchLoggerContainer> */}
+                    <VideocallPage />
+                    {/* </TouchLoggerContainer> */}
+                  </AccelGyroLogger>
+                </GPSLogger>
               </EyetrackingLogger>
             }
           />
