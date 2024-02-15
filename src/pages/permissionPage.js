@@ -170,7 +170,8 @@ function PermissionPage() {
       </StyledPermissionWrap>
       <StyledButtonWrap>
         {allPermissionIsReady && (
-          <Button onClick={() => navigate("/postureCheck")}>
+          // <Button onClick={() => navigate("/postureCheck")}>
+          <Button onClick={() => navigate("/videocallPage")}>
             다음으로 가기
           </Button>
         )}
