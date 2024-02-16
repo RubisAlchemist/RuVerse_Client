@@ -7,7 +7,12 @@ import PermissionPage from "./pages/permissionPage";
 import Home from "./pages/home";
 import { PostureCheckPage } from "./pages/postureCheckPage";
 import VideocallPage from "./pages/videocallPage";
-import EyetrackingLogger from "./component/eyetrackingLogger";
+// import EyetrackingLogger from "./component/eyetrackingLogger";
+import GPSLogger from "./component/gpsLogger";
+import AccelGyroLogger from "./component/accelgyroLogger";
+import TouchLoggerContainer from "./component/touchLogger";
+// import keyboardLogger from "./component/keyboardLogger";
+import StylusLogger from "./component/stylusLogger";
 
 const theme = createTheme({
   palette: {
@@ -24,13 +29,21 @@ function App() {
         <Routes>
           <Route path="/permission" element={<PermissionPage />} />
           <Route path="/" exact element={<Home />} /> {/* 기본 페이지 */}
-          <Route path="/postureCheck" element={<PostureCheckPage />} />
+          {/* <Route path="/postureCheck" element={<PostureCheckPage />} /> */}
           <Route
             path="/videocallPage"
             element={
-              <EyetrackingLogger>
-                <VideocallPage />
-              </EyetrackingLogger>
+              // <EyetrackingLogger>
+              <GPSLogger>
+                <AccelGyroLogger>
+                  <TouchLoggerContainer>
+                    <StylusLogger>
+                      <VideocallPage />
+                    </StylusLogger>
+                  </TouchLoggerContainer>
+                </AccelGyroLogger>
+              </GPSLogger>
+              // </EyetrackingLogger>
             }
           />
         </Routes>
