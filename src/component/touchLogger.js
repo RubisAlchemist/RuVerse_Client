@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 const TouchLoggerContainer = ({
   name,
-  myRef,
+  // myRef,
   touchData,
   setTouchData,
   quizType,
@@ -15,6 +15,7 @@ const TouchLoggerContainer = ({
   const [lastY, setLastY] = useState(0);
   const [isPointerDown, setIsPointerDown] = useState(false);
   const [nextScrollTop, setNextScrollTop] = useState(null);
+  const myRef = useRef(null);
 
   useEffect(() => {
     if (nextScrollTop === null) return;
@@ -96,11 +97,11 @@ const TouchLoggerContainer = ({
     };
     // console.log("setTouchData", eventData)
 
-    if (quizSessionType === 'QUIZ') {
-      setTouchData([eventData]);
-    } else {
-      setTouchData((prevTouchData) => [...prevTouchData, eventData]);
-    }
+    // if (quizSessionType === 'QUIZ') {
+    //   setTouchData([eventData]);
+    // } else {
+    //   setTouchData((prevTouchData) => [...prevTouchData, eventData]);
+    // }
   };
 
   const eventHandlers = ['Enter', 'Down', 'Move', 'Up', 'Leave'].reduce(

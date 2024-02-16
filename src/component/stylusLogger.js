@@ -7,7 +7,7 @@ const StylusLogger = ({
   strokeWidth,
   setStrokeWidth,
   strokeColor,
-  containerRef,
+  // containerRef,
   isEraser,
   children,
   deviceType,
@@ -15,6 +15,7 @@ const StylusLogger = ({
 }) => {
   const [stylusState, setStylusState] = useState('IDLE');
   const [isPointerDown, setIsPointerDown] = useState(false);
+  const containerRef = useRef(null);
 
   const eventTypeMapping = {
     ENTER: ['OFF_SCREEN', 0],
@@ -60,7 +61,8 @@ const StylusLogger = ({
       c: strokeColor,
     };
     // setStylusData([eventData]);
-    setStylusData((stylusData) => [...stylusData, eventData]);
+    // setStylusData((stylusData) => [...stylusData, eventData]);
+    console.log(eventData);
   };
 
   const eventHandlers = ['Enter', 'Down', 'Move', 'Up', 'Leave'].reduce(

@@ -11,6 +11,8 @@ import VideocallPage from "./pages/videocallPage";
 import GPSLogger from "./component/gpsLogger";
 import AccelGyroLogger from "./component/accelgyroLogger";
 import TouchLoggerContainer from "./component/touchLogger";
+// import keyboardLogger from "./component/keyboardLogger";
+import StylusLogger from "./component/stylusLogger";
 
 const theme = createTheme({
   palette: {
@@ -34,9 +36,11 @@ function App() {
               // <EyetrackingLogger>
               <GPSLogger>
                 <AccelGyroLogger>
-                  {/* <TouchLoggerContainer> */}
-                    <VideocallPage />
-                  {/* </TouchLoggerContainer> */}
+                  <TouchLoggerContainer>
+                    <StylusLogger>
+                      <VideocallPage />
+                    </StylusLogger>
+                  </TouchLoggerContainer>
                 </AccelGyroLogger>
               </GPSLogger>
               // </EyetrackingLogger>
