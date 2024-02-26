@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import AC from 'agora-chat';
 import EyetrackingContext from "./eyetrackingContext";
+import "./VideocallPage.css";
 
 export default function VideocallPage() {
-  //   const { RtcTokenBuilder, RtcRole } = require("agora-token");
-
   const { gazeData, isWebgazerInitialized } = useContext(EyetrackingContext);
 
   const gazeCircleStyle = {
@@ -17,37 +17,38 @@ export default function VideocallPage() {
     backgroundColor: "red",
     pointerEvents: "none",
     transform: "translate(-50%, -50%)",
-    zIndex: 9999, // Make sure the circle is above all other elements
+    zIndex: 9999,
   };
 
   const client = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [chatClient, setChatClient] = useState(null);
+  const [textMessage, setTextMessage] = useState("");
   const [channelName, setChannelName] = useState("");
   const [uid, setUid] = useState("");
   const [joinState, setJoinState] = useState(false);
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
+  const [participants, setParticipants] = useState([]);
 
-  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
-  //   const appCertificate = process.env.REACT_APP_AGORA_PRIMARY_CERTIFICATE; // .env 파일 또는 환경 변수에서 Agora 인증서
-  //   const role = RtcRole.PUBLISHER; // 역할을 PUBLISHER 또는 SUBSCRIBER로 설정할 수 있습니다.
-  //   const expirationTimeInSeconds = 3600; // 토큰의 유효 시간 (초 단위)
-  //   const currentTimestamp = Math.floor(Date.now() / 1000);
-  //   const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
-
-  //   // 토큰 생성
-  //   const agoraToken = RtcTokenBuilder.buildTokenWithUid(
-  //     appId,
-  //     appCertificate,
-  //     channelName,
-  //     uid,
-  //     role,
-  //     privilegeExpiredTs
-  //   );
+  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
+  const chatAppId = process.env.REACT_APP_AGORA_RTC_CHATAPP_ID_KEY;
 
   useEffect(() => {
+    const initializeChatClient = () => {
+      const chatClient = new AC.connection({
+        appKey: chatAppId,
+      });
+      setChatClient(chatClient);
+
+      return () => {
+      };
+    };
+
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       subscribeToEvents();
+      initializeChatClient();
       return () => {
         if (localVideoTrack) {
           localVideoTrack.close();
@@ -58,12 +59,59 @@ export default function VideocallPage() {
         client.current && client.current.leave();
       };
     }
-  }, [isWebgazerInitialized]);
+  }, [isWebgazerInitialized, chatAppId]);
+
+  const subscribeToChatEvents = (chatClient) => {
+    chatClient.on("message", (msg) => {
+      setMessages((prevMessages) => [...prevMessages, msg]);
+    });
+  };
+
+  const loginAndSubscribeToChat = async () => {
+    const options = {
+      user: 'userID',
+      agoraToken: 'agoraToken',
+    };
+
+    try {
+      await chatClient.open(options);
+      console.log("Chat login successful");
+      subscribeToChatEvents(chatClient);
+    } catch (err) {
+      console.error("Chat login failed", err);
+    }
+  };
+
+  useEffect(() => {
+    loginAndSubscribeToChat();
+
+    return () => {
+      handleLeave();
+    };
+  }, [chatAppId]);
+
+  const handleSendMessage = () => {
+    if (textMessage.trim() !== "") {
+      const option = {
+        chatType: 'singleChat',
+        type: 'txt',
+        to: 'userID',
+        msg: textMessage,
+      };
+      const msg = AC.message.create(option);
+      chatClient.send(msg)
+        .then(() => {
+          setTextMessage("");
+        })
+        .catch(err => console.error("Send message failed", err));
+    }
+  };
 
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
       if (mediaType === "video") {
+        setParticipants((prevParticipants) => [...prevParticipants, user]);
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
@@ -77,31 +125,58 @@ export default function VideocallPage() {
       }
     });
 
+    const handleUserChange = (user, action) => {
+      setParticipants((prevParticipants) => {
+        if (action === "add") {
+          return [...prevParticipants, user];
+        } else if (action === "remove") {
+          return prevParticipants.filter((participant) => participant.uid !== user.uid);
+        }
+        return prevParticipants;
+      });
+    };
+
     client.current.on("user-unpublished", (user, mediaType) => {
-      if (mediaType === "video") {
-        document.getElementById(`user-container-${user.uid}`)?.remove();
-      }
+      handleUserChange(user, "remove");
     });
 
     client.current.on("user-left", (user) => {
-      document.getElementById(`user-container-${user.uid}`)?.remove();
+      handleUserChange(user, "remove");
     });
   };
 
   const handleJoin = async () => {
     if (!client.current) return;
-    await client.current.join(appId, channelName, null, uid || null);
-    const videoTrack = await AgoraRTC.createCameraVideoTrack();
-    const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    await client.current.publish([videoTrack, audioTrack]);
-    setLocalVideoTrack(videoTrack);
-    setLocalAudioTrack(audioTrack);
-    setJoinState(true);
 
-    videoTrack.play("local-player");
+    try {
+      await client.current.join(appId, channelName, null, uid || null);
+      const videoTrack = await AgoraRTC.createCameraVideoTrack();
+      const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      await client.current.publish([videoTrack, audioTrack]);
+      setLocalVideoTrack(videoTrack);
+      setLocalAudioTrack(audioTrack);
+      setJoinState(true);
+      setParticipants((prevParticipants) => [...prevParticipants, { uid: "local", videoTrack }]);
+    } catch (error) {
+      console.error("Error joining channel", error);
+    }
   };
 
   const handleLeave = async () => {
+    if (client.current) {
+      try {
+        cleanupTracks();
+        await client.current.leave();
+      } catch (error) {
+        console.error("Error leaving channel", error);
+      } finally {
+        setJoinState(false);
+        setParticipants([]);
+      }
+    }
+  };
+
+  const cleanupTracks = () => {
     if (localVideoTrack) {
       localVideoTrack.stop();
       localVideoTrack.close();
@@ -110,39 +185,62 @@ export default function VideocallPage() {
       localAudioTrack.stop();
       localAudioTrack.close();
     }
-    await client.current.leave();
-    setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
-    document.getElementById("remote-container").innerHTML = "";
+  };
+
+  const renderVideo = (user) => {
+    const id = user.uid === "local" ? "local-player" : `user-container-${user.uid}`;
+    const videoTrack = user.videoTrack;
+    setTimeout(() => {
+      videoTrack.play(id);
+    }, 0);
+    return <div key={id} id={id} className="video-container"></div>;
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Enter the channel name"
-        value={channelName}
-        onChange={(e) => setChannelName(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Enter the user ID (optional)"
-        value={uid}
-        onChange={(e) => setUid(e.target.value)}
-      />
+    <div className="videocall-page">
+      <div>
+        <label>Enter Channel Name:</label>
+        <input
+          type="text"
+          placeholder="Enter the channel name"
+          value={channelName}
+          onChange={(e) => setChannelName(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Enter User ID (Optional):</label>
+        <input
+          type="text"
+          placeholder="Enter the user ID (optional)"
+          value={uid}
+          onChange={(e) => setUid(e.target.value)}
+        />
+      </div>
       <button onClick={handleJoin} disabled={joinState}>
         Join
       </button>
       <button onClick={handleLeave} disabled={!joinState}>
         Leave
       </button>
-      <div id="local-player" style={{ width: "320px", height: "240px" }}></div>
-      <div
-        id="remote-container"
-        style={{ width: "320px", height: "240px" }}
-      ></div>
-      {/* <div style={gazeCircleStyle}></div> */}
+      <div className="video-grid" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+        {participants.map((user) => renderVideo(user))}
+      </div>
+      <div className="chat-section">
+        <div className="messages">
+          {messages.map((msg, index) => (
+            <p key={index}>{msg.text}</p> 
+          ))}
+        </div>
+        <input
+          type="text"
+          value={textMessage}
+          onChange={(e) => setTextMessage(e.target.value)}
+          placeholder="Type a message"
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
     </div>
   );
 }

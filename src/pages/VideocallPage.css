@@ -1,0 +1,66 @@
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin-left: 20px;
+}
+
+.messages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.messages p {
+  margin: 5px 0;
+}
+
+.videocall-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .videocall-page input[type="text"], .videocall-page button {
+    margin: 10px;
+    padding: 10px;
+    width: 200px;
+  }
+  
+  .video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .video-container {
+    background-color: #000;
+    width: calc(50% - 10px);
+    padding-top: 28.125%; /* 16:9 Aspect Ratio */
+    position: relative;
+  }
+  
+  @media (min-width: 600px) {
+    .video-container {
+      width: calc(33.333% - 10px);
+    }
+  }
+  
+  @media (min-width: 900px) {
+    .video-container {
+      width: calc(25% - 10px);
+    }
+  }
+  
+  #local-player, .user-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
