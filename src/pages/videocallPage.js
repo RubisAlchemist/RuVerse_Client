@@ -7,6 +7,7 @@ import "./VideocallPage.css";
 export default function VideocallPage() {
   const { gazeData, isWebgazerInitialized } = useContext(EyetrackingContext);
 
+  // Style for displaying gaze circle based on eye-tracking data
   const gazeCircleStyle = {
     position: "fixed",
     left: `${gazeData.x}px`,
@@ -20,21 +21,25 @@ export default function VideocallPage() {
     zIndex: 9999,
   };
 
+  // Refs for Agora RTC and Chat clients
   const client = useRef(null);
-  const [messages, setMessages] = useState([]);
-  const [chatClient, setChatClient] = useState(null);
-  const [textMessage, setTextMessage] = useState("");
-  const [channelName, setChannelName] = useState("");
-  const [uid, setUid] = useState("");
-  const [joinState, setJoinState] = useState(false);
-  const [localVideoTrack, setLocalVideoTrack] = useState(null);
-  const [localAudioTrack, setLocalAudioTrack] = useState(null);
-  const [participants, setParticipants] = useState([]);
+  const [messages, setMessages] = useState([]);  // State to manage chat messages
+  const [chatClient, setChatClient] = useState(null);  // State to manage Chat SDK client
+  const [textMessage, setTextMessage] = useState("");  // State to hold the text message being typed
+  const [channelName, setChannelName] = useState("");  // State to manage the channel name
+  const [uid, setUid] = useState("");  // State to manage the user ID
+  const [joinState, setJoinState] = useState(false);  // State to manage the join state
+  const [localVideoTrack, setLocalVideoTrack] = useState(null);  // State to manage local video track
+  const [localAudioTrack, setLocalAudioTrack] = useState(null);  // State to manage local audio track
+  const [participants, setParticipants] = useState([]);  // State to manage participants in the call
 
+  // .env
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
   const chatAppId = process.env.REACT_APP_AGORA_RTC_CHATAPP_ID_KEY;
 
+  // useEffect hook to handle component initialization and cleanup
   useEffect(() => {
+    // Chat SDK client initialization
     const initializeChatClient = () => {
       const chatClient = new AC.connection({
         appKey: chatAppId,
@@ -45,10 +50,11 @@ export default function VideocallPage() {
       };
     };
 
+    // Initialization of Webgazer before setting up Agora RTC and Chat clients
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      subscribeToEvents();
-      initializeChatClient();
+      subscribeToEvents();  // Function to subscribe to Agora RTC events
+      initializeChatClient();  // Initialize Chat SDK client
       return () => {
         if (localVideoTrack) {
           localVideoTrack.close();
@@ -61,12 +67,14 @@ export default function VideocallPage() {
     }
   }, [isWebgazerInitialized, chatAppId]);
 
+  // Subscribe to Chat SDK events
   const subscribeToChatEvents = (chatClient) => {
     chatClient.on("message", (msg) => {
       setMessages((prevMessages) => [...prevMessages, msg]);
     });
   };
 
+  // Login to Chat and subscribe to chat events
   const loginAndSubscribeToChat = async () => {
     const options = {
       user: 'userID',
@@ -82,6 +90,7 @@ export default function VideocallPage() {
     }
   };
 
+  // useEffect hook to handle Chat login and subscription
   useEffect(() => {
     loginAndSubscribeToChat();
 
@@ -90,6 +99,7 @@ export default function VideocallPage() {
     };
   }, [chatAppId]);
 
+  // Handle sending a text message in the chat
   const handleSendMessage = () => {
     if (textMessage.trim() !== "") {
       const option = {
@@ -107,7 +117,9 @@ export default function VideocallPage() {
     }
   };
 
+  // Subscribe to Agora RTC events
   const subscribeToEvents = () => {
+    // Event handler for when a user is published (joins the call)
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
       if (mediaType === "video") {
@@ -125,6 +137,7 @@ export default function VideocallPage() {
       }
     });
 
+    // Event handler for when a user is unpublished (leaves the call)
     const handleUserChange = (user, action) => {
       setParticipants((prevParticipants) => {
         if (action === "add") {
@@ -136,6 +149,7 @@ export default function VideocallPage() {
       });
     };
 
+    // Handle events for user-unpublished and user-left events
     client.current.on("user-unpublished", (user, mediaType) => {
       handleUserChange(user, "remove");
     });
@@ -145,6 +159,7 @@ export default function VideocallPage() {
     });
   };
 
+  // Handle joining the video call
   const handleJoin = async () => {
     if (!client.current) return;
 
@@ -162,6 +177,7 @@ export default function VideocallPage() {
     }
   };
 
+  // Handle leaving the video call
   const handleLeave = async () => {
     if (client.current) {
       try {
@@ -176,6 +192,7 @@ export default function VideocallPage() {
     }
   };
 
+  // Cleanup local video and audio tracks
   const cleanupTracks = () => {
     if (localVideoTrack) {
       localVideoTrack.stop();
@@ -189,6 +206,7 @@ export default function VideocallPage() {
     setLocalAudioTrack(null);
   };
 
+  // Render video elements for participants
   const renderVideo = (user) => {
     const id = user.uid === "local" ? "local-player" : `user-container-${user.uid}`;
     const videoTrack = user.videoTrack;
@@ -198,6 +216,7 @@ export default function VideocallPage() {
     return <div key={id} id={id} className="video-container"></div>;
   };
 
+  // JSX for the VideocallPage component
   return (
     <div className="videocall-page">
       <div>
