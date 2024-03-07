@@ -64,16 +64,27 @@ export default function VideocallPage() {
     }
   }, [isWebgazerInitialized]);
 
+  useEffect(() => {
+    renderRemoteUsers();
+  }, [remoteUsers]);
+
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
+      // remote-container가 존재하는지 확인하고 없다면 생성합니다.
+      let remoteContainer = document.getElementById("remote-container");
+      if (!remoteContainer) {
+        remoteContainer = document.createElement("div");
+        remoteContainer.id = "remote-container";
+        document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+      }
       if (mediaType === "video") {
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
         playerContainer.style.width = "320px";
         playerContainer.style.height = "240px";
-        document.getElementById("remote-container").append(playerContainer);
+        remoteContainer.append(playerContainer);
         videoTrack.play(playerContainer);
       }
       if (mediaType === "audio") {
@@ -101,7 +112,6 @@ export default function VideocallPage() {
 
   const handleJoin = async () => {
     if (!client.current) return;
-    console.log("taehwi");
     await client.current.join(appId, channelName, null, uid || null);
     const videoTrack = await AgoraRTC.createCameraVideoTrack();
     const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
@@ -153,7 +163,32 @@ export default function VideocallPage() {
 
   // Function to render the remote users' videos
   const renderRemoteUsers = () => {
-    return remoteUsers.map((user, index) => (
+    // remote-container가 존재하는지 확인합니다.
+    let remoteContainer = document.getElementById("remote-container");
+    if (!remoteContainer) {
+      remoteContainer = document.createElement("div");
+      remoteContainer.id = "remote-container";
+      document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+    }
+
+    // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
+    remoteUsers.forEach((user) => {
+      const userContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (userContainer && user.videoTrack) {
+        user.videoTrack.play(userContainer);
+      } else if (!userContainer) {
+        const playerContainer = document.createElement("div");
+        playerContainer.id = `user-container-${user.uid}`;
+        playerContainer.style.width = "320px";
+        playerContainer.style.height = "240px";
+        remoteContainer.appendChild(playerContainer);
+        user.videoTrack.play(playerContainer);
+      }
+    });
+
+    return remoteUsers.map((user) => (
       <div
         key={user.uid}
         id={`user-container-${user.uid}`}
@@ -161,6 +196,7 @@ export default function VideocallPage() {
       />
     ));
   };
+
   const getVideoLayout = () => {
     // Check if there are remote users to display the grid layout
     if (remoteUsers.length > 0) {
@@ -186,7 +222,7 @@ export default function VideocallPage() {
               id={`user-container-${user.uid}`}
               style={{ gridColumn: "2" }}
             >
-              {/* Placeholder for remote video */}
+              {renderRemoteUsers()}
             </div>
           ))}
         </div>

@@ -290,7 +290,7 @@ const EyetrackingLogger = ({ children }) => {
           if (data && isMounted) {
             // 데이터가 있고, 컴포넌트가 마운트 상태인지 확인합니다.
             setGazeData({ x: data.x, y: data.y });
-            console.log(`Gaze Position - X: ${data.x}, Y: ${data.y}`);
+            // console.log(`Gaze Position - X: ${data.x}, Y: ${data.y}`);
           }
         })
         .showVideoPreview(false) // 이 부분을 추가하세요
