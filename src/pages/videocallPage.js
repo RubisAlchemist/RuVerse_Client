@@ -80,8 +80,8 @@ export default function VideocallPage() {
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "640px";
-        playerContainer.style.height = "480px";
+        playerContainer.style.width = "680px";
+        playerContainer.style.height = "510px";
         document
           .getElementById("remote-container")
           .appendChild(playerContainer);
@@ -174,10 +174,10 @@ export default function VideocallPage() {
         <div
           id="local-player"
           style={{
-            width: "640px",
-            height: "480px",
+            width: "680px",
+            height: "510px",
             margin: "auto", // This centers the video in its container
-            // marginTop: "100px",
+            marginTop: "100px",
           }}
         ></div>
       );
@@ -205,10 +205,10 @@ export default function VideocallPage() {
       } else if (!userContainer) {
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "640px";
-        playerContainer.style.height = "480px";
+        playerContainer.style.width = "680px";
+        playerContainer.style.height = "510px";
         playerContainer.style.margin = "auto";
-        // playerContainer.style.marginTop = "100px";
+        playerContainer.style.marginTop = "100px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
@@ -218,7 +218,12 @@ export default function VideocallPage() {
       <div
         key={user.uid}
         id={`user-container-${user.uid}`}
-        style={{ margin: "auto", width: "640px", height: "480px" }}
+        style={{
+          margin: "auto",
+          width: "680px",
+          height: "510px",
+          marginTop: "100px",
+        }}
       />
     ));
   };
