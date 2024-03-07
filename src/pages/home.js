@@ -3,7 +3,7 @@ import React from "react";
 // import StartButton from "../component/startButton";
 import styled from "styled-components";
 import { Button } from "@mui/material";
-import postureImg from "../images/caliImage.png";
+import postureImg from "../images/permissionCheckImage.png";
 import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
@@ -43,9 +43,12 @@ const StyledReady = styled.div`
   line-height: 1.8;
   font-size: 15px;
 `;
-
 const StyledImg = styled.img`
-  width: 60%;
-  height: 60%;
+  width: 40%;
+  height: auto;
   object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 80vw; // On smaller screens, the image will take up 80% of the viewport width
+  }
 `;
