@@ -111,9 +111,9 @@ const KeyboardLogger = ({
         { pointerId, timestamp, pressure, height, width },
       ]);
 
-      // console.log(eventData);
-      //console.log("deviceType: "+deviceType+", pressedKey: "+pressedKey+", pointerType: "+pointerType+", pointerId: "+pointerId + ", eventType: "+eventType +", timestamp: "+timestamp +", ISOtimestamp: "+ISOtimestamp+", pressure: "+pressure +", area: "+area); // to inspect in ipad chrome
-      // console.log(eventDataCompressed);
+      console.log(eventData);
+      console.log("deviceType: "+deviceType+", pressedKey: "+pressedKey+", pointerType: "+pointerType+", pointerId: "+pointerId + ", eventType: "+eventType +", timestamp: "+timestamp +", ISOtimestamp: "+ISOtimestamp+", pressure: "+pressure +", area: "+area); // to inspect in ipad chrome
+      console.log(eventDataCompressed);
 
       if (pressedKey === '{shift}') handleShift();
       if (pressedKey === '{language}') handleLanguage();

@@ -34,13 +34,13 @@ const GPSLogger = ({
         positionsRef.current = [...positionsRef.current, newPosition];
 
         // Call the onGpsData function with the new position
-        // onGpsData(newPosition);
+        onGpsData(newPosition);
 
-        console.log("Latitude: ", position.coords.latitude);
-        console.log("Longitude: ", position.coords.longitude);
-        console.log("Altitude: ", position.coords.altitude);
-        console.log(position);
-        console.log(newPosition.timeStamp);
+        // console.log("Latitude: ", position.coords.latitude);
+        // console.log("Longitude: ", position.coords.longitude);
+        // console.log("Altitude: ", position.coords.altitude);
+        // console.log(position);
+        // console.log(newPosition.timeStamp);
       },
       error,
       options
