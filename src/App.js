@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,13 @@ function App() {
   const [touchData, setTouchData] = useState([]);
   const [stylusData, setStylusData] = useState([]);
   const [eyetrackingData, setEyetrackingData] = useState([]);
+  // 최신 상태를 저장할 참조
+  const latestDataRef = useRef({
+    gpsData,
+    accelgyroData,
+    touchData,
+    eyetrackingData,
+  });
   // const [keyboardData, setKeyboardData] = useState([]);
   const dispatch = useDispatch();
   // const gpsData = useSelector(state => state.dataReducer.gpsData);
@@ -54,48 +61,80 @@ function App() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Dispatch action to update Redux store with the data
-      dispatch(
-        updateData({
-          gpsData,
-          accelgyroData,
-          touchData,
-          stylusData,
-          // keyboardData,
-          eyetrackingData,
-        })
-      );
+    latestDataRef.current = {
+      gpsData,
+      accelgyroData,
+      touchData,
+      eyetrackingData,
+    };
+  }, [gpsData, accelgyroData, touchData, eyetrackingData]);
 
-      // Print out the data on the console
-      console.log("Uploading data", {
-        gpsData,
-        accelgyroData,
-        touchData,
-        // stylusData,
-        // keyboardData,
-        eyetrackingData,
-      });
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     // Dispatch action to update Redux store with the data
+  //     dispatch(
+  //       updateData({
+  //         gpsData,
+  //         accelgyroData,
+  //         touchData,
+  //         // stylusData,
+  //         // keyboardData,
+  //         eyetrackingData,
+  //       })
+  //     );
 
-      // Clear the state variables
-      setGpsData([]);
-      setAccelgyroData([]);
-      setTouchData([]);
-      setStylusData([]);
-      setEyetrackingData([]);
-      // setKeyboardData([]);
-    }, 10000);
+  //     // Print out the data on the console
+  //     // console.log("Uploading data", {
+  //     //   gpsData,
+  //     //   accelgyroData,
+  //     //   touchData,
+  //     //   // stylusData,
+  //     //   // keyboardData,
+  //     //   eyetrackingData,
+  //     // });
+  //     console.log("Latest Data:", latestDataRef.current);
 
-    return () => clearInterval(interval);
-  }, [
-    dispatch,
-    gpsData,
-    accelgyroData,
-    touchData,
-    stylusData,
-    eyetrackingData,
-  ]);
+  //     // console.log("Interval check", new Date());
 
+  //     // Clear the state variables
+  //     setGpsData([]);
+  //     setAccelgyroData([]);
+  //     setTouchData([]);
+  //     setStylusData([]);
+  //     setEyetrackingData([]);
+  //     // setKeyboardData([]);
+  //   }, 10000);
+
+  //   return () => clearInterval(interval);
+  // }, [
+  //   dispatch,
+  //   gpsData,
+  //   accelgyroData,
+  //   touchData,
+  //   stylusData,
+  //   eyetrackingData,
+  // ]);
+  useEffect(
+    () => {
+      const interval = setInterval(() => {
+        // 현재 수집된 데이터를 콘솔에 로깅
+        console.log("Uploading Data:", latestDataRef.current);
+
+        // 모든 상태를 초기화
+        setGpsData([]);
+        setAccelgyroData([]);
+        setTouchData([]);
+        setStylusData([]);
+        setEyetrackingData([]);
+      }, 10000); // 10초 간격
+
+      return () => clearInterval(interval);
+    },
+    [
+      // 이 의존성 배열은 이제 빈 배열이 될 수 있습니다,
+      // 왜냐하면 상태 업데이트는 setInterval 콜백 안에서만 관리되기 때문입니다.
+    ]
+  );
   return (
     <ThemeProvider theme={theme}>
       <Router>
