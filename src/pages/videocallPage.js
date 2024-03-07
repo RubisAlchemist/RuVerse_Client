@@ -82,8 +82,8 @@ export default function VideocallPage() {
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "320px";
-        playerContainer.style.height = "240px";
+        playerContainer.style.width = "640px";
+        playerContainer.style.height = "480px";
         remoteContainer.append(playerContainer);
         videoTrack.play(playerContainer);
       }
@@ -151,8 +151,8 @@ export default function VideocallPage() {
         <div
           id="local-player"
           style={{
-            width: "320px",
-            height: "240px",
+            width: "640px",
+            height: "320px",
             margin: "auto", // This centers the video in its container
             marginTop: "100px",
           }}
@@ -237,15 +237,7 @@ export default function VideocallPage() {
             justifyContent: "center",
             flexWrap: "wrap",
           }}
-        >
-          {remoteUsers.map((user) => (
-            <div
-              key={user.uid}
-              id={`user-container-${user.uid}`}
-              style={{ margin: "10px" }}
-            ></div>
-          ))}
-        </div>
+        ></div>
       </div>
     );
   };
