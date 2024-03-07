@@ -163,41 +163,69 @@ export default function VideocallPage() {
   };
 
   // Function to render the remote users' videos
+  // const renderRemoteUsers = () => {
+  //   // remote-container가 존재하는지 확인합니다.
+  //   let remoteContainer = document.getElementById("remote-container");
+  //   if (!remoteContainer) {
+  //     remoteContainer = document.createElement("div");
+  //     remoteContainer.id = "remote-container";
+  //     document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+  //   }
+
+  //   // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
+  //   remoteUsers.forEach((user) => {
+  //     const userContainer = document.getElementById(
+  //       `user-container-${user.uid}`
+  //     );
+  //     if (userContainer && user.videoTrack) {
+  //       user.videoTrack.play(userContainer);
+  //     } else if (!userContainer) {
+  //       const playerContainer = document.createElement("div");
+  //       playerContainer.id = `user-container-${user.uid}`;
+  //       playerContainer.style.width = "640px";
+  //       playerContainer.style.height = "480px";
+  //       playerContainer.style.margin = "auto";
+  //       playerContainer.style.marginTop = "100px";
+  //       remoteContainer.appendChild(playerContainer);
+  //       user.videoTrack.play(playerContainer);
+  //     }
+  //   });
+
+  //   return remoteUsers.map((user) => (
+  //     <div
+  //       key={user.uid}
+  //       id={`user-container-${user.uid}`}
+  //       style={{ width: "640px", height: "480px" }}
+  //     />
+  //   ));
+  // };
+
   const renderRemoteUsers = () => {
-    // remote-container가 존재하는지 확인합니다.
+    // Ensure the remote-container exists.
     let remoteContainer = document.getElementById("remote-container");
     if (!remoteContainer) {
       remoteContainer = document.createElement("div");
       remoteContainer.id = "remote-container";
       document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+    } else {
+      // Clear the remote-container before adding new video elements
+      remoteContainer.innerHTML = "";
     }
 
-    // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
-    remoteUsers.forEach((user) => {
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer && user.videoTrack) {
-        user.videoTrack.play(userContainer);
-      } else if (!userContainer) {
-        const playerContainer = document.createElement("div");
-        playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "640px";
-        playerContainer.style.height = "480px";
-        playerContainer.style.margin = "auto";
-        playerContainer.style.marginTop = "100px";
-        remoteContainer.appendChild(playerContainer);
-        user.videoTrack.play(playerContainer);
-      }
-    });
+    // Check if there's at least one remote user
+    if (remoteUsers.length > 0) {
+      const user = remoteUsers[0]; // Get the first user from the remoteUsers array
+      const userContainer = document.createElement("div");
+      userContainer.id = `user-container-${user.uid}`;
+      userContainer.style.width = "640px";
+      userContainer.style.height = "480px";
+      userContainer.style.margin = "auto";
+      userContainer.style.marginTop = "100px";
+      remoteContainer.appendChild(userContainer);
+      user.videoTrack.play(userContainer.id);
+    }
 
-    return remoteUsers.map((user) => (
-      <div
-        key={user.uid}
-        id={`user-container-${user.uid}`}
-        style={{ width: "320px", height: "240px" }}
-      />
-    ));
+    // Return nothing as we are manipulating the DOM directly
   };
 
   const getVideoLayout = () => {
