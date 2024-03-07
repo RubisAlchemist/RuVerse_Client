@@ -213,17 +213,7 @@ export default function VideocallPage() {
     }
 
     // Check if there's at least one remote user
-    if (remoteUsers.length > 1) {
-      const user = remoteUsers[1]; // Get the first user from the remoteUsers array
-      const userContainer = document.createElement("div");
-      userContainer.id = `user-container-${user.uid}`;
-      userContainer.style.width = "640px";
-      userContainer.style.height = "480px";
-      userContainer.style.margin = "auto";
-      userContainer.style.marginTop = "100px";
-      remoteContainer.appendChild(userContainer);
-      user.videoTrack.play(userContainer.id);
-    } else {
+    if (remoteUsers.length > 0) {
       const user = remoteUsers[0]; // Get the first user from the remoteUsers array
       const userContainer = document.createElement("div");
       userContainer.id = `user-container-${user.uid}`;
@@ -267,8 +257,14 @@ export default function VideocallPage() {
     // 비디오 피드와 버튼을 감싸는 div 생성
     return (
       <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-        {joinState && localVideoTrack && renderLocalUser()}
-        {renderRemoteUsers()}
+        {/* {joinState && localVideoTrack && renderLocalUser()} */}
+        {remoteUsers.map((user) => (
+          <div
+            key={user.uid}
+            id={`user-container-${user.uid}`}
+            style={{ margin: "10px" }}
+          ></div>
+        ))}
       </div>
     );
   };
