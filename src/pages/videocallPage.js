@@ -177,7 +177,7 @@ export default function VideocallPage() {
             width: "640px",
             height: "480px",
             margin: "auto", // This centers the video in its container
-            marginTop: "100px",
+            // marginTop: "100px",
           }}
         ></div>
       );
@@ -208,7 +208,7 @@ export default function VideocallPage() {
         playerContainer.style.width = "640px";
         playerContainer.style.height = "480px";
         playerContainer.style.margin = "auto";
-        playerContainer.style.marginTop = "100px";
+        // playerContainer.style.marginTop = "100px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
@@ -346,7 +346,7 @@ export default function VideocallPage() {
           {/* Video feeds container */}
           <div
             id="video-container"
-            style={{ width: "100%", marginTop: "100px", marginBottom: "100px" }}
+            style={{ width: "100%", marginTop: "-50px", marginBottom: "100px" }}
           >
             {getVideoLayout()}
           </div>
