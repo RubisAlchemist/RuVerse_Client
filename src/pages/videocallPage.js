@@ -198,39 +198,63 @@ export default function VideocallPage() {
   };
 
   const getVideoLayout = () => {
-    // Check if there are remote users to display the grid layout
-    if (remoteUsers.length > 0) {
-      return (
+    // remote-container가 존재하는지 확인하고, 필요하면 생성합니다.
+    let remoteContainer = document.getElementById("remote-container");
+    if (!remoteContainer) {
+      remoteContainer = document.createElement("div");
+      remoteContainer.id = "remote-container";
+      document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+    }
+
+    // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
+    remoteUsers.forEach((user) => {
+      const userContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (userContainer && user.videoTrack) {
+        user.videoTrack.play(userContainer);
+      } else if (!userContainer && remoteContainer) {
+        const playerContainer = document.createElement("div");
+        playerContainer.id = `user-container-${user.uid}`;
+        playerContainer.style.width = "320px";
+        playerContainer.style.height = "240px";
+        remoteContainer.appendChild(playerContainer);
+        user.videoTrack.play(playerContainer);
+      }
+    });
+
+    // 비디오 피드와 버튼을 감싸는 div 생성
+    return (
+      <div style={{ width: "100%" }}>
         <div
+          id="local-player"
+          style={{ margin: "0 auto", width: "640px", height: "480px" }}
+        >
+          {joinState && localVideoTrack && renderLocalUser()}
+        </div>
+        <div
+          id="remote-container"
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gridGap: "10px",
-            padding: "10px",
-            marginTop: "20px",
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
           }}
         >
-          {/* Local video */}
-          <div id="local-player" style={{ gridColumn: "1" }}>
-            {renderLocalUser()}
-          </div>
-
-          {/* Assuming only one remote user for this scenario */}
-          {remoteUsers.slice(0, 1).map((user) => (
+          {remoteUsers.map((user) => (
             <div
               key={user.uid}
               id={`user-container-${user.uid}`}
-              style={{ gridColumn: "2" }}
-            >
-              {renderRemoteUsers()}
-            </div>
+              style={{ margin: "10px" }}
+            ></div>
           ))}
         </div>
-      );
-    } else {
-      // If no remote users, display only the local video in the center
-      return renderLocalUser();
-    }
+        <div style={{ marginTop: "20px" }}>
+          <Button onClick={handleLeave} variant="contained" color="primary">
+            상담 끝내기
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   // 사용자가 참여하지 않았을 때 표시할 요소들을 렌더링하는 함수
