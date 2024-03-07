@@ -218,7 +218,7 @@ export default function VideocallPage() {
       <div
         key={user.uid}
         id={`user-container-${user.uid}`}
-        style={{ width: "640px", height: "480px" }}
+        style={{ margin: "auto", width: "640px", height: "480px" }}
       />
     ));
   };
