@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useDispatch, useSelector } from 'react-redux';
-import { updateData } from './store/dataLog/actions';
+import { useDispatch, useSelector } from "react-redux";
+import { updateData } from "./store/dataLog/actions";
 
 import PermissionPage from "./pages/permissionPage";
 // <<<<<<< HEAD
@@ -44,26 +44,28 @@ function App() {
   // const sessionStylusData = useSelector(state => state.dataReducer.sessionStylusData);
 
   const handleSetGpsData = (newGpsData) => {
-    setGpsData(prevDataList => [...prevDataList, newGpsData]);
+    setGpsData((prevDataList) => [...prevDataList, newGpsData]);
   };
   const handleSetAccelgyroData = (newAccelgyroData) => {
-    setAccelgyroData(prevDataList => [...prevDataList, newAccelgyroData]);
+    setAccelgyroData((prevDataList) => [...prevDataList, newAccelgyroData]);
   };
   const handleSetEyetrackingData = (newEyetrackingData) => {
-    setEyetrackingData(prevDataList => [...prevDataList, newEyetrackingData]);
+    setEyetrackingData((prevDataList) => [...prevDataList, newEyetrackingData]);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       // Dispatch action to update Redux store with the data
-      dispatch(updateData({
-        gpsData,
-        accelgyroData,
-        touchData,
-        stylusData,
-        // keyboardData,
-        eyetrackingData,
-      }));
+      dispatch(
+        updateData({
+          gpsData,
+          accelgyroData,
+          touchData,
+          stylusData,
+          // keyboardData,
+          eyetrackingData,
+        })
+      );
 
       // Print out the data on the console
       console.log("Uploading data", {
@@ -74,7 +76,7 @@ function App() {
         // keyboardData,
         eyetrackingData,
       });
-      
+
       // Clear the state variables
       setGpsData([]);
       setAccelgyroData([]);
@@ -82,11 +84,17 @@ function App() {
       setStylusData([]);
       setEyetrackingData([]);
       // setKeyboardData([]);
-
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, [dispatch, gpsData, accelgyroData, touchData, stylusData, eyetrackingData]);
+  }, [
+    dispatch,
+    gpsData,
+    accelgyroData,
+    touchData,
+    stylusData,
+    eyetrackingData,
+  ]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -97,15 +105,13 @@ function App() {
           <Route
             path="/videocallPage"
             element={
-              <EyetrackingLogger
-                setGazeData={handleSetEyetrackingData}
+              <EyetrackingLogger setGazeData={handleSetEyetrackingData}>
+                {/* <<<<<<< HEAD */}
+                <GPSLogger
+                  onGpsData={handleSetGpsData} //{(gpsData) => dispatch(updateData({ gpsData }))}
                 >
-{/* <<<<<<< HEAD */}
-                <GPSLogger 
-                  onGpsData={handleSetGpsData}//{(gpsData) => dispatch(updateData({ gpsData }))}
-                >
-                  <AccelGyroLogger 
-                    onAccelgyroData={handleSetAccelgyroData}//{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
+                  <AccelGyroLogger
+                    onAccelgyroData={handleSetAccelgyroData} //{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
                   >
                     <TouchLoggerContainer
                       touchData={touchData}
@@ -119,24 +125,24 @@ function App() {
                           keyboardData={keyboardData}
                           setKeyboardData={setKeyboardData}
                         > */}
-                          <VideocallPage />
+                        <VideocallPage />
                         {/* </KeyboadLogger> */}
                       </StylusLogger>
                     </TouchLoggerContainer>
                   </AccelGyroLogger>
                 </GPSLogger>
               </EyetrackingLogger>
-// =======
-//               <EyetrackingLogger>
-//                 <GPSLogger>
-//                   <AccelGyroLogger>
-//                     {/* <TouchLoggerContainer> */}
-//                     <VideocallPage />
-//                     {/* </TouchLoggerContainer> */}
-//                   </AccelGyroLogger>
-//                 </GPSLogger>
-//               </EyetrackingLogger>
-// >>>>>>> origin/main
+              // =======
+              //               <EyetrackingLogger>
+              //                 <GPSLogger>
+              //                   <AccelGyroLogger>
+              //                     {/* <TouchLoggerContainer> */}
+              //                     <VideocallPage />
+              //                     {/* </TouchLoggerContainer> */}
+              //                   </AccelGyroLogger>
+              //                 </GPSLogger>
+              //               </EyetrackingLogger>
+              // >>>>>>> origin/main
             }
           />
         </Routes>
@@ -146,9 +152,6 @@ function App() {
 }
 
 export default App;
-
-
-
 
 // // import React from "react";
 // import React, { useEffect, useState, useRef, useMemo } from "react";
@@ -210,7 +213,6 @@ export default App;
 //     return () => clearInterval(interval);
 //   }, [dispatch, gpsData, accelgyroData, sessionTouchData, sessionStylusData]);
 
-
 //   return (
 //     <ThemeProvider theme={theme}>
 //       <Router>
@@ -223,7 +225,7 @@ export default App;
 //             element={
 //               // <EyetrackingLogger>
 //               //   onEyeTrackingData={setEyeTrackingData}
-//                 <GPSLogger 
+//                 <GPSLogger
 //                   onGpsData={setGpsData}
 //                 >
 //                   <AccelGyroLogger

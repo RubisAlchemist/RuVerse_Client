@@ -51,6 +51,7 @@ export default function VideocallPage() {
   useEffect(() => {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      // AgoraRTC.setLogLevel(2);
       subscribeToEvents();
       return () => {
         if (localVideoTrack) {
@@ -177,7 +178,7 @@ export default function VideocallPage() {
             width: "680px",
             height: "510px",
             margin: "auto", // This centers the video in its container
-            marginTop: "100px",
+            marginTop: "80px",
           }}
         ></div>
       );
@@ -208,7 +209,7 @@ export default function VideocallPage() {
         playerContainer.style.width = "680px";
         playerContainer.style.height = "510px";
         playerContainer.style.margin = "auto";
-        playerContainer.style.marginTop = "100px";
+        playerContainer.style.marginTop = "80px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
@@ -222,7 +223,7 @@ export default function VideocallPage() {
           margin: "auto",
           width: "680px",
           height: "510px",
-          marginTop: "100px",
+          marginTop: "80px",
         }}
       />
     ));
@@ -295,34 +296,68 @@ export default function VideocallPage() {
     );
   };
 
-  // 사용자가 참여하지 않았을 때 표시할 요소들을 렌더링하는 함수
+  // // 사용자가 참여하지 않았을 때 표시할 요소들을 렌더링하는 함수
+  // const renderJoinForm = () => {
+  //   return (
+  //     <div
+  //       style={{
+  //         display: "flex",
+  //         flexDirection: "column",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         height: "100vh",
+  //       }}
+  //     >
+  //       <div>
+  //         <StyledInput
+  //           type="text"
+  //           placeholder="주어진 상담소 이름을 입력하세요"
+  //           value={channelName}
+  //           onChange={(e) => setChannelName(e.target.value)}
+  //         />
+  //         <StyledInput
+  //           type="text"
+  //           placeholder="당신의 이름을 입력하세요"
+  //           value={uid}
+  //           onChange={(e) => setUid(e.target.value)}
+  //           style={{ marginRight: 0 }} // Remove the margin for the second input
+  //         />
+  //       </div>
+  //       <StyledImg src={videocallImage} />
+  //       <Button
+  //         onClick={handleJoin}
+  //         variant="contained"
+  //         color="primary"
+  //         style={{ marginTop: "20px" }}
+  //       >
+  //         상담 시작하기
+  //       </Button>
+  //     </div>
+  //   );
+  // };
+
   const renderJoinForm = () => {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-        }}
-      >
-        <div>
+      <JoinFormContainer>
+        <InputGroup>
+          <InputLabel>상담소명 :</InputLabel>
           <StyledInput
             type="text"
             placeholder="주어진 상담소 이름을 입력하세요"
             value={channelName}
             onChange={(e) => setChannelName(e.target.value)}
           />
+        </InputGroup>
+        <InputGroup>
+          <InputLabel>이름 : </InputLabel>
           <StyledInput
             type="text"
             placeholder="당신의 이름을 입력하세요"
             value={uid}
             onChange={(e) => setUid(e.target.value)}
-            style={{ marginRight: 0 }} // Remove the margin for the second input
           />
-        </div>
-        <StyledImg src={videocallImage} />
+        </InputGroup>
+        <StyledImg src={videocallImage}></StyledImg>
         <Button
           onClick={handleJoin}
           variant="contained"
@@ -331,10 +366,9 @@ export default function VideocallPage() {
         >
           상담 시작하기
         </Button>
-      </div>
+      </JoinFormContainer>
     );
   };
-
   return (
     <div
       style={{
@@ -351,13 +385,13 @@ export default function VideocallPage() {
           {/* Video feeds container */}
           <div
             id="video-container"
-            style={{ width: "100%", marginTop: "-50px", marginBottom: "100px" }}
+            style={{ width: "100%", marginTop: "-50px", marginBottom: "80px" }}
           >
             {getVideoLayout()}
           </div>
 
           {/* Button container */}
-          <div id="button-container" style={{ marginTop: "100px" }}>
+          <div id="button-container" style={{ marginTop: "80px" }}>
             {" "}
             {/* Push the button to the bottom */}
             <Button onClick={handleLeave} variant="contained" color="primary">
@@ -373,7 +407,7 @@ export default function VideocallPage() {
 }
 
 const StyledImg = styled.img`
-  width: 60%;
+  width: 90%;
   height: auto;
   object-fit: contain;
 
@@ -383,6 +417,7 @@ const StyledImg = styled.img`
 `;
 
 const StyledInput = styled.input`
+  flex-grow: 1;
   margin-top: 10px;
   margin-bottom: 20px;
   padding: 10px;
@@ -398,5 +433,27 @@ const VideoContainer = styled.div`
   align-items: stretch; // 컨테이너 높이에 맞춰 비디오 높이 조정
   width: 100%;
   max-height: 480px; // 비디오 높이 제한
-  margin-top: 100px;
+  margin-top: 80px;
+`;
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const InputLabel = styled.label`
+  width: 80px; // 레이블의 너비를 고정
+  text-align: right; // 텍스트를 오른쪽으로 정렬
+  margin-right: 10px;
+`;
+
+const JoinFormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin-top: -30px;
 `;
