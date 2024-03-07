@@ -5,8 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateData } from './store/dataLog/actions';
 
 import PermissionPage from "./pages/permissionPage";
-import Home from "./pages/home";
+// <<<<<<< HEAD
+// import Home from "./pages/home";
+// import VideocallPage from "./pages/videocallPage";
+// =======
+import { PostureCheckPage } from "./pages/postureCheckPage";
 import VideocallPage from "./pages/videocallPage";
+import EyetrackingLogger from "./component/eyetrackingLogger";
+import { Home } from "./pages/home";
+// import EyetrackingLogger from "./component/eyetrackingLogger";
+// >>>>>>> origin/main
 import GPSLogger from "./component/gpsLogger";
 import AccelGyroLogger from "./component/accelgyroLogger";
 import TouchLoggerContainer from "./component/touchLogger";
@@ -84,30 +92,46 @@ function App() {
           <Route
             path="/videocallPage"
             element={
-              <GPSLogger 
-                onGpsData={handleSetGpsData}//{(gpsData) => dispatch(updateData({ gpsData }))}
-              >
-                <AccelGyroLogger 
-                  onAccelgyroData={handleSetAccelgyroData}//{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
+              <EyetrackingLogger
+                onEyeTrackingData={setEyeTrackingData}
                 >
-                  <TouchLoggerContainer
-                    touchData={touchData}
-                    setTouchData={setTouchData}
+{/* <<<<<<< HEAD */}
+                <GPSLogger 
+                  onGpsData={handleSetGpsData}//{(gpsData) => dispatch(updateData({ gpsData }))}
+                >
+                  <AccelGyroLogger 
+                    onAccelgyroData={handleSetAccelgyroData}//{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
                   >
-                    <StylusLogger
-                      stylusData={stylusData}
-                      setStylusData={setStylusData}
+                    <TouchLoggerContainer
+                      touchData={touchData}
+                      setTouchData={setTouchData}
                     >
-                      {/* <KeyboadLogger
-                        keyboardData={keyboardData}
-                        setKeyboardData={setKeyboardData}
-                      > */}
-                        <VideocallPage />
-                      {/* </KeyboadLogger> */}
-                    </StylusLogger>
-                  </TouchLoggerContainer>
-                </AccelGyroLogger>
-              </GPSLogger>
+                      <StylusLogger
+                        stylusData={stylusData}
+                        setStylusData={setStylusData}
+                      >
+                        {/* <KeyboadLogger
+                          keyboardData={keyboardData}
+                          setKeyboardData={setKeyboardData}
+                        > */}
+                          <VideocallPage />
+                        {/* </KeyboadLogger> */}
+                      </StylusLogger>
+                    </TouchLoggerContainer>
+                  </AccelGyroLogger>
+                </GPSLogger>
+              </EyetrackingLogger>
+// =======
+//               <EyetrackingLogger>
+//                 <GPSLogger>
+//                   <AccelGyroLogger>
+//                     {/* <TouchLoggerContainer> */}
+//                     <VideocallPage />
+//                     {/* </TouchLoggerContainer> */}
+//                   </AccelGyroLogger>
+//                 </GPSLogger>
+//               </EyetrackingLogger>
+// >>>>>>> origin/main
             }
           />
         </Routes>

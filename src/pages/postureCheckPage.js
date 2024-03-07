@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import postureImg from "../images/caliImage.png";
+import postureImg from "../images/permissionCheckImage.png";
 import { Button } from "@mui/material";
 // import QuizReadyCalib from "./quiz-ready-calib";
 import { useParams } from "react-router-dom";
