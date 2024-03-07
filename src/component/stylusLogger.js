@@ -61,8 +61,8 @@ const StylusLogger = ({
       c: strokeColor,
     };
     // setStylusData([eventData]);
-    // setStylusData((stylusData) => [...stylusData, eventData]);
-    console.log(eventData);
+    setStylusData((stylusData) => [...stylusData, eventData]);
+    // console.log(eventData);
   };
 
   const eventHandlers = ['Enter', 'Down', 'Move', 'Up', 'Leave'].reduce(

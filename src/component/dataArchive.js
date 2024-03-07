@@ -19,7 +19,7 @@ import {
   saveEyetrackingData,
   clearEyetrackingData,
   clipAndSendEyetrackingData,
-} from '@store/actions';
+} from '../store/actions';
 
 function ArchiveModule({
   clientId,
@@ -87,77 +87,77 @@ function ArchiveModule({
     }
   }, [eyetrackingData, dispatch]);
 
-  useEffect(() => {
-    if (quizEnded) {
-      setQuizEndedAt(new Date().toISOString());
-    }
-  }, [quizEnded]);
+  // useEffect(() => {
+  //   if (quizEnded) {
+  //     setQuizEndedAt(new Date().toISOString());
+  //   }
+  // }, [quizEnded]);
 
-  useEffect(() => {
-    if (quizEnded) {
-      dispatch(
-        clipAndSendGpsData(
-          clientId,
-          quizId,
-          'gps',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
-      dispatch(
-        clipAndSendTouchData(
-          clientId,
-          quizId,
-          'touch',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
-      dispatch(
-        clipAndSendKeyboardData(
-          clientId,
-          quizId,
-          'keyboard',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
-      dispatch(
-        clipAndSendStylusData(
-          clientId,
-          quizId,
-          'stylus',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
-      dispatch(
-        clipAndSendAccelgyroData(
-          clientId,
-          quizId,
-          'accel-gyro',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
-      dispatch(
-        clipAndSendEyetrackingData(
-          clientId,
-          quizId,
-          'eye-tracking',
-          quizStartedAt,
-          new Date().toISOString()
-        )
-      );
+  // useEffect(() => {
+  //   if (quizEnded) {
+  //     dispatch(
+  //       clipAndSendGpsData(
+  //         clientId,
+  //         quizId,
+  //         'gps',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
+  //     dispatch(
+  //       clipAndSendTouchData(
+  //         clientId,
+  //         quizId,
+  //         'touch',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
+  //     dispatch(
+  //       clipAndSendKeyboardData(
+  //         clientId,
+  //         quizId,
+  //         'keyboard',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
+  //     dispatch(
+  //       clipAndSendStylusData(
+  //         clientId,
+  //         quizId,
+  //         'stylus',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
+  //     dispatch(
+  //       clipAndSendAccelgyroData(
+  //         clientId,
+  //         quizId,
+  //         'accel-gyro',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
+  //     dispatch(
+  //       clipAndSendEyetrackingData(
+  //         clientId,
+  //         quizId,
+  //         'eye-tracking',
+  //         quizStartedAt,
+  //         new Date().toISOString()
+  //       )
+  //     );
 
-      dispatch(clearGpsData());
-      dispatch(clearTouchData());
-      dispatch(clearKeyboardData());
-      dispatch(clearStylusData());
-      dispatch(clearAccelgyroData());
-      dispatch(clearEyetrackingData());
-    }
-  }, [quizEnded, dispatch]);
+  //     dispatch(clearGpsData());
+  //     dispatch(clearTouchData());
+  //     dispatch(clearKeyboardData());
+  //     dispatch(clearStylusData());
+  //     dispatch(clearAccelgyroData());
+  //     dispatch(clearEyetrackingData());
+  //   }
+  // }, [quizEnded, dispatch]);
 
   return null;
 }

@@ -44,7 +44,8 @@ const AccelGyroLogger = ({
       // }
 
       // console.log(setData)
-      console.log(newData)
+      onAccelgyroData(newData);
+      // console.log(newData)
     };
 
     if (window.DeviceMotionEvent) {

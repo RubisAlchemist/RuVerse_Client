@@ -98,7 +98,7 @@ const TouchLoggerContainer = ({
     // console.log("setTouchData", eventData)
 
     // if (quizSessionType === 'QUIZ') {
-    //   setTouchData([eventData]);
+      setTouchData([eventData]);
     // } else {
     //   setTouchData((prevTouchData) => [...prevTouchData, eventData]);
     // }
