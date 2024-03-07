@@ -152,7 +152,7 @@ export default function VideocallPage() {
           id="local-player"
           style={{
             width: "640px",
-            height: "320px",
+            height: "480px",
             margin: "auto", // This centers the video in its container
             marginTop: "100px",
           }}
@@ -230,14 +230,7 @@ export default function VideocallPage() {
     return (
       <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
         {joinState && localVideoTrack && renderLocalUser()}
-        <div
-          id="remote-container"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        ></div>
+        {renderRemoteUsers()}
       </div>
     );
   };
