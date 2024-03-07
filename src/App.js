@@ -72,7 +72,7 @@ function App() {
         gpsData,
         accelgyroData,
         touchData,
-        stylusData,
+        // stylusData,
         // keyboardData,
         eyetrackingData,
       });
