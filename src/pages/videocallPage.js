@@ -213,7 +213,17 @@ export default function VideocallPage() {
     }
 
     // Check if there's at least one remote user
-    if (remoteUsers.length > 0) {
+    if (remoteUsers.length > 1) {
+      const user = remoteUsers[1]; // Get the first user from the remoteUsers array
+      const userContainer = document.createElement("div");
+      userContainer.id = `user-container-${user.uid}`;
+      userContainer.style.width = "640px";
+      userContainer.style.height = "480px";
+      userContainer.style.margin = "auto";
+      userContainer.style.marginTop = "100px";
+      remoteContainer.appendChild(userContainer);
+      user.videoTrack.play(userContainer.id);
+    } else {
       const user = remoteUsers[0]; // Get the first user from the remoteUsers array
       const userContainer = document.createElement("div");
       userContainer.id = `user-container-${user.uid}`;
