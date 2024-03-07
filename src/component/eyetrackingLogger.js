@@ -276,8 +276,11 @@
 import React, { useState, useEffect } from "react";
 import EyetrackingContext from "../pages/eyetrackingContext";
 
-const EyetrackingLogger = ({ children }) => {
-  const [gazeData, setGazeData] = useState({ x: 0, y: 0 });
+const EyetrackingLogger = ({ 
+  children, 
+  setGazeData,
+}) => {
+  const [gazeData, onGazeData] = useState({ x: 0, y: 0 });
   const [isWebgazerInitialized, setIsWebgazerInitialized] = useState(false);
   const webgazer = window.webgazer;
   let isMounted = true; // 컴포넌트의 마운트 상태를 추적하는 변수를 추가합니다.
@@ -289,8 +292,9 @@ const EyetrackingLogger = ({ children }) => {
         .setGazeListener((data, elapsedTime) => {
           if (data && isMounted) {
             // 데이터가 있고, 컴포넌트가 마운트 상태인지 확인합니다.
-            setGazeData({ x: data.x, y: data.y });
-            console.log(`Gaze Position - X: ${data.x}, Y: ${data.y}`);
+            onGazeData({ x: data.x, y: data.y });
+            setGazeData({ x: data.x, y: data.y })
+            // console.log(`Gaze Position - X: ${data.x}, Y: ${data.y}`);
           }
         })
         .showVideoPreview(false) // 이 부분을 추가하세요
@@ -333,7 +337,7 @@ const EyetrackingLogger = ({ children }) => {
   );
 };
 
-// export default EyetrackingLogger;
+// export default EyetrackingLogger;3ew23ew33
 
 // // EyetrackingLogger.js
 // import React, { useState, useEffect } from "react";
@@ -396,4 +400,4 @@ const EyetrackingLogger = ({ children }) => {
 //   );
 // };
 
-// export default EyetrackingLogger;
+export default EyetrackingLogger;

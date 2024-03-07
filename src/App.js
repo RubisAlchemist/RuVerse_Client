@@ -35,6 +35,7 @@ function App() {
   const [accelgyroData, setAccelgyroData] = useState([]);
   const [touchData, setTouchData] = useState([]);
   const [stylusData, setStylusData] = useState([]);
+  const [eyetrackingData, setEyetrackingData] = useState([]);
   // const [keyboardData, setKeyboardData] = useState([]);
   const dispatch = useDispatch();
   // const gpsData = useSelector(state => state.dataReducer.gpsData);
@@ -43,12 +44,13 @@ function App() {
   // const sessionStylusData = useSelector(state => state.dataReducer.sessionStylusData);
 
   const handleSetGpsData = (newGpsData) => {
-    // Append the new GPS data to the existing list
     setGpsData(prevDataList => [...prevDataList, newGpsData]);
   };
   const handleSetAccelgyroData = (newAccelgyroData) => {
-    // Append the new GPS data to the existing list
-    setGpsData(prevDataList => [...prevDataList, newAccelgyroData]);
+    setAccelgyroData(prevDataList => [...prevDataList, newAccelgyroData]);
+  };
+  const handleSetEyetrackingData = (newEyetrackingData) => {
+    setEyetrackingData(prevDataList => [...prevDataList, newEyetrackingData]);
   };
 
   useEffect(() => {
@@ -60,6 +62,7 @@ function App() {
         touchData,
         stylusData,
         // keyboardData,
+        eyetrackingData,
       }));
 
       // Print out the data on the console
@@ -69,6 +72,7 @@ function App() {
         touchData,
         stylusData,
         // keyboardData,
+        eyetrackingData,
       });
       
       // Clear the state variables
@@ -76,12 +80,13 @@ function App() {
       setAccelgyroData([]);
       setTouchData([]);
       setStylusData([]);
+      setEyetrackingData([]);
       // setKeyboardData([]);
 
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [dispatch, gpsData, accelgyroData, touchData, stylusData]);
+  }, [dispatch, gpsData, accelgyroData, touchData, stylusData, eyetrackingData]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -93,7 +98,7 @@ function App() {
             path="/videocallPage"
             element={
               <EyetrackingLogger
-                onEyeTrackingData={setEyeTrackingData}
+                setGazeData={handleSetEyetrackingData}
                 >
 {/* <<<<<<< HEAD */}
                 <GPSLogger 
