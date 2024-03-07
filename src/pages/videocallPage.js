@@ -120,7 +120,7 @@ export default function VideocallPage() {
     setLocalAudioTrack(audioTrack);
     setJoinState(true);
 
-    videoTrack.play("local-player");
+    // videoTrack.play("local-player");
   };
 
   const handleLeave = async () => {
@@ -154,6 +154,7 @@ export default function VideocallPage() {
             width: "640px",
             height: "480px",
             margin: "auto", // This centers the video in its container
+            marginTop: "100px",
           }}
         ></div>
       );
@@ -226,12 +227,7 @@ export default function VideocallPage() {
     // 비디오 피드와 버튼을 감싸는 div 생성
     return (
       <div style={{ width: "100%" }}>
-        <div
-          id="local-player"
-          style={{ margin: "0 auto", width: "640px", height: "480px" }}
-        >
-          {joinState && localVideoTrack && renderLocalUser()}
-        </div>
+        {joinState && localVideoTrack && renderLocalUser()}
         <div
           id="remote-container"
           style={{
@@ -247,11 +243,6 @@ export default function VideocallPage() {
               style={{ margin: "10px" }}
             ></div>
           ))}
-        </div>
-        <div style={{ marginTop: "20px" }}>
-          <Button onClick={handleLeave} variant="contained" color="primary">
-            상담 끝내기
-          </Button>
         </div>
       </div>
     );
@@ -300,30 +291,33 @@ export default function VideocallPage() {
   return (
     <div
       style={{
-        textAlign: "center",
-        height: "100vh",
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
+        flexDirection: "column", // Ensure elements are stacked vertically
+        justifyContent: "flex-start", // Align content to the start of the container
+        alignItems: "center", // Center items horizontally
+        height: "100vh", // Full viewport height
+        width: "100%", // Full viewport width
       }}
     >
-      {!joinState && renderJoinForm()}
-      {joinState && (
-        <div style={{ width: "100%" }}>
-          {getVideoLayout()}
-          <Button
-            onClick={handleLeave}
-            variant="contained"
-            color="primary"
-            style={{ marginTop: "20px" }}
-          >
-            상담 끝내기
-          </Button>
-        </div>
+      {joinState ? (
+        <>
+          {/* Video feeds container */}
+          <div id="video-container" style={{ width: "100%" }}>
+            {getVideoLayout()}
+          </div>
+
+          {/* Button container */}
+          <div id="button-container" style={{ marginTop: "100px" }}>
+            {" "}
+            {/* Push the button to the bottom */}
+            <Button onClick={handleLeave} variant="contained" color="primary">
+              상담 끝내기
+            </Button>
+          </div>
+        </>
+      ) : (
+        renderJoinForm() // Render the join form if not joined
       )}
-      {/* If you need to render the gaze circle, it should be placed here */}
-      {/* {isWebgazerInitialized && <div style={gazeCircleStyle}></div>} */}
     </div>
   );
 }
