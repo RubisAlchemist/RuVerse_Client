@@ -151,8 +151,8 @@ export default function VideocallPage() {
         <div
           id="local-player"
           style={{
-            width: "640px",
-            height: "480px",
+            width: "320px",
+            height: "240px",
             margin: "auto", // This centers the video in its container
             marginTop: "100px",
           }}
@@ -184,6 +184,8 @@ export default function VideocallPage() {
         playerContainer.id = `user-container-${user.uid}`;
         playerContainer.style.width = "320px";
         playerContainer.style.height = "240px";
+        playerContainer.style.margin = "auto";
+        playerContainer.style.marginTop = "100px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
@@ -228,22 +230,7 @@ export default function VideocallPage() {
     return (
       <div style={{ width: "100%" }}>
         {joinState && localVideoTrack && renderLocalUser()}
-        <div
-          id="remote-container"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {remoteUsers.map((user) => (
-            <div
-              key={user.uid}
-              id={`user-container-${user.uid}`}
-              style={{ margin: "10px" }}
-            ></div>
-          ))}
-        </div>
+        {renderRemoteUsers()}
       </div>
     );
   };
