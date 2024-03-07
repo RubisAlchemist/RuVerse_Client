@@ -182,8 +182,8 @@ export default function VideocallPage() {
       } else if (!userContainer) {
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "320px";
-        playerContainer.style.height = "240px";
+        playerContainer.style.width = "640px";
+        playerContainer.style.height = "480px";
         playerContainer.style.margin = "auto";
         playerContainer.style.marginTop = "100px";
         remoteContainer.appendChild(playerContainer);
@@ -219,8 +219,8 @@ export default function VideocallPage() {
       } else if (!userContainer && remoteContainer) {
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "320px";
-        playerContainer.style.height = "240px";
+        playerContainer.style.width = "640px";
+        playerContainer.style.height = "480px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
@@ -228,9 +228,24 @@ export default function VideocallPage() {
 
     // 비디오 피드와 버튼을 감싸는 div 생성
     return (
-      <div style={{ width: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
         {joinState && localVideoTrack && renderLocalUser()}
-        {renderRemoteUsers()}
+        <div
+          id="remote-container"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {remoteUsers.map((user) => (
+            <div
+              key={user.uid}
+              id={`user-container-${user.uid}`}
+              style={{ margin: "10px" }}
+            ></div>
+          ))}
+        </div>
       </div>
     );
   };
