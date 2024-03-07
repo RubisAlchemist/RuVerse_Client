@@ -71,39 +71,62 @@ export default function VideocallPage() {
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
-      // remote-container가 존재하는지 확인하고 없다면 생성합니다.
-      let remoteContainer = document.getElementById("remote-container");
-      if (!remoteContainer) {
-        remoteContainer = document.createElement("div");
-        remoteContainer.id = "remote-container";
-        document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
-      }
-      if (mediaType === "video") {
+
+      // 새로운 원격 사용자의 video track을 DOM에 추가하기 전에 이미 있는지 확인합니다.
+      const existingUserContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (!existingUserContainer && mediaType === "video") {
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
         playerContainer.style.width = "640px";
         playerContainer.style.height = "480px";
-        remoteContainer.append(playerContainer);
+        document
+          .getElementById("remote-container")
+          .appendChild(playerContainer);
         videoTrack.play(playerContainer);
       }
+
+      // 원격 사용자의 오디오 트랙이 있다면 재생합니다.
       if (mediaType === "audio") {
         user.audioTrack.play();
       }
-      setRemoteUsers((prevUsers) => [...prevUsers, user]);
+
+      // 원격 사용자 배열을 업데이트합니다. 중복을 피하기 위해 새로운 유저만 추가합니다.
+      setRemoteUsers((prevUsers) => {
+        // 이 유저가 이미 있는지 확인합니다.
+        if (prevUsers.some((existingUser) => existingUser.uid === user.uid)) {
+          return prevUsers; // 이미 있으면 상태를 변경하지 않습니다.
+        }
+        return [...prevUsers, user]; // 새 유저를 배열에 추가합니다.
+      });
     });
 
-    client.current.on("user-unpublished", async (user, mediaType) => {
-      if (mediaType === "video") {
-        document.getElementById(`user-container-${user.uid}`)?.remove();
+    client.current.on("user-unpublished", (user) => {
+      // DOM에서 해당 유저의 컨테이너를 제거합니다.
+      const userContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (userContainer) {
+        userContainer.remove();
       }
+
+      // 상태에서도 해당 유저를 제거합니다.
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
     });
 
     client.current.on("user-left", (user) => {
-      document.getElementById(`user-container-${user.uid}`)?.remove();
+      // 위와 동일한 로직을 사용합니다.
+      const userContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (userContainer) {
+        userContainer.remove();
+      }
+
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
@@ -120,7 +143,7 @@ export default function VideocallPage() {
     setLocalAudioTrack(audioTrack);
     setJoinState(true);
 
-    // videoTrack.play("local-player");
+    videoTrack.play("local-player");
   };
 
   const handleLeave = async () => {
@@ -163,73 +186,8 @@ export default function VideocallPage() {
   };
 
   // Function to render the remote users' videos
-  // const renderRemoteUsers = () => {
-  //   // remote-container가 존재하는지 확인합니다.
-  //   let remoteContainer = document.getElementById("remote-container");
-  //   if (!remoteContainer) {
-  //     remoteContainer = document.createElement("div");
-  //     remoteContainer.id = "remote-container";
-  //     document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
-  //   }
-
-  //   // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
-  //   remoteUsers.forEach((user) => {
-  //     const userContainer = document.getElementById(
-  //       `user-container-${user.uid}`
-  //     );
-  //     if (userContainer && user.videoTrack) {
-  //       user.videoTrack.play(userContainer);
-  //     } else if (!userContainer) {
-  //       const playerContainer = document.createElement("div");
-  //       playerContainer.id = `user-container-${user.uid}`;
-  //       playerContainer.style.width = "640px";
-  //       playerContainer.style.height = "480px";
-  //       playerContainer.style.margin = "auto";
-  //       playerContainer.style.marginTop = "100px";
-  //       remoteContainer.appendChild(playerContainer);
-  //       user.videoTrack.play(playerContainer);
-  //     }
-  //   });
-
-  //   return remoteUsers.map((user) => (
-  //     <div
-  //       key={user.uid}
-  //       id={`user-container-${user.uid}`}
-  //       style={{ width: "640px", height: "480px" }}
-  //     />
-  //   ));
-  // };
-
   const renderRemoteUsers = () => {
-    // Ensure the remote-container exists.
-    let remoteContainer = document.getElementById("remote-container");
-    if (!remoteContainer) {
-      remoteContainer = document.createElement("div");
-      remoteContainer.id = "remote-container";
-      document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
-    } else {
-      // Clear the remote-container before adding new video elements
-      remoteContainer.innerHTML = "";
-    }
-
-    // Check if there's at least one remote user
-    if (remoteUsers.length > 0) {
-      const user = remoteUsers[0]; // Get the first user from the remoteUsers array
-      const userContainer = document.createElement("div");
-      userContainer.id = `user-container-${user.uid}`;
-      userContainer.style.width = "640px";
-      userContainer.style.height = "480px";
-      userContainer.style.margin = "auto";
-      userContainer.style.marginTop = "100px";
-      remoteContainer.appendChild(userContainer);
-      user.videoTrack.play(userContainer.id);
-    }
-
-    // Return nothing as we are manipulating the DOM directly
-  };
-
-  const getVideoLayout = () => {
-    // remote-container가 존재하는지 확인하고, 필요하면 생성합니다.
+    // remote-container가 존재하는지 확인합니다.
     let remoteContainer = document.getElementById("remote-container");
     if (!remoteContainer) {
       remoteContainer = document.createElement("div");
@@ -244,28 +202,91 @@ export default function VideocallPage() {
       );
       if (userContainer && user.videoTrack) {
         user.videoTrack.play(userContainer);
-      } else if (!userContainer && remoteContainer) {
+      } else if (!userContainer) {
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
         playerContainer.style.width = "640px";
         playerContainer.style.height = "480px";
+        playerContainer.style.margin = "auto";
+        playerContainer.style.marginTop = "100px";
         remoteContainer.appendChild(playerContainer);
         user.videoTrack.play(playerContainer);
       }
     });
 
-    // 비디오 피드와 버튼을 감싸는 div 생성
+    return remoteUsers.map((user) => (
+      <div
+        key={user.uid}
+        id={`user-container-${user.uid}`}
+        style={{ width: "640px", height: "480px" }}
+      />
+    ));
+  };
+
+  // const getVideoLayout = () => {
+  //   // remote-container가 존재하는지 확인하고, 필요하면 생성합니다.
+  //   let remoteContainer = document.getElementById("remote-container");
+  //   if (!remoteContainer) {
+  //     remoteContainer = document.createElement("div");
+  //     remoteContainer.id = "remote-container";
+  //     document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+  //   }
+
+  //   // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
+  //   remoteUsers.forEach((user) => {
+  //     const userContainer = document.getElementById(
+  //       `user-container-${user.uid}`
+  //     );
+  //     if (userContainer && user.videoTrack) {
+  //       user.videoTrack.play(userContainer);
+  //     } else if (!userContainer && remoteContainer) {
+  //       const playerContainer = document.createElement("div");
+  //       playerContainer.id = `user-container-${user.uid}`;
+  //       playerContainer.style.width = "640px";
+  //       playerContainer.style.height = "480px";
+  //       remoteContainer.appendChild(playerContainer);
+  //       user.videoTrack.play(playerContainer);
+  //     }
+  //   });
+
+  //   // 비디오 피드와 버튼을 감싸는 div 생성
+  //   return (
+  //     <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+  //       {joinState && localVideoTrack && renderLocalUser()}
+  //       <div
+  //         id="remote-container"
+  //         style={{
+  //           display: "flex",
+  //           justifyContent: "center",
+  //           flexWrap: "wrap",
+  //         }}
+  //       >
+  //         {remoteUsers.map((user) => (
+  //           <div
+  //             key={user.uid}
+  //             id={`user-container-${user.uid}`}
+  //             style={{ margin: "10px" }}
+  //           ></div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  // 상단에 정의된 스타일 컴포넌트를 사용
+  const getVideoLayout = () => {
+    // 로컬 사용자 비디오 렌더링
+    const localUser = renderLocalUser();
+
+    // 원격 사용자 비디오 렌더링, 최대 1명만 표시
+    const remoteUser = remoteUsers.length > 0 ? renderRemoteUsers()[0] : null;
+
+    // VideoContainer 컴포넌트 안에 로컬 및 원격 사용자 비디오를 배치
     return (
-      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-        {/* {joinState && localVideoTrack && renderLocalUser()} */}
-        {remoteUsers.map((user) => (
-          <div
-            key={user.uid}
-            id={`user-container-${user.uid}`}
-            style={{ margin: "10px" }}
-          ></div>
-        ))}
-      </div>
+      <VideoContainer>
+        {localUser}
+        {remoteUser}
+      </VideoContainer>
     );
   };
 
@@ -323,7 +344,10 @@ export default function VideocallPage() {
       {joinState ? (
         <>
           {/* Video feeds container */}
-          <div id="video-container" style={{ width: "100%" }}>
+          <div
+            id="video-container"
+            style={{ width: "100%", marginTop: "100px", marginBottom: "100px" }}
+          >
             {getVideoLayout()}
           </div>
 
@@ -361,4 +385,13 @@ const StyledInput = styled.input`
   border-radius: 4px;
   width: 200px;
   margin-right: 10px; // Only for the first input
+`;
+
+const VideoContainer = styled.div`
+  display: flex;
+  flex-direction: row; // 가로로 나열
+  align-items: stretch; // 컨테이너 높이에 맞춰 비디오 높이 조정
+  width: 100%;
+  max-height: 480px; // 비디오 높이 제한
+  margin-top: 100px;
 `;
