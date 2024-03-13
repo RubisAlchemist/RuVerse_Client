@@ -165,16 +165,6 @@ export default function VideocallPage() {
     // 클라이언트가 초기화되지 않았거나 이미 조인 상태인 경우 early return 처리
     if (!client.current || joinState) return;
 
-    // 클라이언트 준비 상태를 확인합니다.
-    const readyState = client.current.getConnectionState();
-    if (readyState !== "DISCONNECTED") {
-      console.log(
-        "Client is not in a DISCONNECTED state. Current state:",
-        readyState
-      );
-      return; // DISCONNECTED 상태가 아닐 경우 조인하지 않습니다.
-    }
-
     try {
       // Agora 채널에 조인합니다.
       await client.current.join(appId, channelName, null, uid || null);
