@@ -162,16 +162,40 @@ export default function VideocallPage() {
   };
 
   const handleJoin = async () => {
-    if (!client.current) return;
-    await client.current.join(appId, channelName, null, uid || null);
-    const videoTrack = await AgoraRTC.createCameraVideoTrack();
-    const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-    await client.current.publish([videoTrack, audioTrack]);
-    setLocalVideoTrack(videoTrack);
-    setLocalAudioTrack(audioTrack);
-    setJoinState(true);
+    // 클라이언트가 초기화되지 않았거나 이미 조인 상태인 경우 early return 처리
+    if (!client.current || joinState) return;
 
-    videoTrack.play("local-player");
+    // 클라이언트 준비 상태를 확인합니다.
+    const readyState = client.current.getConnectionState();
+    if (readyState !== "DISCONNECTED") {
+      console.log(
+        "Client is not in a DISCONNECTED state. Current state:",
+        readyState
+      );
+      return; // DISCONNECTED 상태가 아닐 경우 조인하지 않습니다.
+    }
+
+    try {
+      // Agora 채널에 조인합니다.
+      await client.current.join(appId, channelName, null, uid || null);
+
+      // 비디오와 오디오 트랙을 생성합니다.
+      const videoTrack = await AgoraRTC.createCameraVideoTrack();
+      const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+
+      // 생성된 트랙들을 퍼블리시합니다.
+      await client.current.publish([videoTrack, audioTrack]);
+
+      // 상태를 업데이트합니다.
+      setLocalVideoTrack(videoTrack);
+      setLocalAudioTrack(audioTrack);
+      setJoinState(true);
+
+      // 로컬 비디오를 재생합니다.
+      videoTrack.play("local-player");
+    } catch (error) {
+      console.error("Failed to join the channel:", error);
+    }
   };
 
   const handleLeave = async () => {
@@ -237,7 +261,7 @@ export default function VideocallPage() {
       if (userContainer) {
         // If the container exists, check if the video track exists before playing
         if (user.videoTrack) {
-          user.videoTrack.play(userContainer).catch((e) => console.error(e));
+          user.videoTrack.play(userContainer);
         }
       } else {
         // If the container doesn't exist, create it and play the video track
@@ -250,7 +274,7 @@ export default function VideocallPage() {
         remoteContainer.appendChild(playerContainer);
 
         if (user.videoTrack) {
-          user.videoTrack.play(playerContainer).catch((e) => console.error(e));
+          user.videoTrack.play(playerContainer);
         }
       }
     });
