@@ -205,7 +205,7 @@ export default function VideocallPage() {
     // const remoteContainer = document.getElementById("remote-container");
     // if (remoteContainer) {
     //   remoteContainer.innerHTML = "";
-    }
+    // }
     // 자신이 '상담 끝내기' 버튼을 누른 경우에만 RTM을 통해 종료 신호 전송
     // if (!receivedSignal) {
     //   rtmChannel.current &&
@@ -424,6 +424,7 @@ export default function VideocallPage() {
       </JoinFormContainer>
     );
   };
+
   return (
     <div
       style={{
