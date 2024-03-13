@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
-import AgoraRTM from "agora-rtm-sdk";
+// import AgoraRTM from "agora-rtm-sdk";
 import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
@@ -57,18 +57,18 @@ export default function VideocallPage() {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       // AgoraRTC.setLogLevel(2);
       // Agora RTM 로그인 및 채널 가입
-      rtmClient.current = AgoraRTM.createInstance(appId);
-      const uidStr = String(Math.floor(Math.random() * 10000)); // 예시 UID 생성
-      rtmClient.current.login({ uid: uidStr }).then(() => {
-        rtmChannel.current = rtmClient.current.createChannel(channelName);
-        rtmChannel.current.join().then(() => {
-          rtmChannel.current.on("ChannelMessage", ({ text }, senderId) => {
-            if (text === "END_CALL") {
-              handleLeave(true); // 상담 종료 처리
-            }
-          });
-        });
-      });
+      // rtmClient.current = AgoraRTM.createInstance(appId);
+      // const uidStr = String(Math.floor(Math.random() * 10000)); // 예시 UID 생성
+      // rtmClient.current.login({ uid: uidStr }).then(() => {
+      //   rtmChannel.current = rtmClient.current.createChannel(channelName);
+      //   rtmChannel.current.join().then(() => {
+      //     rtmChannel.current.on("ChannelMessage", ({ text }, senderId) => {
+      //       if (text === "END_CALL") {
+      //         handleLeave(true); // 상담 종료 처리
+      //       }
+      //     });
+      //   });
+      // });
       subscribeToEvents();
       return () => {
         if (localVideoTrack) {
@@ -79,9 +79,9 @@ export default function VideocallPage() {
         }
         client.current && client.current.leave();
 
-        // AgoraRTM 로그아웃 및 채널 퇴장
-        rtmChannel.current && rtmChannel.current.leave();
-        rtmClient.current && rtmClient.current.logout();
+        // // AgoraRTM 로그아웃 및 채널 퇴장
+        // rtmChannel.current && rtmChannel.current.leave();
+        // rtmClient.current && rtmClient.current.logout();
       };
     }
   }, [isWebgazerInitialized, channelName]);
@@ -174,7 +174,7 @@ export default function VideocallPage() {
     videoTrack.play("local-player");
   };
 
-  const handleLeave = async (receivedSignal = false) => {
+  const handleLeave = async () => {
     if (localVideoTrack) {
       localVideoTrack.stop();
       localVideoTrack.close();
@@ -193,10 +193,11 @@ export default function VideocallPage() {
       remoteContainer.innerHTML = "";
     }
     // 자신이 '상담 끝내기' 버튼을 누른 경우에만 RTM을 통해 종료 신호 전송
-    if (!receivedSignal) {
-      rtmChannel.current &&
-        (await rtmChannel.current.sendMessage({ text: "END_CALL" }));
-    }
+    // if (!receivedSignal) {
+    //   rtmChannel.current &&
+    //     (await rtmChannel.current.sendMessage({ text: "END_CALL" }));
+    // }
+    renderJoinForm();
   };
 
   const renderLocalUser = () => {
