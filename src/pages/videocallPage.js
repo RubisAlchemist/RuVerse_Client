@@ -84,7 +84,7 @@ export default function VideocallPage() {
         // rtmClient.current && rtmClient.current.logout();
       };
     }
-  }, [isWebgazerInitialized, channelName]);
+  }, [isWebgazerInitialized]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -202,9 +202,9 @@ export default function VideocallPage() {
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
     // Check if the element exists before trying to manipulate it
-    const remoteContainer = document.getElementById("remote-container");
-    if (remoteContainer) {
-      remoteContainer.innerHTML = "";
+    // const remoteContainer = document.getElementById("remote-container");
+    // if (remoteContainer) {
+    //   remoteContainer.innerHTML = "";
     }
     // 자신이 '상담 끝내기' 버튼을 누른 경우에만 RTM을 통해 종료 신호 전송
     // if (!receivedSignal) {
