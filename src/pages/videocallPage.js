@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTM from "agora-rtm-sdk";
 import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
@@ -24,6 +25,9 @@ export default function VideocallPage() {
   };
 
   const client = useRef(null);
+  const rtmClient = useRef(null);
+  const rtmChannel = useRef(null);
+
   const [channelName, setChannelName] = useState("");
   const [uid, setUid] = useState("");
   const [joinState, setJoinState] = useState(false);
@@ -52,6 +56,19 @@ export default function VideocallPage() {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       // AgoraRTC.setLogLevel(2);
+      // Agora RTM 로그인 및 채널 가입
+      rtmClient.current = AgoraRTM.createInstance(appId);
+      const uidStr = String(Math.floor(Math.random() * 10000)); // 예시 UID 생성
+      rtmClient.current.login({ uid: uidStr }).then(() => {
+        rtmChannel.current = rtmClient.current.createChannel(channelName);
+        rtmChannel.current.join().then(() => {
+          rtmChannel.current.on("ChannelMessage", ({ text }, senderId) => {
+            if (text === "END_CALL") {
+              handleLeave(true); // 상담 종료 처리
+            }
+          });
+        });
+      });
       subscribeToEvents();
       return () => {
         if (localVideoTrack) {
@@ -61,9 +78,13 @@ export default function VideocallPage() {
           localAudioTrack.close();
         }
         client.current && client.current.leave();
+
+        // AgoraRTM 로그아웃 및 채널 퇴장
+        rtmChannel.current && rtmChannel.current.leave();
+        rtmClient.current && rtmClient.current.logout();
       };
     }
-  }, [isWebgazerInitialized]);
+  }, [isWebgazerInitialized, channelName]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -131,6 +152,12 @@ export default function VideocallPage() {
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
+
+      // 모든 원격 사용자가 나갔는지 확인하고, 나간 경우 초기 화면으로 돌아갑니다.
+      if (remoteUsers.length <= 1) {
+        // 이 예제에서는 현재 사용자를 포함해 2명 이하인지 확인합니다.
+        handleLeave();
+      }
     });
   };
 
@@ -147,7 +174,7 @@ export default function VideocallPage() {
     videoTrack.play("local-player");
   };
 
-  const handleLeave = async () => {
+  const handleLeave = async (receivedSignal = false) => {
     if (localVideoTrack) {
       localVideoTrack.stop();
       localVideoTrack.close();
@@ -164,6 +191,11 @@ export default function VideocallPage() {
     const remoteContainer = document.getElementById("remote-container");
     if (remoteContainer) {
       remoteContainer.innerHTML = "";
+    }
+    // 자신이 '상담 끝내기' 버튼을 누른 경우에만 RTM을 통해 종료 신호 전송
+    if (!receivedSignal) {
+      rtmChannel.current &&
+        (await rtmChannel.current.sendMessage({ text: "END_CALL" }));
     }
   };
 
