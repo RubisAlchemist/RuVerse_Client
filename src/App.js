@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { updateData } from "./store/dataLog/actions";
+import { createGlobalStyle } from "styled-components";
 
 import PermissionPage from "./pages/permissionPage";
 // <<<<<<< HEAD
@@ -137,6 +138,7 @@ function App() {
   );
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       <Router>
         <Routes>
           <Route path="/permission" element={<PermissionPage />} />
@@ -191,6 +193,18 @@ function App() {
 }
 
 export default App;
+
+const GlobalStyle = createGlobalStyle`
+  * {
+    box-sizing: border-box; /* Makes sure padding and borders are inside the width/height */
+    margin: 0; /* Reset default margins */
+    padding: 0; /* Reset default paddings */
+  }
+
+  body {
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+  }
+`;
 
 // // import React from "react";
 // import React, { useEffect, useState, useRef, useMemo } from "react";

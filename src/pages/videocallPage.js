@@ -374,7 +374,7 @@ export default function VideocallPage() {
       style={{
         display: "flex",
         flexDirection: "column", // Ensure elements are stacked vertically
-        justifyContent: "flex-start", // Align content to the start of the container
+        justifyContent: "center", // Align content to the start of the container
         alignItems: "center", // Center items horizontally
         height: "100vh", // Full viewport height
         width: "100%", // Full viewport width
