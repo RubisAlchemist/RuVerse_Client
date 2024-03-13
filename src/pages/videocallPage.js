@@ -71,14 +71,15 @@ export default function VideocallPage() {
       // });
       subscribeToEvents();
       return () => {
-        if (localVideoTrack) {
-          localVideoTrack.close();
-        }
-        if (localAudioTrack) {
-          localAudioTrack.close();
-        }
-        client.current && client.current.leave();
-
+        // if (localVideoTrack) {
+        //   localVideoTrack.close();
+        // }
+        // if (localAudioTrack) {
+        //   localAudioTrack.close();
+        // }
+        // client.current && client.current.leave();
+        client.current?.off("user-published");
+        client.current?.off("user-left");
         // // AgoraRTM 로그아웃 및 채널 퇴장
         // rtmChannel.current && rtmChannel.current.leave();
         // rtmClient.current && rtmClient.current.logout();
@@ -140,24 +141,32 @@ export default function VideocallPage() {
       );
     });
 
-    client.current.on("user-left", (user) => {
-      // 위와 동일한 로직을 사용합니다.
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer) {
-        userContainer.remove();
-      }
+    // client.current.on("user-left", (user) => {
+    //   // 위와 동일한 로직을 사용합니다.
+    //   const userContainer = document.getElementById(
+    //     `user-container-${user.uid}`
+    //   );
+    //   if (userContainer) {
+    //     userContainer.remove();
+    //   }
 
+    //   setRemoteUsers((prevUsers) =>
+    //     prevUsers.filter((u) => u.uid !== user.uid)
+    //   );
+
+    //   // 모든 원격 사용자가 나갔는지 확인하고, 나간 경우 초기 화면으로 돌아갑니다.
+    //   if (remoteUsers.length <= 1) {
+    //     // 이 예제에서는 현재 사용자를 포함해 2명 이하인지 확인합니다.
+    //     handleLeave();
+    //   }
+    // });
+
+    // Subscribe to the user-left event
+    client.current.on("user-left", (user) => {
+      // Remove the user from the remoteUsers state
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
-
-      // 모든 원격 사용자가 나갔는지 확인하고, 나간 경우 초기 화면으로 돌아갑니다.
-      if (remoteUsers.length <= 1) {
-        // 이 예제에서는 현재 사용자를 포함해 2명 이하인지 확인합니다.
-        handleLeave();
-      }
     });
   };
 
@@ -234,53 +243,71 @@ export default function VideocallPage() {
   };
 
   // Function to render the remote users' videos
+  // const renderRemoteUsers = () => {
+  //   // Ensure the remote-container exists
+  //   let remoteContainer = document.getElementById("remote-container");
+  //   if (!remoteContainer) {
+  //     remoteContainer = document.createElement("div");
+  //     remoteContainer.id = "remote-container";
+  //     document.body.appendChild(remoteContainer); // Adjust this as needed
+  //   }
+
+  //   // Play each remote user's video track
+  //   remoteUsers.forEach((user) => {
+  //     const userContainer = document.getElementById(
+  //       `user-container-${user.uid}`
+  //     );
+  //     if (userContainer) {
+  //       // If the container exists, check if the video track exists before playing
+  //       if (user.videoTrack) {
+  //         user.videoTrack.play(userContainer);
+  //       }
+  //     } else {
+  //       // If the container doesn't exist, create it and play the video track
+  //       const playerContainer = document.createElement("div");
+  //       playerContainer.id = `user-container-${user.uid}`;
+  //       playerContainer.style.width = "680px";
+  //       playerContainer.style.height = "510px";
+  //       playerContainer.style.margin = "auto";
+  //       playerContainer.style.marginTop = "80px";
+  //       remoteContainer.appendChild(playerContainer);
+
+  //       if (user.videoTrack) {
+  //         user.videoTrack.play(playerContainer);
+  //       }
+  //     }
+  //   });
+
+  //   // Return elements for remote users
+  //   return remoteUsers.map((user) => (
+  //     <div
+  //       key={user.uid}
+  //       id={`user-container-${user.uid}`}
+  //       style={{
+  //         margin: "auto",
+  //         width: "680px",
+  //         height: "510px",
+  //         marginTop: "80px",
+  //       }}
+  //     />
+  //   ));
+  // };
+
   const renderRemoteUsers = () => {
-    // Ensure the remote-container exists
-    let remoteContainer = document.getElementById("remote-container");
-    if (!remoteContainer) {
-      remoteContainer = document.createElement("div");
-      remoteContainer.id = "remote-container";
-      document.body.appendChild(remoteContainer); // Adjust this as needed
-    }
-
-    // Play each remote user's video track
-    remoteUsers.forEach((user) => {
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer) {
-        // If the container exists, check if the video track exists before playing
-        if (user.videoTrack) {
-          user.videoTrack.play(userContainer);
-        }
-      } else {
-        // If the container doesn't exist, create it and play the video track
-        const playerContainer = document.createElement("div");
-        playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "680px";
-        playerContainer.style.height = "510px";
-        playerContainer.style.margin = "auto";
-        playerContainer.style.marginTop = "80px";
-        remoteContainer.appendChild(playerContainer);
-
-        if (user.videoTrack) {
-          user.videoTrack.play(playerContainer);
-        }
-      }
-    });
-
-    // Return elements for remote users
+    // Use the remoteUsers state to render video containers
     return remoteUsers.map((user) => (
       <div
         key={user.uid}
         id={`user-container-${user.uid}`}
         style={{
-          margin: "auto",
           width: "680px",
           height: "510px",
+          margin: "auto",
           marginTop: "80px",
         }}
-      />
+      >
+        {/* Agora SDK will play the video track inside this div */}
+      </div>
     ));
   };
 
