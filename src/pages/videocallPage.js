@@ -25,8 +25,8 @@ export default function VideocallPage() {
   };
 
   const client = useRef(null);
-  const rtmClient = useRef(null);
-  const rtmChannel = useRef(null);
+  // const rtmClient = useRef(null);
+  // const rtmChannel = useRef(null);
 
   const [channelName, setChannelName] = useState("");
   const [uid, setUid] = useState("");
@@ -221,22 +221,26 @@ export default function VideocallPage() {
 
   // Function to render the remote users' videos
   const renderRemoteUsers = () => {
-    // remote-container가 존재하는지 확인합니다.
+    // Ensure the remote-container exists
     let remoteContainer = document.getElementById("remote-container");
     if (!remoteContainer) {
       remoteContainer = document.createElement("div");
       remoteContainer.id = "remote-container";
-      document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
+      document.body.appendChild(remoteContainer); // Adjust this as needed
     }
 
-    // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
+    // Play each remote user's video track
     remoteUsers.forEach((user) => {
       const userContainer = document.getElementById(
         `user-container-${user.uid}`
       );
-      if (userContainer && user.videoTrack) {
-        user.videoTrack.play(userContainer);
-      } else if (!userContainer) {
+      if (userContainer) {
+        // If the container exists, check if the video track exists before playing
+        if (user.videoTrack) {
+          user.videoTrack.play(userContainer).catch((e) => console.error(e));
+        }
+      } else {
+        // If the container doesn't exist, create it and play the video track
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
         playerContainer.style.width = "680px";
@@ -244,10 +248,14 @@ export default function VideocallPage() {
         playerContainer.style.margin = "auto";
         playerContainer.style.marginTop = "80px";
         remoteContainer.appendChild(playerContainer);
-        user.videoTrack.play(playerContainer);
+
+        if (user.videoTrack) {
+          user.videoTrack.play(playerContainer).catch((e) => console.error(e));
+        }
       }
     });
 
+    // Return elements for remote users
     return remoteUsers.map((user) => (
       <div
         key={user.uid}
