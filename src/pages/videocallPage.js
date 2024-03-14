@@ -67,7 +67,7 @@ export default function VideocallPage() {
         client.current && client.current.leave();
       };
     }
-  }, [isWebgazerInitialized, localVideoTrack, localAudioTrack]);
+  }, [isWebgazerInitialized]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -326,29 +326,34 @@ export default function VideocallPage() {
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100%",
+        flexDirection: "column", // Ensure elements are stacked vertically
+        justifyContent: "center", // Align content to the start of the container
+        alignItems: "center", // Center items horizontally
+        height: "100vh", // Full viewport height
+        width: "100%", // Full viewport width
       }}
     >
-      {joinState && !trackEnded ? (
+      {joinState ? (
         <>
+          {/* Video feeds container */}
           <div
             id="video-container"
             style={{ width: "100%", marginTop: "-50px", marginBottom: "80px" }}
           >
             {getVideoLayout()}
           </div>
+
+          {/* Button container */}
           <div id="button-container" style={{ marginTop: "80px" }}>
+            {" "}
+            {/* Push the button to the bottom */}
             <Button onClick={handleLeave} variant="contained" color="primary">
               상담 끝내기
             </Button>
           </div>
         </>
       ) : (
-        renderJoinForm()
+        renderJoinForm() // Render the join form if not joined
       )}
     </div>
   );
