@@ -34,6 +34,7 @@ export default function VideocallPage() {
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [remoteUsers, setRemoteUsers] = useState([]);
+  const [trackEnded, setTrackEnded] = useState(false); // 비디오 트랙이 종료되었는지 여부를 추적하는 상태
 
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
   //   const appCertificate = process.env.REACT_APP_AGORA_PRIMARY_CERTIFICATE; // .env 파일 또는 환경 변수에서 Agora 인증서
@@ -55,20 +56,6 @@ export default function VideocallPage() {
   useEffect(() => {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      // AgoraRTC.setLogLevel(2);
-      // Agora RTM 로그인 및 채널 가입
-      // rtmClient.current = AgoraRTM.createInstance(appId);
-      // const uidStr = String(Math.floor(Math.random() * 10000)); // 예시 UID 생성
-      // rtmClient.current.login({ uid: uidStr }).then(() => {
-      //   rtmChannel.current = rtmClient.current.createChannel(channelName);
-      //   rtmChannel.current.join().then(() => {
-      //     rtmChannel.current.on("ChannelMessage", ({ text }, senderId) => {
-      //       if (text === "END_CALL") {
-      //         handleLeave(true); // 상담 종료 처리
-      //       }
-      //     });
-      //   });
-      // });
       subscribeToEvents();
       return () => {
         if (localVideoTrack) {
@@ -78,13 +65,9 @@ export default function VideocallPage() {
           localAudioTrack.close();
         }
         client.current && client.current.leave();
-
-        // // AgoraRTM 로그아웃 및 채널 퇴장
-        // rtmChannel.current && rtmChannel.current.leave();
-        // rtmClient.current && rtmClient.current.logout();
       };
     }
-  }, [isWebgazerInitialized]);
+  }, [isWebgazerInitialized, localVideoTrack, localAudioTrack]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -99,6 +82,7 @@ export default function VideocallPage() {
         `user-container-${user.uid}`
       );
       if (!existingUserContainer && mediaType === "video") {
+        setTrackEnded(false);
         const videoTrack = user.videoTrack;
         const playerContainer = document.createElement("div");
         playerContainer.id = `user-container-${user.uid}`;
@@ -112,6 +96,7 @@ export default function VideocallPage() {
 
       // 원격 사용자의 오디오 트랙이 있다면 재생합니다.
       if (mediaType === "audio") {
+        setTrackEnded(false);
         user.audioTrack.play();
       }
 
@@ -127,6 +112,7 @@ export default function VideocallPage() {
 
     client.current.on("user-unpublished", (user) => {
       // DOM에서 해당 유저의 컨테이너를 제거합니다.
+      setTrackEnded(true);
       const userContainer = document.getElementById(
         `user-container-${user.uid}`
       );
@@ -201,6 +187,7 @@ export default function VideocallPage() {
     setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
+    setTrackEnded(true);
     // Check if the element exists before trying to manipulate it
     // const remoteContainer = document.getElementById("remote-container");
     // if (remoteContainer) {
@@ -339,34 +326,29 @@ export default function VideocallPage() {
     <div
       style={{
         display: "flex",
-        flexDirection: "column", // Ensure elements are stacked vertically
-        justifyContent: "center", // Align content to the start of the container
-        alignItems: "center", // Center items horizontally
-        height: "100vh", // Full viewport height
-        width: "100%", // Full viewport width
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100%",
       }}
     >
-      {joinState ? (
+      {joinState && !trackEnded ? (
         <>
-          {/* Video feeds container */}
           <div
             id="video-container"
             style={{ width: "100%", marginTop: "-50px", marginBottom: "80px" }}
           >
             {getVideoLayout()}
           </div>
-
-          {/* Button container */}
           <div id="button-container" style={{ marginTop: "80px" }}>
-            {" "}
-            {/* Push the button to the bottom */}
             <Button onClick={handleLeave} variant="contained" color="primary">
               상담 끝내기
             </Button>
           </div>
         </>
       ) : (
-        renderJoinForm() // Render the join form if not joined
+        renderJoinForm()
       )}
     </div>
   );
