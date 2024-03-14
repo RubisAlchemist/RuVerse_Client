@@ -71,6 +71,21 @@ export default function VideocallPage() {
 
   useEffect(() => {
     renderRemoteUsers();
+    return () => {
+      remoteUsers.forEach((user) => {
+        if (user.videoTrack) {
+          user.videoTrack.stop();
+          user.videoTrack.close();
+        }
+
+        // DOM에서 플레이어 컨테이너 제거
+        const playerElementId = `user-container-${user.uid}`;
+        const playerContainer = document.getElementById(playerElementId);
+        if (playerContainer) {
+          playerContainer.remove();
+        }
+      });
+    };
   }, [remoteUsers]);
 
   const subscribeToEvents = () => {
@@ -187,6 +202,8 @@ export default function VideocallPage() {
     setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
+
+    setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
     // Check if the element exists before trying to manipulate it
     // const remoteContainer = document.getElementById("remote-container");
@@ -250,7 +267,7 @@ export default function VideocallPage() {
         playerContainer.style.marginTop = "80px";
         remoteContainer.appendChild(playerContainer);
 
-        if (user.videoTrack) {
+        if (user.videoTrack && !user.videoTrack.isPlaying()) {
           user.videoTrack.play(playerContainer);
         }
       }
