@@ -19,7 +19,7 @@ import {
   saveEyetrackingData,
   clearEyetrackingData,
   clipAndSendEyetrackingData,
-} from '../store/actions';
+} from '../store/dataSave/actions';
 
 function ArchiveModule({
   clientId,
@@ -32,18 +32,20 @@ function ArchiveModule({
   keyboardData,
   stylusData,
   eyetrackingData,
+  joinState,
+  dispatch
 }) {
-  const [quizStartedAt, setQuizStartedAt] = useState(new Date().toISOString());
-  const [quizEndedAt, setQuizEndedAt] = useState(null);
-  const dispatch = useDispatch();
-  const [quizStarted, setQuizStarted] = useState(false);
+  // const [quizStartedAt, setQuizStartedAt] = useState(new Date().toISOString());
+  // const [quizEndedAt, setQuizEndedAt] = useState(null);
+  // const dispatch = useDispatch();
+  // const [quizStarted, setQuizStarted] = useState(false);
 
-  useEffect(() => {
-    if (!quizStarted && quizEnded) {
-      setQuizStartedAt(new Date().toISOString());
-      setQuizStarted(true);
-    }
-  }, [quizEnded]);
+  // useEffect(() => {
+  //   if (!quizStarted && quizEnded) {
+  //     setQuizStartedAt(new Date().toISOString());
+  //     setQuizStarted(true);
+  //   }
+  // }, [quizEnded]);
 
   // let quizEndedTime = new Date(quizStartedAt);
   // quizEndedTime.setSeconds(quizEndedTime.getSeconds() + quizTimelimit);
@@ -52,37 +54,43 @@ function ArchiveModule({
   //console.log("quizEnded DA: ", quizEnded)
 
   useEffect(() => {
-    if (gpsData !== null) {
+    if (gpsData !== null && joinState) {
+      console.log("saving gpsData");
       dispatch(saveGpsData(gpsData));
     }
   }, [gpsData, dispatch]);
 
   useEffect(() => {
-    if (touchData !== null) {
+    if (touchData !== null && joinState) {
+      console.log("saving touchData");
       dispatch(saveTouchData(touchData));
     }
   }, [touchData, dispatch]);
 
   useEffect(() => {
-    if (keyboardData !== null) {
+    if (keyboardData !== null && joinState) {
+      console.log("saving keyboardData");
       dispatch(saveKeyboardData(keyboardData));
     }
   }, [keyboardData, dispatch]);
 
   useEffect(() => {
-    if (stylusData !== null) {
+    if (stylusData !== null && joinState) {
+      console.log("saving stylusData: ", stylusData);
       dispatch(saveStylusData(stylusData));
     }
   }, [stylusData, dispatch]);
 
   useEffect(() => {
-    if (accelgyroData !== null) {
+    if (accelgyroData !== null && joinState) {
+      console.log("saving accelgyroData");
       dispatch(saveAccelgyroData(accelgyroData));
     }
   }, [accelgyroData, dispatch]);
 
   useEffect(() => {
-    if (eyetrackingData !== null) {
+    if (eyetrackingData !== null && joinState) {
+      console.log("saving eyetrackingData");
       dispatch(saveEyetrackingData(eyetrackingData));
     }
   }, [eyetrackingData, dispatch]);

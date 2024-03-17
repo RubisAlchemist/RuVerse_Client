@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 // import AgoraRTM from "agora-rtm-sdk";
@@ -5,11 +6,22 @@ import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
 import { Button } from "@mui/material";
+import { initialState, dataArchiveReducer } from '../store/dataSave/reducer';
+import { useReducer } from 'react';
 
-export default function VideocallPage() {
+
+export default function VideocallPage({ joinState, setJoinState, reduxData, dispatch }) {
   //   const { RtcTokenBuilder, RtcRole } = require("agora-token");
 
   const { gazeData, isWebgazerInitialized } = useContext(EyetrackingContext);
+
+  // const reduxData = useSelector(state => state.dataReducer);
+  // const reduxData = useSelector(state => state.dataArchiveReducer);
+  // const [reduxData, dispatch] = useReducer(dataArchiveReducer, initialState);
+
+  // useEffect(() => {
+  //   console.log("Redux Data:", reduxData); // Ensure reduxData is accessible here
+  // }, [reduxData]); // Add reduxData as a dependency to re-run the effect when it changes
 
   const gazeCircleStyle = {
     position: "fixed",
@@ -30,7 +42,7 @@ export default function VideocallPage() {
 
   const [channelName, setChannelName] = useState("");
   const [uid, setUid] = useState("");
-  const [joinState, setJoinState] = useState(false);
+  // const [joinState, setJoinState] = useState(false);
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [remoteUsers, setRemoteUsers] = useState([]);
@@ -199,6 +211,9 @@ export default function VideocallPage() {
       localAudioTrack.close();
     }
     await client.current.leave();
+
+    console.log("Uploading data:", reduxData);
+
     setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);

@@ -4,6 +4,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { updateData } from "./store/dataLog/actions";
 import { createGlobalStyle } from "styled-components";
+import { useReducer } from 'react';
+
 
 import PermissionPage from "./pages/permissionPage";
 // <<<<<<< HEAD
@@ -21,6 +23,11 @@ import AccelGyroLogger from "./component/accelgyroLogger";
 import TouchLoggerContainer from "./component/touchLogger";
 import StylusLogger from "./component/stylusLogger";
 // import KeyboadLogger from "./component/keyboardLogger";
+
+import ArchiveModule from "./component/dataArchive";
+import { initialState, dataArchiveReducer } from './store/dataSave/reducer';
+
+
 import { Key } from "@mui/icons-material";
 
 const theme = createTheme({
@@ -37,6 +44,10 @@ function App() {
   const [touchData, setTouchData] = useState([]);
   const [stylusData, setStylusData] = useState([]);
   const [eyetrackingData, setEyetrackingData] = useState([]);
+
+  const [joinState, setJoinState] = useState(false); // Define joinState
+  const [reduxData, dispatch] = useReducer(dataArchiveReducer, initialState);
+
   // 최신 상태를 저장할 참조
   const latestDataRef = useRef({
     gpsData,
@@ -45,7 +56,9 @@ function App() {
     eyetrackingData,
   });
   // const [keyboardData, setKeyboardData] = useState([]);
-  const dispatch = useDispatch();
+
+  // const dispatch = useDispatch();
+
   // const gpsData = useSelector(state => state.dataReducer.gpsData);
   // const accelgyroData = useSelector(state => state.dataReducer.accelgyroData);
   // const sessionTouchData = useSelector(state => state.dataReducer.sessionTouchData);
@@ -115,27 +128,33 @@ function App() {
   //   stylusData,
   //   eyetrackingData,
   // ]);
-  useEffect(
-    () => {
-      const interval = setInterval(() => {
-        // 현재 수집된 데이터를 콘솔에 로깅
-        console.log("Uploading Data:", latestDataRef.current);
+  // useEffect(
+  //   () => {
+  //     const interval = setInterval(() => {
+  //       // 현재 수집된 데이터를 콘솔에 로깅
+  //       console.log("Uploading Data:", latestDataRef.current);
 
-        // 모든 상태를 초기화
-        setGpsData([]);
-        setAccelgyroData([]);
-        setTouchData([]);
-        setStylusData([]);
-        setEyetrackingData([]);
-      }, 10000); // 10초 간격
+  //       // 모든 상태를 초기화
+  //       setGpsData([]);
+  //       setAccelgyroData([]);
+  //       setTouchData([]);
+  //       setStylusData([]);
+  //       setEyetrackingData([]);
+  //     }, 10000); // 10초 간격
 
-      return () => clearInterval(interval);
-    },
-    [
-      // 이 의존성 배열은 이제 빈 배열이 될 수 있습니다,
-      // 왜냐하면 상태 업데이트는 setInterval 콜백 안에서만 관리되기 때문입니다.
-    ]
-  );
+  //     return () => clearInterval(interval);
+  //   },
+  //   [
+  //     // 이 의존성 배열은 이제 빈 배열이 될 수 있습니다,
+  //     // 왜냐하면 상태 업데이트는 setInterval 콜백 안에서만 관리되기 때문입니다.
+  //   ]
+  // );
+  // useEffect(() => {
+  //   if (collectData) {
+  //     dispatch()
+  //   }
+  // }, [gpsData, accelgyroData, touchData, eyetrackingData]);
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
@@ -166,7 +185,25 @@ function App() {
                           keyboardData={keyboardData}
                           setKeyboardData={setKeyboardData}
                         > */}
-                        <VideocallPage />
+                        {/* <VideocallPage /> */}
+                        <VideocallPage 
+                          joinState={joinState} 
+                          setJoinState={setJoinState}
+                          reduxData={reduxData}
+                          dispatch = {dispatch}
+                          />
+                        <ArchiveModule
+                          // clientId={user.clientId}
+                          gpsData={gpsData}
+                          accelgyroData={accelgyroData}
+                          touchData={touchData}
+                          // keyboardData={keyboardData}
+                          stylusData={stylusData}
+                          eyetrackingData={eyetrackingData}
+                          joinState = {joinState}
+                          dispatch = {dispatch}
+                          />
+                        {/* <VideocallPage joinState={joinState} setJoinState={setJoinState} /> */}
                         {/* </KeyboadLogger> */}
                       </StylusLogger>
                     </TouchLoggerContainer>
