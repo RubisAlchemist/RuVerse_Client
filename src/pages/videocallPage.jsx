@@ -59,6 +59,7 @@ export default function VideocallPage({
   const appId = "69dbaf1e0ce24639abc248bf91e9e951"; // .env 파일 또는 환경 변수에서 Agora App ID
 
   useEffect(() => {
+    console.log("태휘태팉티ㅣ팉");
     renderJoinForm();
   }, [trackEnded]);
 
@@ -237,7 +238,9 @@ export default function VideocallPage({
       localAudioTrack.close();
     }
 
-    await client.current.leave();
+    if (client.current) {
+      await client.current.leave();
+    }
 
     console.log("Uploading data:", reduxData);
 
@@ -339,6 +342,7 @@ export default function VideocallPage({
   };
 
   const renderJoinForm = () => {
+    console.log("저기저기");
     return (
       <JoinFormContainer>
         <InputGroup>
