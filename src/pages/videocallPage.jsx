@@ -155,31 +155,16 @@ export default function VideocallPage({
 
     client.current.on("user-left", (user) => {
       // 위와 동일한 로직을 사용합니다.
-      // const userContainer = document.getElementById(
-      //   `user-container-${user.uid}`
-      // );
-      // if (userContainer) {
-      //   userContainer.remove();
-      // }
+      const userContainer = document.getElementById(
+        `user-container-${user.uid}`
+      );
+      if (userContainer) {
+        userContainer.remove();
+      }
 
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
-
-      setTimeout(() => {
-        const userContainer = document.getElementById(
-          `user-container-${user.uid}`
-        );
-        // 부모 노드가 존재하며 userContainer가 부모 노드의 자식인 경우에만 제거합니다.
-        const parentElement = document.getElementById("remote-container");
-        if (
-          parentElement &&
-          userContainer &&
-          parentElement.contains(userContainer)
-        ) {
-          parentElement.removeChild(userContainer);
-        }
-      }, 0);
 
       // 모든 참가자가 통화를 종료하고 초기 조인 폼으로 리다이렉트합니다.
       handleLeave(); // 변경된 부분
@@ -221,7 +206,7 @@ export default function VideocallPage({
   const handleLeave = async () => {
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
-      videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
     }
 
     if (localVideoTrack) {
