@@ -246,16 +246,17 @@ export default function VideocallPage({
     setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
     console.log("여기여기");
-    const videoContainer = document.getElementById("video-container");
-    if (videoContainer) {
-      videoContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
-    }
+    // const videoContainer = document.getElementById("video-container");
+    // if (videoContainer) {
+    //   videoContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    // }
 
-    const remoteContainer = document.getElementById("remote-container");
-    if (remoteContainer) {
-      remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
-    }
-    renderJoinForm();
+    // const remoteContainer = document.getElementById("remote-container");
+    // if (remoteContainer) {
+    //   remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    // }
+    // renderJoinForm();
+    window.location.reload();
   };
 
   const renderLocalUser = () => {
