@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { Button } from "@mui/material";
 import { initialState, dataArchiveReducer } from "../store/dataSave/reducer";
 import { useReducer } from "react";
+import VideoRecorder from "../component/videoRecorder";
 
 export default function VideocallPage({
   joinState,
