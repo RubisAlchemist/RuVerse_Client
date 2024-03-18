@@ -59,6 +59,10 @@ export default function VideocallPage({
   const appId = "69dbaf1e0ce24639abc248bf91e9e951"; // .env 파일 또는 환경 변수에서 Agora App ID
 
   useEffect(() => {
+    renderJoinForm();
+  }, [trackEnded]);
+
+  useEffect(() => {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       subscribeToEvents();
@@ -155,16 +159,31 @@ export default function VideocallPage({
 
     client.current.on("user-left", (user) => {
       // 위와 동일한 로직을 사용합니다.
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer) {
-        userContainer.remove();
-      }
+      // const userContainer = document.getElementById(
+      //   `user-container-${user.uid}`
+      // );
+      // if (userContainer) {
+      //   userContainer.remove();
+      // }
 
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
+
+      setTimeout(() => {
+        const userContainer = document.getElementById(
+          `user-container-${user.uid}`
+        );
+        // 부모 노드가 존재하며 userContainer가 부모 노드의 자식인 경우에만 제거합니다.
+        const parentElement = document.getElementById("remote-container");
+        if (
+          parentElement &&
+          userContainer &&
+          parentElement.contains(userContainer)
+        ) {
+          parentElement.removeChild(userContainer);
+        }
+      }, 0);
 
       // 모든 참가자가 통화를 종료하고 초기 조인 폼으로 리다이렉트합니다.
       handleLeave(); // 변경된 부분
@@ -228,16 +247,6 @@ export default function VideocallPage({
 
     setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
-    // Check if the element exists before trying to manipulate it
-    // const remoteContainer = document.getElementById("remote-container");
-    // if (remoteContainer) {
-    //   remoteContainer.innerHTML = "";
-    // }
-    // 자신이 '상담 끝내기' 버튼을 누른 경우에만 RTM을 통해 종료 신호 전송
-    // if (!receivedSignal) {
-    //   rtmChannel.current &&
-    //     (await rtmChannel.current.sendMessage({ text: "END_CALL" }));
-    // }
     console.log("여기여기");
     renderJoinForm();
   };
