@@ -110,7 +110,7 @@ import { SAVE_GPS_DATA, DELETE_GPS_DATA, CLEAR_GPS_DATA, SAVE_TOUCH_DATA, DELETE
           // stylusData: [...state.stylusData, ...stylusnewItems],
           stylusData: [...state.stylusData, ...uniquestylusPayload],
         };
-        console.log("Updated state after saving stylus data:", newState); // Log the updated state
+        // console.log("Updated state after saving stylus data:", newState); // Log the updated state
   
         return newState; 
       }  

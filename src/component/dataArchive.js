@@ -55,42 +55,42 @@ function ArchiveModule({
 
   useEffect(() => {
     if (gpsData !== null && joinState) {
-      console.log("saving gpsData");
+      // console.log("saving gpsData");
       dispatch(saveGpsData(gpsData));
     }
   }, [gpsData, dispatch]);
 
   useEffect(() => {
     if (touchData !== null && joinState) {
-      console.log("saving touchData");
+      // console.log("saving touchData");
       dispatch(saveTouchData(touchData));
     }
   }, [touchData, dispatch]);
 
   useEffect(() => {
     if (keyboardData !== null && joinState) {
-      console.log("saving keyboardData");
+      // console.log("saving keyboardData");
       dispatch(saveKeyboardData(keyboardData));
     }
   }, [keyboardData, dispatch]);
 
   useEffect(() => {
     if (stylusData !== null && joinState) {
-      console.log("saving stylusData: ", stylusData);
+      // console.log("saving stylusData: ", stylusData);
       dispatch(saveStylusData(stylusData));
     }
   }, [stylusData, dispatch]);
 
   useEffect(() => {
     if (accelgyroData !== null && joinState) {
-      console.log("saving accelgyroData");
+      // console.log("saving accelgyroData");
       dispatch(saveAccelgyroData(accelgyroData));
     }
   }, [accelgyroData, dispatch]);
 
   useEffect(() => {
     if (eyetrackingData !== null && joinState) {
-      console.log("saving eyetrackingData");
+      // console.log("saving eyetrackingData");
       dispatch(saveEyetrackingData(eyetrackingData));
     }
   }, [eyetrackingData, dispatch]);
