@@ -59,11 +59,6 @@ export default function VideocallPage({
   const appId = "69dbaf1e0ce24639abc248bf91e9e951"; // .env 파일 또는 환경 변수에서 Agora App ID
 
   useEffect(() => {
-    console.log("태휘태팉티ㅣ팉");
-    renderJoinForm();
-  }, [trackEnded]);
-
-  useEffect(() => {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       subscribeToEvents();
@@ -251,6 +246,15 @@ export default function VideocallPage({
     setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
     console.log("여기여기");
+    const videoContainer = document.getElementById("video-container");
+    if (videoContainer) {
+      videoContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    }
+
+    const remoteContainer = document.getElementById("remote-container");
+    if (remoteContainer) {
+      remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    }
     renderJoinForm();
   };
 
@@ -342,7 +346,6 @@ export default function VideocallPage({
   };
 
   const renderJoinForm = () => {
-    console.log("저기저기");
     return (
       <JoinFormContainer>
         <InputGroup>
