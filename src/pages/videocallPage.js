@@ -4,6 +4,9 @@ import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
 import { Button } from "@mui/material";
+// import { startRecording, stopRecording } from '../component/videoRecorder';
+import VideoRecorder from '../component/videoRecorder';
+
 
 export default function VideocallPage() {
   //   const { RtcTokenBuilder, RtcRole } = require("agora-token");
@@ -30,24 +33,12 @@ export default function VideocallPage() {
   const [localVideoTrack, setLocalVideoTrack] = useState(null);
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [remoteUsers, setRemoteUsers] = useState([]);
+  // const [isRecording, setIsRecording] = useState(false);
+  const videoRecorderRef = useRef();
 
-  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
-  //   const appCertificate = process.env.REACT_APP_AGORA_PRIMARY_CERTIFICATE; // .env 파일 또는 환경 변수에서 Agora 인증서
-  //   const role = RtcRole.PUBLISHER; // 역할을 PUBLISHER 또는 SUBSCRIBER로 설정할 수 있습니다.
-  //   const expirationTimeInSeconds = 3600; // 토큰의 유효 시간 (초 단위)
-  //   const currentTimestamp = Math.floor(Date.now() / 1000);
-  //   const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
-
-  //   // 토큰 생성
-  //   const agoraToken = RtcTokenBuilder.buildTokenWithUid(
-  //     appId,
-  //     appCertificate,
-  //     channelName,
-  //     uid,
-  //     role,
-  //     privilegeExpiredTs
-  //   );
-
+  // const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
+  const appId = "69dbaf1e0ce24639abc248bf91e9e951";// .env 파일 또는 환경 변수에서 Agora App ID
+  
   useEffect(() => {
     if (isWebgazerInitialized) {
       client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -69,6 +60,13 @@ export default function VideocallPage() {
     renderRemoteUsers();
   }, [remoteUsers]);
 
+  // useEffect(() => {
+  //   if (joinState && videoRecorderRef.current) {
+  //     videoRecorderRef.current.startRecording();
+  //     console.log("레코딩 시작 시도");
+  //   }
+  // }, [joinState]);
+  
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
@@ -143,11 +141,22 @@ export default function VideocallPage() {
     setLocalVideoTrack(videoTrack);
     setLocalAudioTrack(audioTrack);
     setJoinState(true);
-
+  
     videoTrack.play("local-player");
+    
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 1");
+      videoRecorderRef.current.startRecording(); // 녹화 시작
+    }
   };
-
+  
   const handleLeave = async () => {
+    
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 2");
+      videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    }
+  
     if (localVideoTrack) {
       localVideoTrack.stop();
       localVideoTrack.close();
@@ -156,16 +165,13 @@ export default function VideocallPage() {
       localAudioTrack.stop();
       localAudioTrack.close();
     }
+  
     await client.current.leave();
     setJoinState(false);
     setLocalVideoTrack(null);
     setLocalAudioTrack(null);
-    // Check if the element exists before trying to manipulate it
-    const remoteContainer = document.getElementById("remote-container");
-    if (remoteContainer) {
-      remoteContainer.innerHTML = "";
-    }
   };
+  
 
   const renderLocalUser = () => {
     if (joinState && localVideoTrack) {
@@ -229,57 +235,7 @@ export default function VideocallPage() {
     ));
   };
 
-  // const getVideoLayout = () => {
-  //   // remote-container가 존재하는지 확인하고, 필요하면 생성합니다.
-  //   let remoteContainer = document.getElementById("remote-container");
-  //   if (!remoteContainer) {
-  //     remoteContainer = document.createElement("div");
-  //     remoteContainer.id = "remote-container";
-  //     document.body.appendChild(remoteContainer); // 이 부분은 적절한 위치에 맞게 조정해야 할 수 있습니다.
-  //   }
-
-  //   // 각 원격 사용자에 대해 비디오 트랙을 재생하는 코드를 추가합니다.
-  //   remoteUsers.forEach((user) => {
-  //     const userContainer = document.getElementById(
-  //       `user-container-${user.uid}`
-  //     );
-  //     if (userContainer && user.videoTrack) {
-  //       user.videoTrack.play(userContainer);
-  //     } else if (!userContainer && remoteContainer) {
-  //       const playerContainer = document.createElement("div");
-  //       playerContainer.id = `user-container-${user.uid}`;
-  //       playerContainer.style.width = "640px";
-  //       playerContainer.style.height = "480px";
-  //       remoteContainer.appendChild(playerContainer);
-  //       user.videoTrack.play(playerContainer);
-  //     }
-  //   });
-
-  //   // 비디오 피드와 버튼을 감싸는 div 생성
-  //   return (
-  //     <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-  //       {joinState && localVideoTrack && renderLocalUser()}
-  //       <div
-  //         id="remote-container"
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "center",
-  //           flexWrap: "wrap",
-  //         }}
-  //       >
-  //         {remoteUsers.map((user) => (
-  //           <div
-  //             key={user.uid}
-  //             id={`user-container-${user.uid}`}
-  //             style={{ margin: "10px" }}
-  //           ></div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
-  // 상단에 정의된 스타일 컴포넌트를 사용
+  
   const getVideoLayout = () => {
     // 로컬 사용자 비디오 렌더링
     const localUser = renderLocalUser();
@@ -295,46 +251,6 @@ export default function VideocallPage() {
       </VideoContainer>
     );
   };
-
-  // // 사용자가 참여하지 않았을 때 표시할 요소들을 렌더링하는 함수
-  // const renderJoinForm = () => {
-  //   return (
-  //     <div
-  //       style={{
-  //         display: "flex",
-  //         flexDirection: "column",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         height: "100vh",
-  //       }}
-  //     >
-  //       <div>
-  //         <StyledInput
-  //           type="text"
-  //           placeholder="주어진 상담소 이름을 입력하세요"
-  //           value={channelName}
-  //           onChange={(e) => setChannelName(e.target.value)}
-  //         />
-  //         <StyledInput
-  //           type="text"
-  //           placeholder="당신의 이름을 입력하세요"
-  //           value={uid}
-  //           onChange={(e) => setUid(e.target.value)}
-  //           style={{ marginRight: 0 }} // Remove the margin for the second input
-  //         />
-  //       </div>
-  //       <StyledImg src={videocallImage} />
-  //       <Button
-  //         onClick={handleJoin}
-  //         variant="contained"
-  //         color="primary"
-  //         style={{ marginTop: "20px" }}
-  //       >
-  //         상담 시작하기
-  //       </Button>
-  //     </div>
-  //   );
-  // };
 
   const renderJoinForm = () => {
     return (
@@ -398,10 +314,12 @@ export default function VideocallPage() {
               상담 끝내기
             </Button>
           </div>
+          
         </>
       ) : (
         renderJoinForm() // Render the join form if not joined
       )}
+      <VideoRecorder ref={videoRecorderRef} style={{ display: joinState ? 'block' : 'none' }} />
     </div>
   );
 }
