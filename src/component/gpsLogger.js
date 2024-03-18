@@ -17,8 +17,8 @@ const GPSLogger = ({
 
   const options = {
     enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 100,
+    maximumAge: 1000,
+    timeout: 1000,
   };
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const GPSLogger = ({
       // When component is unmounted, print all positions
       // console.log(positionsRef.current);
     };
-  }, []);
+  }, [onGpsData]);
 
   return <div name={name} {...props}></div>;
 };

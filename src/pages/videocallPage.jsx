@@ -51,23 +51,11 @@ export default function VideocallPage({
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [remoteUsers, setRemoteUsers] = useState([]);
   const [trackEnded, setTrackEnded] = useState(false); // 비디오 트랙이 종료되었는지 여부를 추적하는 상태
+  // const [isRecording, setIsRecording] = useState(false);
+  const videoRecorderRef = useRef();
 
-  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
-  //   const appCertificate = process.env.REACT_APP_AGORA_PRIMARY_CERTIFICATE; // .env 파일 또는 환경 변수에서 Agora 인증서
-  //   const role = RtcRole.PUBLISHER; // 역할을 PUBLISHER 또는 SUBSCRIBER로 설정할 수 있습니다.
-  //   const expirationTimeInSeconds = 3600; // 토큰의 유효 시간 (초 단위)
-  //   const currentTimestamp = Math.floor(Date.now() / 1000);
-  //   const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
-
-  //   // 토큰 생성
-  //   const agoraToken = RtcTokenBuilder.buildTokenWithUid(
-  //     appId,
-  //     appCertificate,
-  //     channelName,
-  //     uid,
-  //     role,
-  //     privilegeExpiredTs
-  //   );
+  // const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
+  const appId = "69dbaf1e0ce24639abc248bf91e9e951"; // .env 파일 또는 환경 변수에서 Agora App ID
 
   useEffect(() => {
     if (isWebgazerInitialized) {
@@ -103,6 +91,13 @@ export default function VideocallPage({
       });
     };
   }, [remoteUsers]);
+
+  // useEffect(() => {
+  //   if (joinState && videoRecorderRef.current) {
+  //     videoRecorderRef.current.startRecording();
+  //     console.log("레코딩 시작 시도");
+  //   }
+  // }, [joinState]);
 
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
@@ -198,9 +193,19 @@ export default function VideocallPage({
     } catch (error) {
       console.error("Failed to join the channel:", error);
     }
+
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 1");
+      videoRecorderRef.current.startRecording(); // 녹화 시작
+    }
   };
 
   const handleLeave = async () => {
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 2");
+      videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    }
+
     if (localVideoTrack) {
       localVideoTrack.stop();
       localVideoTrack.close();
@@ -209,6 +214,7 @@ export default function VideocallPage({
       localAudioTrack.stop();
       localAudioTrack.close();
     }
+
     await client.current.leave();
 
     console.log("Uploading data:", reduxData);
@@ -386,6 +392,10 @@ export default function VideocallPage({
       ) : (
         renderJoinForm() // Render the join form if not joined
       )}
+      <VideoRecorder
+        ref={videoRecorderRef}
+        style={{ display: joinState ? "block" : "none" }}
+      />
     </div>
   );
 }
