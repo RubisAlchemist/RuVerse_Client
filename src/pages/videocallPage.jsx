@@ -83,7 +83,7 @@ export default function VideocallPage({
         client.current && client.current.leave();
       };
     }
-  }, [isWebgazerInitialized, localVideoTrack, localAudioTrack]);
+  }, [isWebgazerInitialized]);
 
   useEffect(() => {
     renderRemoteUsers();
