@@ -165,7 +165,9 @@ export default function VideocallPage({
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
-      handleLeave();
+
+      // 모든 참가자가 통화를 종료하고 초기 조인 폼으로 리다이렉트합니다.
+      handleLeave(); // 변경된 부분
     });
   };
 
@@ -236,6 +238,7 @@ export default function VideocallPage({
     //   rtmChannel.current &&
     //     (await rtmChannel.current.sendMessage({ text: "END_CALL" }));
     // }
+    console.log("여기여기");
     renderJoinForm();
   };
 
