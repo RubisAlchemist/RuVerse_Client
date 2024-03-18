@@ -18,11 +18,11 @@ const VideoRecorder = forwardRef((props, ref) => {
         recorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             setRecordedChunks((prev) => [...prev, event.data]);
-            // console.log("recordedChunks: ", recordedChunks)
+            console.log("recordedChunks: ", recordedChunks)
           }
         };
 
-        // console.log('MediaRecorder is ready');
+        console.log('MediaRecorder is ready');
       } catch (error) {
         console.error('Error getting user media', error);
       }
@@ -38,7 +38,7 @@ const VideoRecorder = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     startRecording() {
-    //   console.log('Attempting to start recording');
+      console.log('Attempting to start recording');
       if (mediaRecorder && mediaRecorder.state === 'inactive') {
         console.log('Starting recording');
         mediaRecorder.start();
@@ -48,13 +48,14 @@ const VideoRecorder = forwardRef((props, ref) => {
       }
     },
     stopAndDownloadRecording() {
-        // console.log('Attempting to stop and download recording');
+        console.log('Attempting to stop and download recording');
         console.log(mediaRecorder);
         console.log(mediaRecorder.state);
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.onstop = () => {
+            console.log("check here1");
             if (recordedChunks.length > 0) {
-                // console.log("check here");
+              console.log("check here2");
               const blob = new Blob(recordedChunks, { type: 'video/mp4' });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
@@ -73,7 +74,6 @@ const VideoRecorder = forwardRef((props, ref) => {
           mediaRecorder.stop();
           setRecording(false);
           
-        //   setRecordedChunks([]);    // 이거 초기화 하는 것만 다운 다 된 것 확인 후에 넣으면 됨!
         } else {
           console.log('MediaRecorder not recording');
         }
