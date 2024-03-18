@@ -2,7 +2,7 @@ import { SAVE_GPS_DATA, DELETE_GPS_DATA, CLEAR_GPS_DATA, SAVE_TOUCH_DATA, DELETE
   CLEAR_ACCELGYRO_DATA, SAVE_EYETRACKING_DATA, DELETE_EYETRACKING_DATA, CLEAR_EYETRACKING_DATA } from './actionTypes';
   import _ from 'lodash';
   
-  const initialState = {
+  export const initialState = {
     gpsData: [],
     touchData: [],
     keyboardData: [],
@@ -11,7 +11,7 @@ import { SAVE_GPS_DATA, DELETE_GPS_DATA, CLEAR_GPS_DATA, SAVE_TOUCH_DATA, DELETE
     eyetrackingData: [],
   };
   
-  const dataArchiveReducer = (state = initialState, action) => {
+  export const dataArchiveReducer = (state = initialState, action) => {
     switch (action.type) {
       case SAVE_GPS_DATA:
         return {
@@ -100,11 +100,19 @@ import { SAVE_GPS_DATA, DELETE_GPS_DATA, CLEAR_GPS_DATA, SAVE_TOUCH_DATA, DELETE
         // filter out any items that are already in the state's touchData array
         // const stylusnewItems = uniquestylusPayload.filter(item => !state.stylusData.some(data => _.isEqual(item, data)));
   
-        return {
+        // return {
+        //   ...state,
+        //   // stylusData: [...state.stylusData, ...stylusnewItems],
+        //   stylusData: [...state.stylusData, ...uniquestylusPayload],
+        // }; 
+        const newState = {
           ...state,
           // stylusData: [...state.stylusData, ...stylusnewItems],
           stylusData: [...state.stylusData, ...uniquestylusPayload],
-        }; 
+        };
+        console.log("Updated state after saving stylus data:", newState); // Log the updated state
+  
+        return newState; 
       }  
       case DELETE_STYLUS_DATA:{
           const { startTime, endTime } = action.payload;
