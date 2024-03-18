@@ -67,7 +67,7 @@ export default function VideocallPage() {
         client.current && client.current.leave();
       };
     }
-  }, [isWebgazerInitialized]);
+  }, [isWebgazerInitialized, localVideoTrack, localAudioTracK]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -153,12 +153,7 @@ export default function VideocallPage() {
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
-
-      // 모든 원격 사용자가 나갔는지 확인하고, 나간 경우 초기 화면으로 돌아갑니다.
-      if (remoteUsers.length <= 1) {
-        // 이 예제에서는 현재 사용자를 포함해 2명 이하인지 확인합니다.
-        handleLeave();
-      }
+      handleLeave();
     });
   };
 
@@ -403,7 +398,6 @@ const VideoContainer = styled.div`
   align-items: stretch; // 컨테이너 높이에 맞춰 비디오 높이 조정
   width: 100%;
   max-height: 480px; // 비디오 높이 제한
-  margin-top: 80px;
 `;
 
 const InputGroup = styled.div`
