@@ -6,11 +6,15 @@ import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
 import { Button } from "@mui/material";
-import { initialState, dataArchiveReducer } from '../store/dataSave/reducer';
-import { useReducer } from 'react';
+import { initialState, dataArchiveReducer } from "../store/dataSave/reducer";
+import { useReducer } from "react";
 
-
-export default function VideocallPage({ joinState, setJoinState, reduxData, dispatch }) {
+export default function VideocallPage({
+  joinState,
+  setJoinState,
+  reduxData,
+  dispatch,
+}) {
   //   const { RtcTokenBuilder, RtcRole } = require("agora-token");
 
   const { gazeData, isWebgazerInitialized } = useContext(EyetrackingContext);
@@ -79,7 +83,7 @@ export default function VideocallPage({ joinState, setJoinState, reduxData, disp
         client.current && client.current.leave();
       };
     }
-  }, [isWebgazerInitialized, localVideoTrack, localAudioTracK]);
+  }, [isWebgazerInitialized, localVideoTrack, localAudioTrack]);
 
   useEffect(() => {
     renderRemoteUsers();
