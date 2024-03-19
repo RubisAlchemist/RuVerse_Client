@@ -218,7 +218,6 @@ export default function VideocallPage({
     testChannel.on("ChannelMessage", ({ text }, senderId) => {
       if (text === "endSession") {
         videoRecorderRef.current?.stopAndDownloadRecording();
-        renderJoinForm();
       }
     });
 
@@ -241,10 +240,10 @@ export default function VideocallPage({
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
     }
     // RTM 클라이언트 로그아웃 및 채널 나가기
-    // if (rtmClient && rtmChannel) {
-    //   await rtmChannel.leave();
-    //   await rtmClient.logout();
-    // }
+    if (rtmClient && rtmChannel) {
+      await rtmChannel.leave();
+      await rtmClient.logout();
+    }
 
     if (localVideoTrack) {
       localVideoTrack.stop();
