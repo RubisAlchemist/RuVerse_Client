@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 
 const VideoRecorder = forwardRef((props, ref) => {
   const [recording, setRecording] = useState(false);
@@ -9,7 +15,10 @@ const VideoRecorder = forwardRef((props, ref) => {
   useEffect(() => {
     async function getMedia() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
         // if (videoRef.current) videoRef.current.srcObject = stream;
 
         const recorder = new MediaRecorder(stream);
@@ -22,9 +31,9 @@ const VideoRecorder = forwardRef((props, ref) => {
           }
         };
 
-        console.log('MediaRecorder is ready');
+        console.log("MediaRecorder is ready");
       } catch (error) {
-        console.error('Error getting user media', error);
+        console.error("Error getting user media", error);
       }
     }
     getMedia();
@@ -39,61 +48,60 @@ const VideoRecorder = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     startRecording() {
       // console.log('Attempting to start recording');
-      if (mediaRecorder && mediaRecorder.state === 'inactive') {
+      if (mediaRecorder && mediaRecorder.state === "inactive") {
         mediaRecorder.start();
         setRecording(true);
-        console.log('Recording started');
+        console.log("Recording started");
       } else {
-        console.log('MediaRecorder not ready or already recording');
+        console.log("MediaRecorder not ready or already recording");
       }
     },
     stopAndDownloadRecording() {
-        // console.log('Attempting to stop and download recording');
-        // console.log(mediaRecorder);
-        // console.log(mediaRecorder.state);
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-          //   mediaRecorder.onstop = () => {
-          //   console.log("check here1");
-          //   // if (recordedChunks.length > 0) {
-          //   //   // console.log("check here2");
-          //   //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-          //   //   const url = URL.createObjectURL(blob);
-          //   //   const a = document.createElement('a');
-          //   //   a.href = url;
-          //   //   a.download = 'recording.mp4'; // 파일 이름
-          //   //   document.body.appendChild(a);
-          //   //   a.click();
-          //   //   document.body.removeChild(a);
-          //   //   URL.revokeObjectURL(url);
-          //   //   console.log('Recording download URL:', url);
-          //   // }
-          // };
-          mediaRecorder.stop();
-          setRecording(false);
-          console.log('Recording stopped');
-          
-        } else {
-          console.log('MediaRecorder not recording');
-        }
-      },
-    }));
-
-    useEffect(() => {
-      if (recordedChunks.length > 0) {
-          const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'recording.mp4';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          console.log('Recording downloaded:', url);
-          
-          setRecordedChunks([]);
+      // console.log('Attempting to stop and download recording');
+      // console.log(mediaRecorder);
+      // console.log(mediaRecorder.state);
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        //   mediaRecorder.onstop = () => {
+        //   console.log("check here1");
+        //   // if (recordedChunks.length > 0) {
+        //   //   // console.log("check here2");
+        //   //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+        //   //   const url = URL.createObjectURL(blob);
+        //   //   const a = document.createElement('a');
+        //   //   a.href = url;
+        //   //   a.download = 'recording.mp4'; // 파일 이름
+        //   //   document.body.appendChild(a);
+        //   //   a.click();
+        //   //   document.body.removeChild(a);
+        //   //   URL.revokeObjectURL(url);
+        //   //   console.log('Recording download URL:', url);
+        //   // }
+        // };
+        mediaRecorder.stop();
+        setRecording(false);
+        console.log("Recording stopped");
+      } else {
+        console.log("MediaRecorder not recording");
       }
-  }, [recordedChunks]);
+    },
+  }));
+
+  useEffect(() => {
+    if (recordedChunks.length > 0) {
+      const blob = new Blob(recordedChunks, { type: "video/mp4" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recording.mp4";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      console.log("Recording downloaded:", url);
+
+      setRecordedChunks([]);
+    }
+  }, [recordedChunks, recording]);
 
   return null;
 });
