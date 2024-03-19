@@ -60,6 +60,7 @@ const VideoRecorder = forwardRef((props, ref) => {
       // console.log('Attempting to stop and download recording');
       // console.log(mediaRecorder);
       // console.log(mediaRecorder.state);
+      console.log("1: ", recordedChunks);
       if (mediaRecorder && mediaRecorder.state === "recording") {
         //   mediaRecorder.onstop = () => {
         //   console.log("check here1");
@@ -80,6 +81,8 @@ const VideoRecorder = forwardRef((props, ref) => {
         mediaRecorder.stop();
         setRecording(false);
         console.log("Recording stopped");
+
+        console.log("2: ", recordedChunks);
       } else {
         console.log("MediaRecorder not recording");
       }
@@ -101,7 +104,7 @@ const VideoRecorder = forwardRef((props, ref) => {
 
       setRecordedChunks([]);
     }
-  }, [recording]);
+  }, [recordedChunks]);
 
   return null;
 });
