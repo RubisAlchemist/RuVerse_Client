@@ -55,8 +55,7 @@ export default function VideocallPage({
   // const [isRecording, setIsRecording] = useState(false);
   const videoRecorderRef = useRef();
 
-  // const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
-  const appId = "69dbaf1e0ce24639abc248bf91e9e951"; // .env 파일 또는 환경 변수에서 Agora App ID
+  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
 
   useEffect(() => {
     if (isWebgazerInitialized) {
@@ -92,13 +91,6 @@ export default function VideocallPage({
       });
     };
   }, [remoteUsers]);
-
-  // useEffect(() => {
-  //   if (joinState && videoRecorderRef.current) {
-  //     videoRecorderRef.current.startRecording();
-  //     console.log("레코딩 시작 시도");
-  //   }
-  // }, [joinState]);
 
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {

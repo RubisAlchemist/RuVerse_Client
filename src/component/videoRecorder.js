@@ -4,13 +4,13 @@ const VideoRecorder = forwardRef((props, ref) => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
-  const videoRef = useRef(null);
+  // const videoRef = useRef(null);
 
   useEffect(() => {
     async function getMedia() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (videoRef.current) videoRef.current.srcObject = stream;
+        // if (videoRef.current) videoRef.current.srcObject = stream;
 
         const recorder = new MediaRecorder(stream);
         setMediaRecorder(recorder);
@@ -18,7 +18,7 @@ const VideoRecorder = forwardRef((props, ref) => {
         recorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             setRecordedChunks((prev) => [...prev, event.data]);
-            console.log("recordedChunks: ", recordedChunks)
+            // console.log("recordedChunks: ", recordedChunks)
           }
         };
 
@@ -30,49 +30,47 @@ const VideoRecorder = forwardRef((props, ref) => {
     getMedia();
   }, []);
 
-  useEffect(() => {
-    if (mediaRecorder) {
-      console.log('MediaRecorder is set and ready for commands');
-    }
-  }, [mediaRecorder]);
+  // useEffect(() => {
+  //   if (mediaRecorder) {
+  //     console.log('MediaRecorder is set and ready for commands');
+  //   }
+  // }, [mediaRecorder]);
 
   useImperativeHandle(ref, () => ({
     startRecording() {
-      console.log('Attempting to start recording');
+      // console.log('Attempting to start recording');
       if (mediaRecorder && mediaRecorder.state === 'inactive') {
-        console.log('Starting recording');
         mediaRecorder.start();
         setRecording(true);
+        console.log('Recording started');
       } else {
         console.log('MediaRecorder not ready or already recording');
       }
     },
     stopAndDownloadRecording() {
-        console.log('Attempting to stop and download recording');
-        console.log(mediaRecorder);
-        console.log(mediaRecorder.state);
+        // console.log('Attempting to stop and download recording');
+        // console.log(mediaRecorder);
+        // console.log(mediaRecorder.state);
         if (mediaRecorder && mediaRecorder.state === 'recording') {
-            mediaRecorder.onstop = () => {
-            // console.log("check here1");
-            if (recordedChunks.length > 0) {
-              // console.log("check here2");
-              const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'recording.mp4'; // 파일 이름
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
-              console.log('Recording download URL:', url);
-            }
-            
-          };
-          
-          console.log('Stopping recording');
+          //   mediaRecorder.onstop = () => {
+          //   console.log("check here1");
+          //   // if (recordedChunks.length > 0) {
+          //   //   // console.log("check here2");
+          //   //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+          //   //   const url = URL.createObjectURL(blob);
+          //   //   const a = document.createElement('a');
+          //   //   a.href = url;
+          //   //   a.download = 'recording.mp4'; // 파일 이름
+          //   //   document.body.appendChild(a);
+          //   //   a.click();
+          //   //   document.body.removeChild(a);
+          //   //   URL.revokeObjectURL(url);
+          //   //   console.log('Recording download URL:', url);
+          //   // }
+          // };
           mediaRecorder.stop();
           setRecording(false);
+          console.log('Recording stopped');
           
         } else {
           console.log('MediaRecorder not recording');
@@ -80,7 +78,24 @@ const VideoRecorder = forwardRef((props, ref) => {
       },
     }));
 
-  return <div style={{ display: 'none' }}><video ref={videoRef} controls autoPlay></video></div>;
+    useEffect(() => {
+      if (recordedChunks.length > 0) {
+          const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'recording.mp4';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          console.log('Recording downloaded:', url);
+          
+          setRecordedChunks([]);
+      }
+  }, [recordedChunks]);
+
+  return null;
 });
 
 export default VideoRecorder;
