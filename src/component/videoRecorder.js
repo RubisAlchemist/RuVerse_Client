@@ -62,11 +62,11 @@ const VideoRecorder = forwardRef((props, ref) => {
       // console.log(mediaRecorder.state);
       console.log("1: ", recordedChunks);
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        mediaRecorder.stop();
         setRecording(false);
         if (recordedChunks.length > 0) {
           console.log("check here2");
           const blob = new Blob(recordedChunks, { type: "video/mp4" });
+          mediaRecorder.stop();
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
