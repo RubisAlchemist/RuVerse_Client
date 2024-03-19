@@ -92,13 +92,6 @@ export default function VideocallPage({
     };
   }, [remoteUsers]);
 
-  // useEffect(() => {
-  //   if (joinState && videoRecorderRef.current) {
-  //     videoRecorderRef.current.startRecording();
-  //     console.log("레코딩 시작 시도");
-  //   }
-  // }, [joinState]);
-
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);

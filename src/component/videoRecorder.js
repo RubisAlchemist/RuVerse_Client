@@ -53,20 +53,20 @@ const VideoRecorder = forwardRef((props, ref) => {
         console.log(mediaRecorder.state);
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.onstop = () => {
-            // console.log("check here1");
-            if (recordedChunks.length > 0) {
-              // console.log("check here2");
-              const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'recording.mp4'; // 파일 이름
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
-              console.log('Recording download URL:', url);
-            }
+            console.log("check here1");
+            // if (recordedChunks.length > 0) {
+            //   // console.log("check here2");
+            //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+            //   const url = URL.createObjectURL(blob);
+            //   const a = document.createElement('a');
+            //   a.href = url;
+            //   a.download = 'recording.mp4'; // 파일 이름
+            //   document.body.appendChild(a);
+            //   a.click();
+            //   document.body.removeChild(a);
+            //   URL.revokeObjectURL(url);
+            //   console.log('Recording download URL:', url);
+            // }
             
           };
           
@@ -79,6 +79,25 @@ const VideoRecorder = forwardRef((props, ref) => {
         }
       },
     }));
+
+    useEffect(() => {
+      if (recordedChunks.length > 0) {
+          const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'recording.mp4';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          console.log('Recording downloaded:', url);
+          
+          // recordedChunks를 클리어하여 다음 녹화 준비
+          setRecordedChunks([]);
+      }
+  }, [recordedChunks]);
+
 
   return <div style={{ display: 'none' }}><video ref={videoRef} controls autoPlay></video></div>;
 });
