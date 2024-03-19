@@ -48,7 +48,7 @@ const VideoRecorder = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     startRecording() {
       // console.log('Attempting to start recording');
-      if (mediaRecorder) {
+      if (mediaRecorder && mediaRecorder.state === "inactive") {
         mediaRecorder.start();
         setRecording(true);
         console.log("Recording started");
@@ -62,24 +62,21 @@ const VideoRecorder = forwardRef((props, ref) => {
       // console.log(mediaRecorder.state);
       console.log("1: ", recordedChunks);
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        //   mediaRecorder.onstop = () => {
-        //   console.log("check here1");
-        //   // if (recordedChunks.length > 0) {
-        //   //   // console.log("check here2");
-        //   //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-        //   //   const url = URL.createObjectURL(blob);
-        //   //   const a = document.createElement('a');
-        //   //   a.href = url;
-        //   //   a.download = 'recording.mp4'; // 파일 이름
-        //   //   document.body.appendChild(a);
-        //   //   a.click();
-        //   //   document.body.removeChild(a);
-        //   //   URL.revokeObjectURL(url);
-        //   //   console.log('Recording download URL:', url);
-        //   // }
-        // };
         mediaRecorder.stop();
         setRecording(false);
+        if (recordedChunks.length > 0) {
+          console.log("check here2");
+          const blob = new Blob(recordedChunks, { type: "video/mp4" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "recording.mp4"; // 파일 이름
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          console.log("Recording download URL:", url);
+        }
         console.log("Recording stopped");
 
         console.log("2: ", recordedChunks);
@@ -89,22 +86,22 @@ const VideoRecorder = forwardRef((props, ref) => {
     },
   }));
 
-  useEffect(() => {
-    if (recordedChunks.length > 0) {
-      const blob = new Blob(recordedChunks, { type: "video/mp4" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "recording.mp4";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      console.log("Recording downloaded:", url);
+  // useEffect(() => {
+  //   if (recordedChunks.length > 0) {
+  //     const blob = new Blob(recordedChunks, { type: "video/mp4" });
+  //     const url = URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = "recording.mp4";
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //     URL.revokeObjectURL(url);
+  //     console.log("Recording downloaded:", url);
 
-      setRecordedChunks([]);
-    }
-  }, [recordedChunks]);
+  //     setRecordedChunks([]);
+  //   }
+  // }, [recordedChunks]);
 
   return null;
 });
