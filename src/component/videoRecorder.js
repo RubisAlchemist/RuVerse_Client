@@ -27,7 +27,7 @@ const VideoRecorder = forwardRef((props, ref) => {
         recorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
             setRecordedChunks((prev) => [...prev, event.data]);
-            // console.log("recordedChunks: ", recordedChunks)
+            console.log("recordedChunks: ", recordedChunks);
           }
         };
 
@@ -48,7 +48,7 @@ const VideoRecorder = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     startRecording() {
       // console.log('Attempting to start recording');
-      if (mediaRecorder && mediaRecorder.state === "inactive") {
+      if (mediaRecorder) {
         mediaRecorder.start();
         setRecording(true);
         console.log("Recording started");
