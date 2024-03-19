@@ -196,6 +196,7 @@ export default function VideocallPage({
   };
 
   const handleLeave = async () => {
+    console.log("비디오 레코더: ", videoRecorderRef.current);
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
@@ -233,7 +234,8 @@ export default function VideocallPage({
     //   remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
     // }
     // renderJoinForm();
-    window.location.reload();
+
+    // window.location.reload();
   };
 
   const renderLocalUser = () => {
