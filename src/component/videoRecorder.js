@@ -101,7 +101,7 @@ const VideoRecorder = forwardRef((props, ref) => {
 
       setRecordedChunks([]);
     }
-  }, [recordedChunks, recording]);
+  }, [recording]);
 
   return null;
 });

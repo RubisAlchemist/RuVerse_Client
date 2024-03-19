@@ -196,7 +196,6 @@ export default function VideocallPage({
   };
 
   const handleLeave = async () => {
-    console.log("비디오 레코더: ", videoRecorderRef.current);
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
