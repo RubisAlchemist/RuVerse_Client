@@ -218,6 +218,8 @@ export default function VideocallPage({
     testChannel.on("ChannelMessage", ({ text }, senderId) => {
       if (text === "endSession") {
         videoRecorderRef.current?.stopAndDownloadRecording();
+        finishCall();
+        renderJoinForm();
       }
     });
 
@@ -235,14 +237,56 @@ export default function VideocallPage({
 
     // ... (녹화 중지 및 데이터 업로드 로직)
 
-    if (videoRecorderRef.current) {
-      // console.log("레코딩 2");
-      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    }
+    // if (videoRecorderRef.current) {
+    //   // console.log("레코딩 2");
+    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    // }
     // RTM 클라이언트 로그아웃 및 채널 나가기
-    if (rtmClient && rtmChannel) {
-      await rtmChannel.leave();
-      await rtmClient.logout();
+    // if (rtmClient && rtmChannel) {
+    //   await rtmChannel.leave();
+    //   await rtmClient.logout();
+    // }
+
+    // if (localVideoTrack) {
+    //   localVideoTrack.stop();
+    //   localVideoTrack.close();
+    // }
+    // if (localAudioTrack) {
+    //   localAudioTrack.stop();
+    //   localAudioTrack.close();
+    // }
+
+    // if (client.current) {
+    //   await client.current.leave();
+    // }
+
+    // console.log("Uploading data:", reduxData);
+
+    // setJoinState(false);
+    // setLocalVideoTrack(null);
+    // setLocalAudioTrack(null);
+
+    // setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
+    // setTrackEnded(true);
+    // console.log("여기여기");
+    // const videoContainer = document.getElementById("video-container");
+    // if (videoContainer) {
+    //   videoContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    // }
+
+    // const remoteContainer = document.getElementById("remote-container");
+    // if (remoteContainer) {
+    //   remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
+    // }
+    // renderJoinForm();
+
+    // window.location.reload();
+  };
+
+  const finishCall = async () => {
+    // RTM을 통해 모든 사용자에게 "상담 끝내기" 메시지 전송
+    if (rtmChannel) {
+      await rtmChannel.sendMessage({ text: "endSession" });
     }
 
     if (localVideoTrack) {
@@ -256,29 +300,20 @@ export default function VideocallPage({
 
     if (client.current) {
       await client.current.leave();
+      // }
+
+      console.log("Uploading data:", reduxData);
+
+      setJoinState(false);
+      setLocalVideoTrack(null);
+      setLocalAudioTrack(null);
+
+      setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
+      setTrackEnded(true);
+      console.log("여기여기");
+
+      // window.location.reload();
     }
-
-    console.log("Uploading data:", reduxData);
-
-    setJoinState(false);
-    setLocalVideoTrack(null);
-    setLocalAudioTrack(null);
-
-    setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
-    setTrackEnded(true);
-    console.log("여기여기");
-    // const videoContainer = document.getElementById("video-container");
-    // if (videoContainer) {
-    //   videoContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
-    // }
-
-    // const remoteContainer = document.getElementById("remote-container");
-    // if (remoteContainer) {
-    //   remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
-    // }
-    // renderJoinForm();
-
-    // window.location.reload();
   };
 
   const renderLocalUser = () => {
