@@ -17,6 +17,7 @@
     "agora-react-uikit": "^1.2.0",
     "agora-rtc-react": "^2.1.0",
     "agora-rtc-sdk-ng": "^4.20.0",
+    "agora-rtm-react": "^1.1.2",
     "agora-rtm-sdk": "^2.1.9",
     "agora-token": "^2.0.3",
     "crypto": "^1.0.1",

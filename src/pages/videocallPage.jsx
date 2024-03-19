@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
-// import AgoraRTM from "agora-rtm-sdk";
+import AgoraRTM from "agora-rtm-sdk";
+import { createChannel, createClient, RtmMessage } from "agora-rtm-react";
 import EyetrackingContext from "./eyetrackingContext";
 import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
@@ -52,10 +53,20 @@ export default function VideocallPage({
   const [localAudioTrack, setLocalAudioTrack] = useState(null);
   const [remoteUsers, setRemoteUsers] = useState([]);
   const [trackEnded, setTrackEnded] = useState(false); // 비디오 트랙이 종료되었는지 여부를 추적하는 상태
+  const [rtmClient, setRtmClient] = useState(null);
+  const [rtmChannel, setRtmChannel] = useState(null);
   // const [isRecording, setIsRecording] = useState(false);
   const videoRecorderRef = useRef();
 
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
+
+  // 컴포넌트 언마운트 시 클린업
+  useEffect(() => {
+    return () => {
+      rtmChannel?.leave();
+      rtmClient?.logout();
+    };
+  }, [rtmChannel, rtmClient]);
 
   useEffect(() => {
     if (isWebgazerInitialized) {
@@ -189,6 +200,27 @@ export default function VideocallPage({
       console.error("Failed to join the channel:", error);
     }
 
+    // 사용자 입력에 기반하여 RTM 클라이언트 설정 및 채널 조인
+    const tempclient = createClient(appId);
+    const tempchannel = createChannel(channelName);
+
+    setRtmClient(tempclient);
+    setRtmChannel(tempchannel);
+
+    const testClient = tempclient();
+    const testChannel = tempchannel(testClient);
+
+    // RTM 로그인 및 채널 조인
+    await testClient.login({ uid: uid });
+    await testChannel.join();
+
+    // 메시지 리스너 설정
+    testChannel.on("ChannelMessage", ({ text }, senderId) => {
+      if (text === "endSession") {
+        videoRecorderRef.current?.stopAndDownloadRecording();
+      }
+    });
+
     if (videoRecorderRef.current) {
       // console.log("레코딩 1");
       videoRecorderRef.current.startRecording(); // 녹화 시작
@@ -196,9 +228,21 @@ export default function VideocallPage({
   };
 
   const handleLeave = async () => {
+    // RTM을 통해 모든 사용자에게 "상담 끝내기" 메시지 전송
+    if (rtmChannel) {
+      await rtmChannel.sendMessage({ text: "endSession" });
+    }
+
+    // ... (녹화 중지 및 데이터 업로드 로직)
+
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    }
+    // RTM 클라이언트 로그아웃 및 채널 나가기
+    if (rtmClient && rtmChannel) {
+      await rtmChannel.leave();
+      await rtmClient.logout();
     }
 
     if (localVideoTrack) {
