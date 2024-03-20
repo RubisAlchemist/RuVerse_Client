@@ -34,6 +34,7 @@
     "web-vitals": "^2.1.4",
     "zlib": "^1.0.5"
   },
+  "proxy": "http://ec2-43-203-115-70.ap-northeast-2.compute.amazonaws.com:8080",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-scripts build",

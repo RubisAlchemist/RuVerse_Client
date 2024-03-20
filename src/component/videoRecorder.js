@@ -56,6 +56,29 @@ const VideoRecorder = forwardRef((props, ref) => {
         console.log("MediaRecorder not ready or already recording");
       }
     },
+    async stopRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        setRecording(false);
+        console.log("Recording stopped");
+
+        // 녹화 중지 후 recordedChunks를 기반으로 Blob 생성 후 반환
+        return new Promise((resolve) => {
+          const handleDataAvailable = (event) => {
+            if (event.data.size > 0) {
+              resolve(new Blob(recordedChunks, { type: "video/mp4" }));
+            }
+          };
+
+          mediaRecorder.addEventListener("dataavailable", handleDataAvailable, {
+            once: true,
+          });
+        });
+      } else {
+        console.log("MediaRecorder not recording");
+        return null;
+      }
+    },
     stopAndDownloadRecording() {
       // console.log('Attempting to stop and download recording');
       // console.log(mediaRecorder);

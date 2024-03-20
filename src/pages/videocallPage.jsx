@@ -59,6 +59,7 @@ export default function VideocallPage({
   const videoRecorderRef = useRef();
 
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
+  const serverAddress = process.env.REACT_APP_BACKEND_ADDRESS_DEV;
 
   // 컴포넌트 언마운트 시 클린업
   useEffect(() => {
@@ -235,10 +236,50 @@ export default function VideocallPage({
 
     // ... (녹화 중지 및 데이터 업로드 로직)
 
+    // if (videoRecorderRef.current) {
+    //   // console.log("레코딩 2");
+    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    // }
+
     if (videoRecorderRef.current) {
-      // console.log("레코딩 2");
-      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+      const videoBlob = await videoRecorderRef.current.stopRecording();
+      if (videoBlob) {
+        const formData = new FormData();
+        formData.append("videoFile", videoBlob, "recording.mp4");
+
+        const updatedReduxData = {
+          ...reduxData,
+          uid,
+          channelName,
+        };
+
+        // console.log("updatedReduxData: ", JSON.stringify(updatedReduxData));
+
+        // reduxData를 FormData에 추가 (예시로 JSON 문자열로 변환)
+        formData.append("reduxData", JSON.stringify(updatedReduxData));
+
+        // 서버 엔드포인트 URL
+        const uploadURL = `${serverAddress}upload`;
+
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`${key}: ${value}`);
+        // }
+
+        // console.log("formData: ", formData);
+
+        try {
+          const response = await fetch(uploadURL, {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+          console.log("Upload successful:", data);
+        } catch (error) {
+          console.error("Upload error:", error);
+        }
+      }
     }
+
     // RTM 클라이언트 로그아웃 및 채널 나가기
     if (rtmClient && rtmChannel) {
       await rtmChannel.leave();
