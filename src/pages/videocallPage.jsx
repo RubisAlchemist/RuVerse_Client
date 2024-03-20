@@ -66,6 +66,7 @@ export default function VideocallPage({
     return () => {
       rtmChannel?.leave();
       rtmClient?.logout();
+      window.location.reload();
     };
   }, [rtmChannel, rtmClient]);
 
@@ -318,8 +319,6 @@ export default function VideocallPage({
     //   remoteContainer.innerHTML = ""; // 이를 통해 내부 엘리먼트를 모두 제거
     // }
     // renderJoinForm();
-
-    window.location.reload();
   };
 
   const renderLocalUser = () => {
