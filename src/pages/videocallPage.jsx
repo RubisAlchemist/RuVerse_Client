@@ -218,7 +218,8 @@ export default function VideocallPage({
     // 메시지 리스너 설정
     testChannel.on("ChannelMessage", ({ text }, senderId) => {
       if (text === "endSession") {
-        videoRecorderRef.current?.stopAndDownloadRecording();
+        // videoRecorderRef.current?.stopAndDownloadRecording();
+        videoRecorderRef.current?.stopRecording();
       }
     });
 
@@ -236,48 +237,9 @@ export default function VideocallPage({
 
     // ... (녹화 중지 및 데이터 업로드 로직)
 
-    // if (videoRecorderRef.current) {
-    //   // console.log("레코딩 2");
-    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    // }
-
     if (videoRecorderRef.current) {
-      const videoBlob = await videoRecorderRef.current.stopRecording();
-      if (videoBlob) {
-        const formData = new FormData();
-        formData.append("videoFile", videoBlob, "recording.mp4");
-
-        const updatedReduxData = {
-          ...reduxData,
-          uid,
-          channelName,
-        };
-
-        // console.log("updatedReduxData: ", JSON.stringify(updatedReduxData));
-
-        // reduxData를 FormData에 추가 (예시로 JSON 문자열로 변환)
-        formData.append("reduxData", JSON.stringify(updatedReduxData));
-
-        // 서버 엔드포인트 URL
-        const uploadURL = `${serverAddress}upload`;
-
-        // for (let [key, value] of formData.entries()) {
-        //   console.log(`${key}: ${value}`);
-        // }
-
-        // console.log("formData: ", formData);
-
-        try {
-          const response = await fetch(uploadURL, {
-            method: "POST",
-            body: formData,
-          });
-          const data = await response.json();
-          console.log("Upload successful:", data);
-        } catch (error) {
-          console.error("Upload error:", error);
-        }
-      }
+      // console.log("레코딩 2");
+      await videoRecorderRef.current.stopRecording(); // 녹화 중지 및 다운로드
     }
 
     // RTM 클라이언트 로그아웃 및 채널 나가기
@@ -479,6 +441,7 @@ export default function VideocallPage({
       <VideoRecorder
         ref={videoRecorderRef}
         style={{ display: joinState ? "block" : "none" }}
+        reduxData={reduxData}
       />
     </div>
   );
