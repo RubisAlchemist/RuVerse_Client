@@ -289,8 +289,9 @@ const EyetrackingLogger = ({ children, setGazeData }) => {
         .setGazeListener((data, elapsedTime) => {
           if (data && isMounted) {
             // 데이터가 있고, 컴포넌트가 마운트 상태인지 확인합니다.
-            onGazeData({ x: data.x, y: data.y });
-            setGazeData({ x: data.x, y: data.y });
+            let isoDate = new Date().toISOString();
+            onGazeData({ x: data.x, y: data.y, timestamp: isoDate });
+            setGazeData({ x: data.x, y: data.y, timestamp: isoDate });
             // console.log(`Gaze Position - X: ${data.x}, Y: ${data.y}`);
           }
         })
