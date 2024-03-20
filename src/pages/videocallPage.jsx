@@ -319,7 +319,7 @@ export default function VideocallPage({
     // }
     // renderJoinForm();
 
-    // window.location.reload();
+    window.location.reload();
   };
 
   const renderLocalUser = () => {
