@@ -113,42 +113,29 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       }
     },
     stopAndDownloadRecording() {
-      // console.log('Attempting to stop and download recording');
-      // console.log(mediaRecorder);
-      // console.log(mediaRecorder.state);
-      console.log("1: ", recordedChunks);
+      console.log("Recording state before stopping:", mediaRecorder.state);
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        //   mediaRecorder.onstop = () => {
-        //   console.log("check here1");
-        //   // if (recordedChunks.length > 0) {
-        //   //   // console.log("check here2");
-        //   //   const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-        //   //   const url = URL.createObjectURL(blob);
-        //   //   const a = document.createElement('a');
-        //   //   a.href = url;
-        //   //   a.download = 'recording.mp4'; // 파일 이름
-        //   //   document.body.appendChild(a);
-        //   //   a.click();
-        //   //   document.body.removeChild(a);
-        //   //   URL.revokeObjectURL(url);
-        //   //   console.log('Recording download URL:', url);
-        //   // }
-        // };
-        mediaRecorder.stop();
-        setRecording(false);
-        console.log("Recording stopped");
-
-        // 녹화가 중지되었을 때, Blob 생성 및 서버로의 업로드 로직을 여기에 구현합니다.
-        mediaRecorder.onstop = async () => {
-          const blob = new Blob(recordedChunks, { type: "video/mp4" });
-          console.log("Recording stopped and blob created");
-          // 여기서 blob을 사용하여 서버로 업로드하는 로직을 구현합니다.
-          // 예를 들어, uploadData 함수에 blob을 인자로 전달할 수 있습니다.
-          await uploadData(blob); // 이 함수는 blob을 서버로 업로드하는 로직을 구현해야 합니다.
-          setRecordedChunks([]); // 녹화 데이터 초기화
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            // 이벤트 발생 시 청크 추가
+            recordedChunks.push(event.data);
+          }
         };
+
+        mediaRecorder.onstop = async () => {
+          console.log("Recording stopped.");
+          const blob = new Blob(recordedChunks, { type: "video/mp4" });
+          console.log("Blob created with size:", blob.size);
+
+          // Blob이 생성된 후 바로 업로드 로직을 실행
+          await uploadData(blob);
+          setRecordedChunks([]); // 청크 초기화
+        };
+
+        mediaRecorder.stop(); // 녹화 중지
+        setRecording(false);
       } else {
-        console.log("MediaRecorder not recording");
+        console.log("MediaRecorder not recording or already stopped.");
       }
     },
   }));
@@ -202,7 +189,40 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
   //     // URL.revokeObjectURL(url);
   //     // console.log("Recording downloaded:", url);
   //     // ref.current.stopAndSendRecording();
-  //     uploadData();
+  //     console.log("이태휘");
+  //     const blob = new Blob(recordedChunks, { type: "video/mp4" });
+  //     const formData = new FormData();
+  //     formData.append("videoFile", blob, "recording.mp4");
+
+  //     const updatedReduxData = {
+  //       ...reduxData,
+  //       uid,
+  //       channelName,
+  //     };
+
+  //     formData.append("reduxData", JSON.stringify(updatedReduxData));
+
+  //     console.log(updatedReduxData);
+
+  //     const uploadURL = `${serverAddress}upload`; // URL에 슬래시(/)를 확인해 주세요.
+
+  //     console.log(uploadURL);
+
+  //     try {
+  //       const response = fetch(uploadURL, {
+  //         method: "POST",
+  //         body: formData,
+  //       });
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       const data = response.json();
+  //       console.log("Upload successful:", data);
+  //     } catch (error) {
+  //       console.error("Upload error:", error);
+  //     }
+
+  //     setRecordedChunks([]);
   //   }
   // }, [recordedChunks]);
 
