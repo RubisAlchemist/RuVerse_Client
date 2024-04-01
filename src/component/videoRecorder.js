@@ -185,7 +185,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     // },
   }));
 
-  useEffect(() => {
+  useEffect(async () => {
     if (recordedChunks.length > 0) {
       // const blob = new Blob(recordedChunks, { type: "video/mp4" });
       // const url = URL.createObjectURL(blob);
@@ -218,7 +218,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       console.log(uploadURL);
 
       try {
-        const response = fetch(uploadURL, {
+        const response = await fetch(uploadURL, {
           method: "POST",
           body: formData,
         });
