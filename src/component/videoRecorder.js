@@ -153,9 +153,9 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     },
   }));
 
-  const uploadData = async () => {
+  const uploadData = async (blob) => {
     console.log("이태휘");
-    const blob = new Blob(recordedChunks, { type: "video/mp4" });
+    // const blob = new Blob(recordedChunks, { type: "video/mp4" });
     const formData = new FormData();
     formData.append("videoFile", blob, "recording.mp4");
 
