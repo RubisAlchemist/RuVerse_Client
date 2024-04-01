@@ -138,7 +138,15 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
         setRecording(false);
         console.log("Recording stopped");
 
-        console.log("2: ", recordedChunks);
+        // 녹화가 중지되었을 때, Blob 생성 및 서버로의 업로드 로직을 여기에 구현합니다.
+        mediaRecorder.onstop = async () => {
+          const blob = new Blob(recordedChunks, { type: "video/mp4" });
+          console.log("Recording stopped and blob created");
+          // 여기서 blob을 사용하여 서버로 업로드하는 로직을 구현합니다.
+          // 예를 들어, uploadData 함수에 blob을 인자로 전달할 수 있습니다.
+          await uploadData(blob); // 이 함수는 blob을 서버로 업로드하는 로직을 구현해야 합니다.
+          setRecordedChunks([]); // 녹화 데이터 초기화
+        };
       } else {
         console.log("MediaRecorder not recording");
       }
