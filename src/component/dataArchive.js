@@ -83,14 +83,14 @@ function ArchiveModule({
 
   useEffect(() => {
     if (accelgyroData !== null && joinState) {
-      // console.log("saving accelgyroData");
+      // console.log("saving accelgyroData: ", accelgyroData);
       dispatch(saveAccelgyroData(accelgyroData));
     }
   }, [accelgyroData, dispatch]);
 
   useEffect(() => {
     if (eyetrackingData !== null && joinState) {
-      // console.log("saving eyetrackingData");
+      // console.log("saving eyetrackingData:", eyetrackingData);
       dispatch(saveEyetrackingData(eyetrackingData));
     }
   }, [eyetrackingData, dispatch]);

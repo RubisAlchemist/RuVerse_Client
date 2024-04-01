@@ -62,14 +62,25 @@ function App() {
   // const sessionTouchData = useSelector(state => state.dataReducer.sessionTouchData);
   // const sessionStylusData = useSelector(state => state.dataReducer.sessionStylusData);
 
+  // const handleSetGpsData = (newGpsData) => {
+  //   setGpsData((prevDataList) => [...prevDataList, newGpsData]);
+  // };
+  // const handleSetAccelgyroData = (newAccelgyroData) => {
+  //   setAccelgyroData((prevDataList) => [...prevDataList, newAccelgyroData]);
+  // };
+  // const handleSetEyetrackingData = (newEyetrackingData) => {
+  //   setEyetrackingData((prevDataList) => [...prevDataList, newEyetrackingData]);
+  // };
+
   const handleSetGpsData = (newGpsData) => {
-    setGpsData((prevDataList) => [...prevDataList, newGpsData]);
+    setGpsData([newGpsData]);
   };
   const handleSetAccelgyroData = (newAccelgyroData) => {
-    setAccelgyroData((prevDataList) => [...prevDataList, newAccelgyroData]);
+    // console.log("newAccelgyroData", newAccelgyroData)
+    setAccelgyroData([newAccelgyroData]);
   };
   const handleSetEyetrackingData = (newEyetrackingData) => {
-    setEyetrackingData((prevDataList) => [...prevDataList, newEyetrackingData]);
+    setEyetrackingData([newEyetrackingData]);
   };
 
   useEffect(() => {

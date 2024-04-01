@@ -35,7 +35,7 @@ const AccelGyroLogger = ({
         },
       };
 
-      setData(newData);
+      // setData(newData);
 
       // if (quizSessionType === 'QUIZ') {
       //   onAccelgyroData(newData);
@@ -43,22 +43,28 @@ const AccelGyroLogger = ({
       //   onAccelgyroData((prevData) => prevData.concat(newData));
       // }
 
-      // console.log(setData)
+      // console.log('accel_gyro_data', newData);
       onAccelgyroData(newData);
       // console.log(newData)
     };
 
     if (window.DeviceMotionEvent) {
+      console.log('DeviceMotionEvent is supported');
       if (typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission()
+        console.log('DeviceMotionEvent.requestPermission()')
           .then((permissionState) => {
             if (permissionState === 'granted') {
+              console.log('DeviceMotionEvent.requestPermission() granted');
               window.addEventListener('devicemotion', handleDeviceMotion, true);
               setPermissionGranted(true);
+            } else {
+              console.log('DeviceMotionEvent.requestPermission() not granted');
             }
           })
           .catch(console.error);
       } else {
+        console.log('devicemotion event listener added')
         window.addEventListener('devicemotion', handleDeviceMotion, true);
         setPermissionGranted(true);
       }

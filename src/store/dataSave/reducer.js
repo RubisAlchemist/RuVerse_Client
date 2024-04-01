@@ -130,7 +130,11 @@ import { SAVE_GPS_DATA, DELETE_GPS_DATA, CLEAR_GPS_DATA, SAVE_TOUCH_DATA, DELETE
           stylusData: [],  // stylusData를 비움
         }; 
       case SAVE_ACCELGYRO_DATA:
-        const { accel_g, accel_nog, gyro } = action.payload;
+        // console.log("action.payload", action.payload); // Log "action.payload"
+        const { accel_g, accel_nog, gyro } = action.payload[0]; // Payload is array type with one object
+        // console.log("accel_g", accel_g); // Log "accel_g"
+        // console.log("accel_nog", accel_nog); // Log "accel_nog"
+        // console.log("gyro", gyro); // Log "gyro"
         
         // Ensure that each data type is stored as an array.
         return {
