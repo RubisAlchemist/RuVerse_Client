@@ -319,8 +319,8 @@ export default function VideocallPage({
     // }
     // renderJoinForm();
     // setTimeout(() => {
-    //   window.location.reload();
-    // }, 3000); 
+    window.location.reload();
+    // }, 3000);
   };
 
   const renderLocalUser = () => {
