@@ -143,49 +143,45 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
         console.log("MediaRecorder not recording");
       }
     },
-    // 추가된 메소드: 녹화 중지 후 서버에 전송
-    // stopAndSendRecording() {
-    //   this.stopRecording()
-    //     .then(async (blob) => {
-    //       if (!(blob instanceof Blob)) {
-    //         console.error("The recording did not produce a valid Blob object.");
-    //         return;
-    //       }
-
-    //       const formData = new FormData();
-    //       formData.append("videoFile", blob, "recording.mp4");
-
-    //       const updatedReduxData = {
-    //         ...reduxData,
-    //         uid,
-    //         channelName,
-    //       };
-
-    //       formData.append("reduxData", JSON.stringify(updatedReduxData));
-
-    //       const uploadURL = `${serverAddress}/upload`; // URL에 슬래시(/)를 확인해 주세요.
-
-    //       try {
-    //         const response = await fetch(uploadURL, {
-    //           method: "POST",
-    //           body: formData,
-    //         });
-    //         if (!response.ok) {
-    //           throw new Error("Network response was not ok");
-    //         }
-    //         const data = await response.json();
-    //         console.log("Upload successful:", data);
-    //       } catch (error) {
-    //         console.error("Upload error:", error);
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error in stopRecording:", error);
-    //     });
-    // },
   }));
 
-  useEffect(async () => {
+  const uploadData = async () => {
+    console.log("이태휘");
+    const blob = new Blob(recordedChunks, { type: "video/mp4" });
+    const formData = new FormData();
+    formData.append("videoFile", blob, "recording.mp4");
+
+    const updatedReduxData = {
+      ...reduxData,
+      uid,
+      channelName,
+    };
+
+    formData.append("reduxData", JSON.stringify(updatedReduxData));
+
+    console.log(updatedReduxData);
+
+    const uploadURL = `${serverAddress}upload`; // URL에 슬래시(/)를 확인해 주세요.
+
+    console.log(uploadURL);
+
+    try {
+      const response = await fetch(uploadURL, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = response.json();
+      console.log("Upload successful:", data);
+    } catch (error) {
+      console.error("Upload error:", error);
+    }
+
+    setRecordedChunks([]);
+  };
+  useEffect(() => {
     if (recordedChunks.length > 0) {
       // const blob = new Blob(recordedChunks, { type: "video/mp4" });
       // const url = URL.createObjectURL(blob);
@@ -198,40 +194,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       // URL.revokeObjectURL(url);
       // console.log("Recording downloaded:", url);
       // ref.current.stopAndSendRecording();
-      console.log("이태휘");
-      const blob = new Blob(recordedChunks, { type: "video/mp4" });
-      const formData = new FormData();
-      formData.append("videoFile", blob, "recording.mp4");
-
-      const updatedReduxData = {
-        ...reduxData,
-        uid,
-        channelName,
-      };
-
-      formData.append("reduxData", JSON.stringify(updatedReduxData));
-
-      console.log(updatedReduxData);
-
-      const uploadURL = `${serverAddress}upload`; // URL에 슬래시(/)를 확인해 주세요.
-
-      console.log(uploadURL);
-
-      try {
-        const response = await fetch(uploadURL, {
-          method: "POST",
-          body: formData,
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = response.json();
-        console.log("Upload successful:", data);
-      } catch (error) {
-        console.error("Upload error:", error);
-      }
-
-      setRecordedChunks([]);
+      uploadData();
     }
   }, [recordedChunks]);
 
