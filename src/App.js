@@ -4,8 +4,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { updateData } from "./store/dataLog/actions";
 import { createGlobalStyle } from "styled-components";
-import { useReducer } from 'react';
-
+import { useReducer } from "react";
 
 import PermissionPage from "./pages/permissionPage";
 // <<<<<<< HEAD
@@ -25,8 +24,7 @@ import StylusLogger from "./component/stylusLogger";
 // import KeyboadLogger from "./component/keyboardLogger";
 
 import ArchiveModule from "./component/dataArchive";
-import { initialState, dataArchiveReducer } from './store/dataSave/reducer';
-
+import { initialState, dataArchiveReducer } from "./store/dataSave/reducer";
 
 import { Key } from "@mui/icons-material";
 
@@ -186,12 +184,12 @@ function App() {
                           setKeyboardData={setKeyboardData}
                         > */}
                         {/* <VideocallPage /> */}
-                        <VideocallPage 
-                          joinState={joinState} 
+                        <VideocallPage
+                          joinState={joinState}
                           setJoinState={setJoinState}
                           reduxData={reduxData}
-                          dispatch = {dispatch}
-                          />
+                          dispatch={dispatch}
+                        />
                         <ArchiveModule
                           // clientId={user.clientId}
                           gpsData={gpsData}
@@ -200,9 +198,9 @@ function App() {
                           // keyboardData={keyboardData}
                           stylusData={stylusData}
                           eyetrackingData={eyetrackingData}
-                          joinState = {joinState}
-                          dispatch = {dispatch}
-                          />
+                          joinState={joinState}
+                          dispatch={dispatch}
+                        />
                         {/* <VideocallPage joinState={joinState} setJoinState={setJoinState} /> */}
                         {/* </KeyboadLogger> */}
                       </StylusLogger>
