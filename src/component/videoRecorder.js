@@ -189,22 +189,22 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
 
     setRecordedChunks([]);
   };
-  useEffect(() => {
-    if (recordedChunks.length > 0) {
-      // const blob = new Blob(recordedChunks, { type: "video/mp4" });
-      // const url = URL.createObjectURL(blob);
-      // const a = document.createElement("a");
-      // a.href = url;
-      // a.download = "recording.mp4";
-      // document.body.appendChild(a);
-      // a.click();
-      // document.body.removeChild(a);
-      // URL.revokeObjectURL(url);
-      // console.log("Recording downloaded:", url);
-      // ref.current.stopAndSendRecording();
-      uploadData();
-    }
-  }, [recordedChunks]);
+  // useEffect(() => {
+  //   if (recordedChunks.length > 0) {
+  //     // const blob = new Blob(recordedChunks, { type: "video/mp4" });
+  //     // const url = URL.createObjectURL(blob);
+  //     // const a = document.createElement("a");
+  //     // a.href = url;
+  //     // a.download = "recording.mp4";
+  //     // document.body.appendChild(a);
+  //     // a.click();
+  //     // document.body.removeChild(a);
+  //     // URL.revokeObjectURL(url);
+  //     // console.log("Recording downloaded:", url);
+  //     // ref.current.stopAndSendRecording();
+  //     uploadData();
+  //   }
+  // }, [recordedChunks]);
 
   return null;
 });
