@@ -239,6 +239,7 @@ export default function VideocallPage({
     testChannel.on("ChannelMessage", ({ text }, senderId) => {
       if (text === "endSession") {
         // uid.videoRecorderRef.current?.stopAndDownloadRecording();
+        handleLeave();
       }
     });
 
