@@ -130,6 +130,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
           // Blob이 생성된 후 바로 업로드 로직을 실행
           await uploadData(blob);
           setRecordedChunks([]); // 청크 초기화
+          window.location.reload();
         };
 
         mediaRecorder.stop(); // 녹화 중지
@@ -168,7 +169,8 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = response.json();
+      const data = await response.json();
+
       console.log("Upload successful:", data);
     } catch (error) {
       console.error("Upload error:", error);

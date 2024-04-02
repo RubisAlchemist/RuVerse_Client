@@ -249,9 +249,6 @@ export default function VideocallPage({
   };
 
   const handleLeave = async () => {
-    if (videoRecorderRef.current) {
-      await videoRecorderRef.current.stopAndDownloadRecording();
-    }
     // RTM을 통해 모든 사용자에게 "상담 끝내기" 메시지 전송
     if (rtmChannel) {
       await rtmChannel
@@ -266,10 +263,10 @@ export default function VideocallPage({
 
     // ... (녹화 중지 및 데이터 업로드 로직)
 
-    // if (videoRecorderRef.current) {
-    //   // console.log("레코딩 2");
-    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    // }
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 2");
+      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    }
 
     // if (videoRecorderRef.current) {
     //   const videoBlob = await videoRecorderRef.current.stopRecording();
@@ -349,7 +346,6 @@ export default function VideocallPage({
     // }
     // renderJoinForm();
     // setTimeout(() => {
-    window.location.reload();
     // }, 3000);
   };
 
