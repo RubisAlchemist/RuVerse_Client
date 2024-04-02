@@ -119,6 +119,22 @@ export default function VideocallPage({
     };
   }, [remoteUsers]);
 
+  /**
+   * 채널 나가는 이벤트
+   */
+  useEffect(() => {
+    if (rtmChannel) {
+      rtmChannel.on("ChannelMessage", ({ text }, senderId) => {
+        if (text === "endSession") {
+          console.log("[remote user] - handle endSession");
+          videoRecorderRef.current.stopAndDownloadRecording();
+          setJoinState(false);
+          setTrackEnded(true);
+        }
+      });
+    }
+  }, [rtmChannel, setJoinState]);
+
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
