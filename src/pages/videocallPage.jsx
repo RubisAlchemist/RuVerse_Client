@@ -238,7 +238,7 @@ export default function VideocallPage({
     // 메시지 리스너 설정
     testChannel.on("ChannelMessage", ({ text }, senderId) => {
       if (text === "endSession") {
-        videoRecorderRef.current?.stopAndDownloadRecording();
+        // uid.videoRecorderRef.current?.stopAndDownloadRecording();
       }
     });
 
