@@ -170,6 +170,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
    */
   const uploadToS3SmallSize = async (blob) => {
     console.log("[CALL] uploadToS3SmallSize");
+
     /**
      * S3 ENV
      */
@@ -178,15 +179,25 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
     const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 
-    const key =
-      channelName + "_" + uid + "_" + new Date().toISOString() + ".mp4";
-    let file = new File([blob], key, {
+    const videoKey =
+      channelName +
+      "_" +
+      uid +
+      "_" +
+      "비디오" +
+      new Date().toISOString() +
+      ".mp4";
+
+    let file = new File([blob], videoKey, {
       type: "video/mp4",
       lastModified: Date.now(),
     });
 
     console.log("upload target");
     console.log(blob);
+
+    // 로거데이터 업로드
+    await uploadLoggerData();
 
     const s3Client = new S3Client({
       region: REGION,
@@ -201,14 +212,14 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
         new PutObjectCommand({
           Bucket: BUCKET_NAME,
           Body: file,
-          Key: key,
+          Key: videoKey,
         })
       );
 
-      console.log(`${key} uploaded successfully.`);
+      console.log(`${videoKey} uploaded successfully.`);
       console.log(response);
     } catch (err) {
-      console.log(`${key} uploaded failed.`);
+      console.log(`${videoKey} uploaded failed.`);
       console.log(err);
     }
   };
@@ -222,13 +233,23 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
     const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
     const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
-    const key =
-      channelName + "_" + uid + "_" + new Date().toISOString() + ".mp4";
 
-    let file = new File([blob], key, {
+    const videoKey =
+      channelName +
+      "_" +
+      uid +
+      "_" +
+      "비디오" +
+      new Date().toISOString() +
+      ".mp4";
+
+    let file = new File([blob], videoKey, {
       type: "video/mp4",
       lastModified: Date.now(),
     });
+
+    // 로거데이터 업로드
+    await uploadLoggerData();
 
     const s3Client = new S3Client({
       region: REGION,
@@ -244,7 +265,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
         leavePartsOnError: false,
         params: {
           Bucket: BUCKET_NAME,
-          Key: key,
+          Key: videoKey,
           Body: file,
         },
       });
@@ -254,6 +275,43 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       await upload.done();
     } catch (err) {
       console.log("upload failed");
+      console.log(err);
+    }
+  };
+
+  const uploadLoggerData = async () => {
+    const REGION = process.env.REACT_APP_REGION;
+    const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
+    const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
+    const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
+    console.log("로거 데이터 업로드");
+
+    const loggerKey =
+      channelName + "_" + uid + "_" + "텍스트" + "_" + new Date().toISOString();
+
+    const file = Buffer.from(JSON.stringify(reduxData));
+
+    const s3Client = new S3Client({
+      region: REGION,
+      credentials: {
+        accessKeyId: ACCESS_KEY_ID,
+        secretAccessKey: SECRET_ACCESS_KEY_ID,
+      },
+    });
+
+    try {
+      const response = await s3Client.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Body: file,
+          Key: loggerKey,
+        })
+      );
+
+      console.log(`${loggerKey} uploaded successfully.`);
+      console.log(response);
+    } catch (err) {
+      console.log(`${loggerKey} uploaded failed.`);
       console.log(err);
     }
   };
