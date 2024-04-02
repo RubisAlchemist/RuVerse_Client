@@ -129,7 +129,6 @@ export default function VideocallPage({
           console.log("[remote user] - handle endSession");
           videoRecorderRef.current.stopAndDownloadRecording();
           setJoinState(false);
-          setTrackEnded(true);
         }
       });
     }
@@ -352,6 +351,7 @@ export default function VideocallPage({
 
     // setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
+    setJoinState(false);
     console.log("여기여기");
     // const videoContainer = document.getElementById("video-container");
     // if (videoContainer) {

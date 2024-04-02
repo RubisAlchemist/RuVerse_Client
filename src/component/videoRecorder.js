@@ -6,6 +6,20 @@ import React, {
   forwardRef,
 } from "react";
 
+/**
+ * aws s3 v3
+ */
+import { Upload } from "@aws-sdk/lib-storage";
+import {
+  S3Client,
+  S3,
+  CreateMultipartUploadCommand,
+  UploadPartCommand,
+  CompleteMultipartUploadCommand,
+  AbortMultipartUploadCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
+
 const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -128,7 +142,18 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
           console.log("Blob created with size:", blob.size);
 
           // Blob이 생성된 후 바로 업로드 로직을 실행
-          await uploadData(blob);
+          // await uploadData(blob);
+
+          // Blob 크기를 메가바이트로 변환
+          const sizeMB = blob.size / (1024 * 1024);
+          // 200MB 이상인 경우
+          if (sizeMB >= 200) {
+            console.log("동영상 용량 200MB 이상");
+            await uploadToS3(blob);
+          } else {
+            console.log("동영상 용량 200MB 미만");
+            await uploadToS3SmallSize(blob);
+          }
           setRecordedChunks([]); // 청크 초기화
         };
 
@@ -139,6 +164,99 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       }
     },
   }));
+
+  /**
+   * 용량 작은거 업로드
+   */
+  const uploadToS3SmallSize = async (blob) => {
+    console.log("[CALL] uploadToS3SmallSize");
+    /**
+     * S3 ENV
+     */
+    const REGION = process.env.REACT_APP_REGION;
+    const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
+    const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
+    const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
+
+    const key =
+      channelName + "_" + uid + "_" + new Date().toISOString() + ".mp4";
+    let file = new File([blob], key, {
+      type: "video/mp4",
+      lastModified: Date.now(),
+    });
+
+    console.log("upload target");
+    console.log(blob);
+
+    const s3Client = new S3Client({
+      region: REGION,
+      credentials: {
+        accessKeyId: ACCESS_KEY_ID,
+        secretAccessKey: SECRET_ACCESS_KEY_ID,
+      },
+    });
+
+    try {
+      const response = await s3Client.send(
+        new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Body: file,
+          Key: key,
+        })
+      );
+
+      console.log(`${key} uploaded successfully.`);
+      console.log(response);
+    } catch (err) {
+      console.log(`${key} uploaded failed.`);
+      console.log(err);
+    }
+  };
+
+  /**
+   * 대용량 파일 업로드
+   */
+  const uploadToS3 = async (blob) => {
+    console.log("[CALL] uploadToS3");
+    const REGION = process.env.REACT_APP_REGION;
+    const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
+    const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
+    const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
+    const key =
+      channelName + "_" + uid + "_" + new Date().toISOString() + ".mp4";
+
+    let file = new File([blob], key, {
+      type: "video/mp4",
+      lastModified: Date.now(),
+    });
+
+    const s3Client = new S3Client({
+      region: REGION,
+      credentials: {
+        accessKeyId: ACCESS_KEY_ID,
+        secretAccessKey: SECRET_ACCESS_KEY_ID,
+      },
+    });
+
+    try {
+      const upload = new Upload({
+        client: s3Client,
+        leavePartsOnError: false,
+        params: {
+          Bucket: BUCKET_NAME,
+          Key: key,
+          Body: file,
+        },
+      });
+
+      upload.on("httpUploadProgress", (process) => console.log(process));
+
+      await upload.done();
+    } catch (err) {
+      console.log("upload failed");
+      console.log(err);
+    }
+  };
 
   const uploadData = async (blob) => {
     console.log("이태휘");
