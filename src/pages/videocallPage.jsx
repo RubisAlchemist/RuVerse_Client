@@ -307,32 +307,32 @@ export default function VideocallPage({
     //   }
     // }
 
-    // RTM 클라이언트 로그아웃 및 채널 나가기
-    if (rtmClient && rtmChannel) {
-      await rtmChannel.leave();
-      await rtmClient.logout();
-    }
+    // // RTM 클라이언트 로그아웃 및 채널 나가기
+    // if (rtmClient && rtmChannel) {
+    //   await rtmChannel.leave();
+    //   await rtmClient.logout();
+    // }
 
-    if (localVideoTrack) {
-      localVideoTrack.stop();
-      localVideoTrack.close();
-    }
-    if (localAudioTrack) {
-      localAudioTrack.stop();
-      localAudioTrack.close();
-    }
+    // if (localVideoTrack) {
+    //   localVideoTrack.stop();
+    //   localVideoTrack.close();
+    // }
+    // if (localAudioTrack) {
+    //   localAudioTrack.stop();
+    //   localAudioTrack.close();
+    // }
 
-    if (client.current) {
-      await client.current.leave();
-    }
+    // if (client.current) {
+    //   await client.current.leave();
+    // }
 
-    console.log("Uploading data:", reduxData);
+    // console.log("Uploading data:", reduxData);
 
-    setJoinState(false);
-    setLocalVideoTrack(null);
-    setLocalAudioTrack(null);
+    // setJoinState(false);
+    // setLocalVideoTrack(null);
+    // setLocalAudioTrack(null);
 
-    setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
+    // setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
     console.log("여기여기");
     // const videoContainer = document.getElementById("video-container");
