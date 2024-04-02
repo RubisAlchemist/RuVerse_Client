@@ -1,24 +1,11 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useImperativeHandle,
-  forwardRef,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 /**
  * aws s3 v3
  */
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import {
-  S3Client,
-  S3,
-  CreateMultipartUploadCommand,
-  UploadPartCommand,
-  CompleteMultipartUploadCommand,
-  AbortMultipartUploadCommand,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
+import { Buffer } from "buffer";
 
 const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
   const [recording, setRecording] = useState(false);
@@ -196,8 +183,8 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     console.log("upload target");
     console.log(blob);
 
-    // 로거데이터 업로드
-    await uploadLoggerData();
+    // 로거데이터 업로드 로거 데이타 키값
+    const loggerDataKey = await uploadLoggerData();
 
     const s3Client = new S3Client({
       region: REGION,
@@ -278,18 +265,28 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       console.log(err);
     }
   };
-
+  /**
+   * 로거 값 json으로 변환해서 S3 전송
+   * @returns 로거 텍스트 파일 키값
+   */
   const uploadLoggerData = async () => {
     const REGION = process.env.REACT_APP_REGION;
     const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
     const SECRET_ACCESS_KEY_ID = process.env.REACT_APP_SECRET_ACCESS_KEY_ID;
     const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
     console.log("로거 데이터 업로드");
-
+    console.log(reduxData);
     const loggerKey =
-      channelName + "_" + uid + "_" + "텍스트" + "_" + new Date().toISOString();
+      channelName +
+      "_" +
+      uid +
+      "_" +
+      "텍스트" +
+      "_" +
+      new Date().toISOString() +
+      ".json";
 
-    const file = Buffer.from(JSON.stringify(reduxData));
+    const file = Buffer.from(JSON.stringify(reduxData).toString());
 
     const s3Client = new S3Client({
       region: REGION,
@@ -305,11 +302,15 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
           Bucket: BUCKET_NAME,
           Body: file,
           Key: loggerKey,
+          ContentEncoding: "base64",
+          ContentType: "application/json",
         })
       );
 
       console.log(`${loggerKey} uploaded successfully.`);
       console.log(response);
+
+      return loggerKey;
     } catch (err) {
       console.log(`${loggerKey} uploaded failed.`);
       console.log(err);
