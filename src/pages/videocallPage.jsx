@@ -349,7 +349,7 @@ export default function VideocallPage({
     // }
     // renderJoinForm();
     // setTimeout(() => {
-    // window.location.reload();
+    window.location.reload();
     // }, 3000);
   };
 
