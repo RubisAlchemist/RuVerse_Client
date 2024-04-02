@@ -1,5 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import AgoraRTM from "agora-rtm-sdk";
 import { createChannel, createClient, RtmMessage } from "agora-rtm-react";
@@ -98,7 +104,7 @@ export default function VideocallPage({
       localAudioTrack && localAudioTrack.close();
       client.current && client.current.leave();
     };
-  }, [isWebgazerInitialized]);
+  }, [isWebgazerInitialized, localAudioTrack, localVideoTrack]);
 
   useEffect(() => {
     renderRemoteUsers();
@@ -129,13 +135,12 @@ export default function VideocallPage({
           console.log("[remote user] - handle endSession");
           videoRecorderRef.current.stopAndDownloadRecording();
           setJoinState(false);
-          setTrackEnded(true);
         }
       });
     }
   }, [rtmChannel, setJoinState]);
 
-  const subscribeToEvents = () => {
+  const subscribeToEvents = useCallback(() => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
 
@@ -209,7 +214,7 @@ export default function VideocallPage({
       // 모든 참가자가 통화를 종료하고 초기 조인 폼으로 리다이렉트합니다.
       handleLeave(); // 변경된 부분
     });
-  };
+  }, [remoteUsers]);
 
   const handleJoin = async () => {
     // 클라이언트가 초기화되지 않았거나 이미 조인 상태인 경우 early return 처리
@@ -352,6 +357,7 @@ export default function VideocallPage({
 
     // setRemoteUsers([]); // 원격 사용자 목록을 초기화하여 리렌더링 유발
     setTrackEnded(true);
+    setJoinState(false);
     console.log("여기여기");
     // const videoContainer = document.getElementById("video-container");
     // if (videoContainer) {
