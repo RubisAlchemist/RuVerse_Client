@@ -1,6 +1,5 @@
 import {
   LocalVideoTrack,
-  LocalAudioTrack,
   RemoteUser,
   useJoin,
   useLocalCameraTrack,
@@ -14,7 +13,6 @@ import { useSelector } from "react-redux";
 const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
 
 function ShowVideo() {
-  console.log("이태휘");
   const channel = useSelector((state) => state.channel);
 
   /**
@@ -45,27 +43,18 @@ function ShowVideo() {
    *
    * 만약 오디오 트랙도 사용하고 싶으면 useLocalAudioTrack 사용
    */
-  const {
-    isLoading: isLoadingCam,
-    localCameraTrack: localCameraTrack,
-    error,
-  } = useLocalCameraTrack();
-  const {
-    isLoading: isLoadingAudio,
-    localMicrophoneTrack: localMicrophoneTrack,
-  } = useLocalMicrophoneTrack();
+  const { isLoading: isLoadingAudio, localMicrophoneTrack } =
+    useLocalMicrophoneTrack();
+  const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
 
   /**
    * 카메라, 오디오 publishing 하기 -> 요 훅 호출해야 상대방한테도 오디오, 비디오 출력됨
    * 배열 인자 안에 카메라, 오디오에 해당하는 트랙 넣어주면 됨
    */
-  usePublish([localCameraTrack, localMicrophoneTrack]);
-
-  console.log("mic: ", localMicrophoneTrack);
-  console.log("error: ", error);
+  usePublish([localMicrophoneTrack, localCameraTrack]);
 
   //   카메라 로딩 기다리기
-  const deviceLoading = isLoadingCam && isLoadingAudio;
+  const deviceLoading = isLoadingCam;
   if (deviceLoading) return <div>Loading devices...</div>;
 
   return (
@@ -82,8 +71,6 @@ function ShowVideo() {
           marginTop: "80px",
         }}
       />
-      <LocalAudioTrack track={localMicrophoneTrack} play={false} />
-
       {/* Remote User */}
       {remoteUsers.map((user) => (
         // 요 컴포넌트가 알아서 원격 사용자 비디오, 오디오 출력해줌
@@ -93,6 +80,7 @@ function ShowVideo() {
             width: "680px",
             height: "510px",
             margin: "auto", // This centers the video in its container
+            marginTop: "80px",
           }}
         />
       ))}

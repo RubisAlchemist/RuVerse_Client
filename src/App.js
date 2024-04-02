@@ -165,6 +165,76 @@ function App() {
   // }, [gpsData, accelgyroData, touchData, eyetrackingData]);
 
   return (
+    // <ThemeProvider theme={theme}>
+    //   <GlobalStyle />
+    //   <Router>
+    //     <Routes>
+    //       <Route path="/permission" element={<PermissionPage />} />
+    //       <Route path="/" exact element={<Home />} />
+    //       <Route
+    //         path="/videocallPage"
+    //         element={
+    //           <EyetrackingLogger setGazeData={handleSetEyetrackingData}>
+    //             {/* <<<<<<< HEAD */}
+    //             <GPSLogger
+    //               onGpsData={handleSetGpsData} //{(gpsData) => dispatch(updateData({ gpsData }))}
+    //             >
+    //               <AccelGyroLogger
+    //                 onAccelgyroData={handleSetAccelgyroData} //{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
+    //               >
+    //                 <TouchLoggerContainer
+    //                   touchData={touchData}
+    //                   setTouchData={setTouchData}
+    //                 >
+    //                   <StylusLogger
+    //                     stylusData={stylusData}
+    //                     setStylusData={setStylusData}
+    //                   >
+    //                     {/* <KeyboadLogger
+    //                       keyboardData={keyboardData}
+    //                       setKeyboardData={setKeyboardData}
+    //                     > */}
+    //                     {/* <VideocallPage /> */}
+    //                     <VideocallPage
+    //                       joinState={joinState}
+    //                       setJoinState={setJoinState}
+    //                       reduxData={reduxData}
+    //                       dispatch={dispatch}
+    //                     />
+    //                     <ArchiveModule
+    //                       // clientId={user.clientId}
+    //                       gpsData={gpsData}
+    //                       accelgyroData={accelgyroData}
+    //                       touchData={touchData}
+    //                       // keyboardData={keyboardData}
+    //                       stylusData={stylusData}
+    //                       eyetrackingData={eyetrackingData}
+    //                       joinState={joinState}
+    //                       dispatch={dispatch}
+    //                     />
+    //                     {/* <VideocallPage joinState={joinState} setJoinState={setJoinState} /> */}
+    //                     {/* </KeyboadLogger> */}
+    //                   </StylusLogger>
+    //                 </TouchLoggerContainer>
+    //               </AccelGyroLogger>
+    //             </GPSLogger>
+    //           </EyetrackingLogger>
+    //           // =======
+    //           //               <EyetrackingLogger>
+    //           //                 <GPSLogger>
+    //           //                   <AccelGyroLogger>
+    //           //                     {/* <TouchLoggerContainer> */}
+    //           //                     <VideocallPage />
+    //           //                     {/* </TouchLoggerContainer> */}
+    //           //                   </AccelGyroLogger>
+    //           //                 </GPSLogger>
+    //           //               </EyetrackingLogger>
+    //           // >>>>>>> origin/main
+    //         }
+    //       />
+    //     </Routes>
+    //   </Router>
+    // </ThemeProvider>
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Router>
@@ -176,48 +246,31 @@ function App() {
             element={
               <EyetrackingLogger setGazeData={handleSetEyetrackingData}>
                 {/* <<<<<<< HEAD */}
-                <GPSLogger
-                  onGpsData={handleSetGpsData} //{(gpsData) => dispatch(updateData({ gpsData }))}
+
+                <AccelGyroLogger
+                  onAccelgyroData={handleSetAccelgyroData} //{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
                 >
-                  <AccelGyroLogger
-                    onAccelgyroData={handleSetAccelgyroData} //{(accelgyroData) => dispatch(updateData({ accelgyroData }))} //{setAccelgyroData}
-                  >
-                    <TouchLoggerContainer
-                      touchData={touchData}
-                      setTouchData={setTouchData}
-                    >
-                      <StylusLogger
-                        stylusData={stylusData}
-                        setStylusData={setStylusData}
-                      >
-                        {/* <KeyboadLogger
-                          keyboardData={keyboardData}
-                          setKeyboardData={setKeyboardData}
-                        > */}
-                        {/* <VideocallPage /> */}
-                        <VideocallPage
-                          joinState={joinState}
-                          setJoinState={setJoinState}
-                          reduxData={reduxData}
-                          dispatch={dispatch}
-                        />
-                        <ArchiveModule
-                          // clientId={user.clientId}
-                          gpsData={gpsData}
-                          accelgyroData={accelgyroData}
-                          touchData={touchData}
-                          // keyboardData={keyboardData}
-                          stylusData={stylusData}
-                          eyetrackingData={eyetrackingData}
-                          joinState={joinState}
-                          dispatch={dispatch}
-                        />
-                        {/* <VideocallPage joinState={joinState} setJoinState={setJoinState} /> */}
-                        {/* </KeyboadLogger> */}
-                      </StylusLogger>
-                    </TouchLoggerContainer>
-                  </AccelGyroLogger>
-                </GPSLogger>
+                  {/* <VideocallPage /> */}
+                  <VideocallPage
+                    joinState={joinState}
+                    setJoinState={setJoinState}
+                    reduxData={reduxData}
+                    dispatch={dispatch}
+                  />
+                  <ArchiveModule
+                    // clientId={user.clientId}
+                    // gpsData={gpsData}
+                    accelgyroData={accelgyroData}
+                    // touchData={touchData}
+                    // keyboardData={keyboardData}
+                    // stylusData={stylusData}
+                    eyetrackingData={eyetrackingData}
+                    joinState={joinState}
+                    dispatch={dispatch}
+                  />
+                  {/* <VideocallPage joinState={joinState} setJoinState={setJoinState} /> */}
+                  {/* </KeyboadLogger> */}
+                </AccelGyroLogger>
               </EyetrackingLogger>
               // =======
               //               <EyetrackingLogger>

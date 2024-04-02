@@ -69,20 +69,35 @@ export default function VideocallPage({
     };
   }, [rtmChannel, rtmClient]);
 
+  // useEffect(() => {
+  //   if (isWebgazerInitialized) {
+  //     client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+  //     subscribeToEvents();
+  //     return () => {
+  //       if (localVideoTrack) {
+  //         localVideoTrack.close();
+  //       }
+  //       if (localAudioTrack) {
+  //         localAudioTrack.close();
+  //       }
+  //       client.current && client.current.leave();
+  //     };
+  //   }
+  // }, [isWebgazerInitialized]);
+
   useEffect(() => {
-    if (isWebgazerInitialized) {
-      client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      subscribeToEvents();
-      return () => {
-        if (localVideoTrack) {
-          localVideoTrack.close();
-        }
-        if (localAudioTrack) {
-          localAudioTrack.close();
-        }
-        client.current && client.current.leave();
-      };
-    }
+    if (!isWebgazerInitialized) return;
+
+    // Agora RTC 클라이언트 초기화
+    client.current = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    subscribeToEvents();
+
+    return () => {
+      // 컴포넌트 언마운트 시 클린업
+      localVideoTrack && localVideoTrack.close();
+      localAudioTrack && localAudioTrack.close();
+      client.current && client.current.leave();
+    };
   }, [isWebgazerInitialized]);
 
   useEffect(() => {
@@ -107,6 +122,11 @@ export default function VideocallPage({
   const subscribeToEvents = () => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
+
+      // 이미 존재하는 사용자인지 확인
+      if (remoteUsers.find((existingUser) => existingUser.uid === user.uid)) {
+        return; // 이미 존재하는 사용자이면 여기서 처리를 중단
+      }
 
       // 새로운 원격 사용자의 video track을 DOM에 추가하기 전에 이미 있는지 확인합니다.
       const existingUserContainer = document.getElementById(
@@ -229,17 +249,27 @@ export default function VideocallPage({
   };
 
   const handleLeave = async () => {
+    if (videoRecorderRef.current) {
+      await videoRecorderRef.current.stopAndDownloadRecording();
+    }
     // RTM을 통해 모든 사용자에게 "상담 끝내기" 메시지 전송
     if (rtmChannel) {
-      await rtmChannel.sendMessage({ text: "endSession" });
+      await rtmChannel
+        .sendMessage({ text: "endSession" })
+        .then(() => {
+          console.log("Sent 'endSession' message to all users.");
+        })
+        .catch((error) => {
+          console.error("Failed to send 'endSession' message:", error);
+        });
     }
 
     // ... (녹화 중지 및 데이터 업로드 로직)
 
-    if (videoRecorderRef.current) {
-      // console.log("레코딩 2");
-      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    }
+    // if (videoRecorderRef.current) {
+    //   // console.log("레코딩 2");
+    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    // }
 
     // if (videoRecorderRef.current) {
     //   const videoBlob = await videoRecorderRef.current.stopRecording();
@@ -319,7 +349,7 @@ export default function VideocallPage({
     // }
     // renderJoinForm();
     // setTimeout(() => {
-    window.location.reload();
+    // window.location.reload();
     // }, 3000);
   };
 
