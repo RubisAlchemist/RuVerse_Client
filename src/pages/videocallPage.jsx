@@ -240,7 +240,7 @@ export default function VideocallPage({
       if (text === "endSession") {
         // uid.videoRecorderRef.current?.stopAndDownloadRecording();
         // handleLeave();
-        videoRecorderRef.current.stopAndDownloadRecording();
+        // videoRecorderRef.current.stopAndDownloadRecording();
       }
     });
 
@@ -264,11 +264,11 @@ export default function VideocallPage({
     }
 
     // ... (녹화 중지 및 데이터 업로드 로직)
-
-    // if (videoRecorderRef.current) {
-    //   // console.log("레코딩 2");
-    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    // }
+    //로컬은 무조건 이거
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 2");
+      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    }
 
     // if (videoRecorderRef.current) {
     //   const videoBlob = await videoRecorderRef.current.stopRecording();
