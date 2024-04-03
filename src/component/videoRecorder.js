@@ -281,7 +281,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       "_" +
       uid +
       "_" +
-      "텍스트" +
+      "logger_Data" +
       "_" +
       new Date().toISOString() +
       ".json";
