@@ -205,6 +205,8 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
 
       console.log(`${videoKey} uploaded successfully.`);
       console.log(response);
+      // channelName & Uid & loggerDataKey & videoKey 서버 전달
+      await uploadDB(channelName, uid, loggerDataKey, videoKey);
     } catch (err) {
       console.log(`${videoKey} uploaded failed.`);
       console.log(err);
@@ -236,7 +238,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     });
 
     // 로거데이터 업로드
-    await uploadLoggerData();
+    const loggerDataKey = await uploadLoggerData();
 
     const s3Client = new S3Client({
       region: REGION,
@@ -260,6 +262,8 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       upload.on("httpUploadProgress", (process) => console.log(process));
 
       await upload.done();
+      // channelName & Uid & loggerDataKey & videoKey 서버 전달
+      await uploadDB(channelName, uid, loggerDataKey, videoKey);
     } catch (err) {
       console.log("upload failed");
       console.log(err);
@@ -276,6 +280,15 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
     console.log("로거 데이터 업로드");
     console.log(reduxData);
+
+    const updatedReduxData = {
+      ...reduxData,
+      uid,
+      channelName,
+    };
+
+    console.log(updatedReduxData);
+
     const loggerKey =
       channelName +
       "_" +
@@ -286,7 +299,7 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
       new Date().toISOString() +
       ".json";
 
-    const file = Buffer.from(JSON.stringify(reduxData).toString());
+    const file = Buffer.from(JSON.stringify(updatedReduxData).toString());
 
     const s3Client = new S3Client({
       region: REGION,
@@ -317,44 +330,83 @@ const VideoRecorder = forwardRef(({ reduxData, uid, channelName }, ref) => {
     }
   };
 
-  const uploadData = async (blob) => {
-    console.log("이태휘");
-    // const blob = new Blob(recordedChunks, { type: "video/mp4" });
-    const formData = new FormData();
-    formData.append("videoFile", blob, "recording.mp4");
-
-    const updatedReduxData = {
-      ...reduxData,
-      uid,
-      channelName,
-    };
-
-    formData.append("reduxData", JSON.stringify(updatedReduxData));
-
-    console.log(updatedReduxData);
-
-    const uploadURL = `${serverAddress}upload`; // URL에 슬래시(/)를 확인해 주세요.
+  const uploadDB = async (channelName, uid, loggerDataKey, videoKey) => {
+    const uploadURL = `${serverAddress}upload`;
 
     console.log(uploadURL);
 
+    // 전송할 데이터 구성
+    const payload = {
+      channelName,
+      uid,
+      loggerDataKey,
+      videoKey,
+    };
+
     try {
+      // Fetch API를 사용하여 POST 요청을 보냅니다.
       const response = await fetch(uploadURL, {
-        method: "POST",
-        body: formData,
+        method: "POST", // HTTP 메소드
+        headers: {
+          "Content-Type": "application/json", // 내용 유형 지정
+        },
+        body: JSON.stringify(payload), // JSON 문자열로 변환하여 전송
       });
+
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        // 응답이 성공적이지 않은 경우, 에러를 던집니다.
+        throw new Error(`Error: ${response.statusText}`);
       }
+
+      // 응답 데이터를 JSON 형태로 파싱
       const data = await response.json();
 
       console.log("Upload successful:", data);
-      window.location.reload();
+      // 추가적인 작업을 수행할 수 있습니다.
     } catch (error) {
-      console.error("Upload error:", error);
+      // 에러 핸들링
+      console.error("Upload failed:", error);
     }
-
-    setRecordedChunks([]);
   };
+
+  // const uploadData = async (blob) => {
+  //   console.log("이태휘");
+  //   // const blob = new Blob(recordedChunks, { type: "video/mp4" });
+  //   const formData = new FormData();
+  //   formData.append("videoFile", blob, "recording.mp4");
+
+  //   const updatedReduxData = {
+  //     ...reduxData,
+  //     uid,
+  //     channelName,
+  //   };
+
+  //   formData.append("reduxData", JSON.stringify(updatedReduxData));
+
+  //   console.log(updatedReduxData);
+
+  //   const uploadURL = `${serverAddress}upload`; // URL에 슬래시(/)를 확인해 주세요.
+
+  //   console.log(uploadURL);
+
+  //   try {
+  //     const response = await fetch(uploadURL, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     const data = await response.json();
+
+  //     console.log("Upload successful:", data);
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.error("Upload error:", error);
+  //   }
+
+  //   setRecordedChunks([]);
+  // };
   // useEffect(() => {
   //   if (recordedChunks.length > 0) {
   //     // const blob = new Blob(recordedChunks, { type: "video/mp4" });
