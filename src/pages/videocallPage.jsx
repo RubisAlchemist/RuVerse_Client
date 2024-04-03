@@ -104,7 +104,7 @@ export default function VideocallPage({
       localAudioTrack && localAudioTrack.close();
       client.current && client.current.leave();
     };
-  }, [isWebgazerInitialized, localAudioTrack, localVideoTrack]);
+  }, [isWebgazerInitialized]);
 
   useEffect(() => {
     renderRemoteUsers();
