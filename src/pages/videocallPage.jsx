@@ -1,22 +1,18 @@
-import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@mui/material";
+import AgoraRTC from "agora-rtc-sdk-ng";
+import { createChannel, createClient } from "agora-rtm-react";
 import React, {
-  useState,
+  useCallback,
+  useContext,
   useEffect,
   useRef,
-  useContext,
-  useCallback,
+  useState,
 } from "react";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import AgoraRTM from "agora-rtm-sdk";
-import { createChannel, createClient, RtmMessage } from "agora-rtm-react";
-import EyetrackingContext from "./eyetrackingContext";
-import videocallImage from "../images/videocallImage.png";
 import styled from "styled-components";
-import { Button } from "@mui/material";
-import { initialState, dataArchiveReducer } from "../store/dataSave/reducer";
-import { useReducer } from "react";
-import VideoRecorder from "../component/videoRecorder";
+import videocallImage from "../images/videocallImage.png";
+import EyetrackingContext from "./eyetrackingContext";
 
+import VideoRecorder from "../component/videoRecorder";
 export default function VideocallPage({
   joinState,
   setJoinState,
@@ -61,7 +57,7 @@ export default function VideocallPage({
   const [trackEnded, setTrackEnded] = useState(false); // 비디오 트랙이 종료되었는지 여부를 추적하는 상태
   const [rtmClient, setRtmClient] = useState(null);
   const [rtmChannel, setRtmChannel] = useState(null);
-  // const [isRecording, setIsRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const videoRecorderRef = useRef();
 
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
@@ -128,17 +124,17 @@ export default function VideocallPage({
   /**
    * 채널 나가는 이벤트
    */
-  useEffect(() => {
-    if (rtmChannel) {
-      rtmChannel.on("ChannelMessage", ({ text }, senderId) => {
-        if (text === "endSession") {
-          console.log("[remote user] - handle endSession");
-          videoRecorderRef.current.stopAndDownloadRecording();
-          setJoinState(false);
-        }
-      });
-    }
-  }, [rtmChannel, setJoinState]);
+  // useEffect(() => {
+  //   if (rtmChannel) {
+  //     rtmChannel.on("ChannelMessage", ({ text }, senderId) => {
+  //       if (text === "endSession") {
+  //         console.log("[remote user] - handle endSession");
+  //         videoRecorderRef.current.stopAndDownloadRecording();
+  //         setJoinState(false);
+  //       }
+  //     });
+  //   }
+  // }, [rtmChannel, setJoinState]);
 
   const subscribeToEvents = useCallback(() => {
     client.current.on("user-published", async (user, mediaType) => {
@@ -150,21 +146,21 @@ export default function VideocallPage({
       }
 
       // 새로운 원격 사용자의 video track을 DOM에 추가하기 전에 이미 있는지 확인합니다.
-      const existingUserContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (!existingUserContainer && mediaType === "video") {
-        setTrackEnded(false);
-        const videoTrack = user.videoTrack;
-        const playerContainer = document.createElement("div");
-        playerContainer.id = `user-container-${user.uid}`;
-        playerContainer.style.width = "680px";
-        playerContainer.style.height = "510px";
-        document
-          .getElementById("remote-container")
-          .appendChild(playerContainer);
-        videoTrack.play(playerContainer);
-      }
+      // const existingUserContainer = document.getElementById(
+      //   `user-container-${user.uid}`
+      // );
+      // if (!existingUserContainer && mediaType === "video") {
+      //   setTrackEnded(false);
+      //   const videoTrack = user.videoTrack;
+      //   const playerContainer = document.createElement("div");
+      //   playerContainer.id = `user-container-${user.uid}`;
+      //   playerContainer.style.width = "680px";
+      //   playerContainer.style.height = "510px";
+      //   document
+      //     .getElementById("remote-container")
+      //     .appendChild(playerContainer);
+      //   videoTrack.play(playerContainer);
+      // }
 
       // 원격 사용자의 오디오 트랙이 있다면 재생합니다.
       if (mediaType === "audio") {
@@ -185,12 +181,14 @@ export default function VideocallPage({
     client.current.on("user-unpublished", (user) => {
       // DOM에서 해당 유저의 컨테이너를 제거합니다.
       setTrackEnded(true);
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer) {
-        userContainer.remove();
-      }
+      console.log("event on user-unpublished");
+      // const userContainer = document.getElementById(
+      //   `user-container-${user.uid}`
+      // );
+      // if (userContainer) {
+      //   console.log(userContainer);
+      //   userContainer.remove();
+      // }
 
       // 상태에서도 해당 유저를 제거합니다.
       setRemoteUsers((prevUsers) =>
@@ -200,19 +198,21 @@ export default function VideocallPage({
 
     client.current.on("user-left", (user) => {
       // 위와 동일한 로직을 사용합니다.
-      const userContainer = document.getElementById(
-        `user-container-${user.uid}`
-      );
-      if (userContainer) {
-        userContainer.remove();
-      }
+      console.log("event on user-left");
+      // const userContainer = document.getElementById(
+      //   `user-container-${user.uid}`
+      // );
+      // if (userContainer) {
+      //   console.log(userContainer);
+      //   userContainer.remove();
+      // }
 
       setRemoteUsers((prevUsers) =>
         prevUsers.filter((u) => u.uid !== user.uid)
       );
 
       // 모든 참가자가 통화를 종료하고 초기 조인 폼으로 리다이렉트합니다.
-      handleLeave(); // 변경된 부분
+      // handleLeave(); // 변경된 부분
     });
   }, [remoteUsers]);
 
@@ -268,6 +268,18 @@ export default function VideocallPage({
     if (videoRecorderRef.current) {
       // console.log("레코딩 1");
       videoRecorderRef.current.startRecording(); // 녹화 시작
+      setIsRecording(true);
+    }
+  };
+
+  /**
+   * 녹화 종료하기
+   */
+  const stopRecording = async () => {
+    if (videoRecorderRef.current) {
+      // console.log("레코딩 2");
+      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+      setIsRecording(false);
     }
   };
 
@@ -286,10 +298,10 @@ export default function VideocallPage({
 
     // ... (녹화 중지 및 데이터 업로드 로직)
     //로컬은 무조건 이거
-    if (videoRecorderRef.current) {
-      // console.log("레코딩 2");
-      await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-    }
+    // if (videoRecorderRef.current) {
+    //   // console.log("레코딩 2");
+    //   await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+    // }
 
     // if (videoRecorderRef.current) {
     //   const videoBlob = await videoRecorderRef.current.stopRecording();
@@ -330,24 +342,24 @@ export default function VideocallPage({
     //   }
     // }
 
-    // // RTM 클라이언트 로그아웃 및 채널 나가기
-    // if (rtmClient && rtmChannel) {
-    //   await rtmChannel.leave();
-    //   await rtmClient.logout();
-    // }
+    // RTM 클라이언트 로그아웃 및 채널 나가기
+    if (rtmClient && rtmChannel) {
+      await rtmChannel.leave();
+      await rtmClient.logout();
+    }
 
-    // if (localVideoTrack) {
-    //   localVideoTrack.stop();
-    //   localVideoTrack.close();
-    // }
-    // if (localAudioTrack) {
-    //   localAudioTrack.stop();
-    //   localAudioTrack.close();
-    // }
+    if (localVideoTrack) {
+      localVideoTrack.stop();
+      localVideoTrack.close();
+    }
+    if (localAudioTrack) {
+      localAudioTrack.stop();
+      localAudioTrack.close();
+    }
 
-    // if (client.current) {
-    //   await client.current.leave();
-    // }
+    if (client.current) {
+      await client.current.leave();
+    }
 
     // console.log("Uploading data:", reduxData);
 
@@ -519,8 +531,21 @@ export default function VideocallPage({
           <div id="button-container" style={{ marginTop: "80px" }}>
             {" "}
             {/* Push the button to the bottom */}
-            <Button onClick={handleLeave} variant="contained" color="primary">
+            <Button
+              onClick={handleLeave}
+              variant="contained"
+              color="primary"
+              disabled={isRecording}
+            >
               상담 끝내기
+            </Button>
+            <Button
+              onClick={stopRecording}
+              variant="contained"
+              color="secondary"
+              disabled={!isRecording}
+            >
+              녹화 종료하기
             </Button>
           </div>
         </>
