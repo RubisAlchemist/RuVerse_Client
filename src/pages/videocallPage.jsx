@@ -279,6 +279,7 @@ export default function VideocallPage({
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
+      console.log("녹화 종료 완료");
       setIsRecording(false);
     }
   };
@@ -542,7 +543,7 @@ export default function VideocallPage({
             <Button
               onClick={stopRecording}
               variant="contained"
-              color="secondary"
+              color="primary"
               disabled={!isRecording}
             >
               녹화 종료하기
