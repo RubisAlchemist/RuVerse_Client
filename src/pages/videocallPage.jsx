@@ -568,7 +568,7 @@ export default function VideocallPage({
             <Button
               onClick={stopRecording}
               variant="contained"
-              color="secondary"
+              color="primary"
               disabled={uploadingSuccess}
             >
               녹화 종료하기
@@ -596,7 +596,7 @@ export default function VideocallPage({
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            녹화 영상 업로드
+            녹화 영상 업로드중입니다.
           </Typography>
           <CircularProgress
             value={"determinate"}
