@@ -1,4 +1,10 @@
-import { Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Modal,
+  Typography,
+} from "@mui/material";
 import AgoraRTC from "agora-rtc-sdk-ng";
 import { createChannel, createClient } from "agora-rtm-react";
 import React, {
@@ -59,6 +65,13 @@ export default function VideocallPage({
   const [rtmChannel, setRtmChannel] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const videoRecorderRef = useRef();
+
+  /**
+   * 녹화 관련
+   */
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadingSuccess, setUploadingSuccess] = useState(false);
+  const [uploadingError, setUploadingError] = useState(false);
 
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY; // .env 파일 또는 환경 변수에서 Agora App ID
   const serverAddress = process.env.REACT_APP_BACKEND_ADDRESS_DEV;
@@ -136,6 +149,20 @@ export default function VideocallPage({
   //   }
   // }, [rtmChannel, setJoinState]);
 
+  /**
+   *
+   */
+  const onSuccess = () => {
+    setIsUploading(false);
+    setUploadingError(false);
+    setUploadingSuccess(true);
+  };
+
+  const onError = () => {
+    setIsUploading(false);
+    setUploadingSuccess(false);
+    setUploadingError(true);
+  };
   const subscribeToEvents = useCallback(() => {
     client.current.on("user-published", async (user, mediaType) => {
       await client.current.subscribe(user, mediaType);
@@ -279,8 +306,6 @@ export default function VideocallPage({
     if (videoRecorderRef.current) {
       // console.log("레코딩 2");
       await videoRecorderRef.current.stopAndDownloadRecording(); // 녹화 중지 및 다운로드
-      console.log("녹화 종료 완료");
-      setIsRecording(false);
     }
   };
 
@@ -536,15 +561,15 @@ export default function VideocallPage({
               onClick={handleLeave}
               variant="contained"
               color="primary"
-              disabled={isRecording}
+              disabled={!uploadingSuccess}
             >
               상담 끝내기
             </Button>
             <Button
               onClick={stopRecording}
               variant="contained"
-              color="primary"
-              disabled={!isRecording}
+              color="secondary"
+              disabled={uploadingSuccess}
             >
               녹화 종료하기
             </Button>
@@ -558,11 +583,44 @@ export default function VideocallPage({
         reduxData={reduxData}
         uid={uid}
         channelName={channelName}
+        setUploading={setIsUploading}
+        onSuccess={onSuccess}
+        onError={onError}
         style={{ display: joinState ? "block" : "none" }}
       />
+
+      <Modal
+        open={isUploading}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            녹화 영상 업로드
+          </Typography>
+          <CircularProgress
+            value={"determinate"}
+            style={{ marginTop: "12px", alignSelf: "center" }}
+          />
+        </Box>
+      </Modal>
     </div>
   );
 }
+
+const style = {
+  display: "flex",
+  flexDirection: "column",
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const StyledImg = styled.img`
   width: 90%;
