@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setAccelGyro } from "../../store/logger/loggerSlice";
 
-const AccelGyroLogger = ({
-  name,
-  quizType,
-  onAccelgyroData,
-  quizSessionType,
-  ...props
-}) => {
+const AccelgyroLogger = () => {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [data, setData] = useState({});
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleDeviceMotion = (event) => {
@@ -44,42 +42,43 @@ const AccelGyroLogger = ({
       // }
 
       // console.log('accel_gyro_data', newData);
-      onAccelgyroData(newData);
+      dispatch(setAccelGyro(newData));
       // console.log(newData)
     };
 
     if (window.DeviceMotionEvent) {
-      console.log('DeviceMotionEvent is supported');
-      if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-        console.log('DeviceMotionEvent.requestPermission()')
+      console.log("DeviceMotionEvent is supported");
+      if (typeof DeviceMotionEvent.requestPermission === "function") {
+        DeviceMotionEvent.requestPermission();
+        console
+          .log("DeviceMotionEvent.requestPermission()")
           .then((permissionState) => {
-            if (permissionState === 'granted') {
-              console.log('DeviceMotionEvent.requestPermission() granted');
-              window.addEventListener('devicemotion', handleDeviceMotion, true);
+            if (permissionState === "granted") {
+              console.log("DeviceMotionEvent.requestPermission() granted");
+              window.addEventListener("devicemotion", handleDeviceMotion, true);
               setPermissionGranted(true);
             } else {
-              console.log('DeviceMotionEvent.requestPermission() not granted');
+              console.log("DeviceMotionEvent.requestPermission() not granted");
             }
           })
           .catch(console.error);
       } else {
-        console.log('devicemotion event listener added')
-        window.addEventListener('devicemotion', handleDeviceMotion, true);
+        console.log("devicemotion event listener added");
+        window.addEventListener("devicemotion", handleDeviceMotion, true);
         setPermissionGranted(true);
       }
     } else {
-      console.log('DeviceMotionEvent is not supported');
+      console.log("DeviceMotionEvent is not supported");
     }
 
     return () => {
       if (window.DeviceMotionEvent) {
-        window.removeEventListener('devicemotion', handleDeviceMotion, true);
+        window.removeEventListener("devicemotion", handleDeviceMotion, true);
       }
     };
   }, []);
 
-  return <div name={name} {...props}></div>;
+  return null;
 };
 
-export default AccelGyroLogger;
+export default AccelgyroLogger;
