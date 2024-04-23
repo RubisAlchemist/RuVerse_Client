@@ -1,84 +1,98 @@
+import {
+  Box,
+  Button,
+  Card,
+  CardMedia,
+  FormControl,
+  Stack,
+  TextField,
+} from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
+import useCurrentLocation from "../../hooks/useCurrentLocation";
+
+import webgazer from "webgazer";
 import VideoCallImage from "../../images/videocallImage.png";
 import {
-  onChaneUid,
   onChangeChannelName,
+  onChangeUid,
+  setCall,
 } from "../../store/channel/channelSlice";
+import { setGps } from "../../store/logger/loggerSlice";
 
 function JoinForm() {
-  const channelName = useSelector((state) => state.channel.name);
-  const uid = useSelector((state) => state.channel.uid);
+  const uid = useSelector((state) => state.channel.uid.value);
+  const isUidError = useSelector((state) => state.channel.uid.isError);
+  const channelName = useSelector((state) => state.channel.name.value);
+  const isChannelNameError = useSelector((state) => state.channel.name.isError);
 
   const dispatch = useDispatch();
 
+  const { location, error } = useCurrentLocation();
+
+  const handleJoin = () => {
+    webgazer.begin();
+    dispatch(setCall());
+    dispatch(setGps(location));
+  };
+
   return (
-    <JoinFormContainer>
-      <InputGroup>
-        <InputLabel>상담소명 :</InputLabel>
-        <StyledInput
-          type="text"
-          placeholder="주어진 상담소 이름을 입력하세요"
-          value={channelName}
-          onChange={(e) => dispatch(onChangeChannelName(e.target.value))}
-        />
-      </InputGroup>
-      <InputGroup>
-        <InputLabel>이름 : </InputLabel>
-        <StyledInput
-          type="text"
-          placeholder="당신의 이름을 입력하세요"
-          value={uid}
-          onChange={(e) => dispatch(onChaneUid(e.target.value))}
-        />
-      </InputGroup>
-      <StyledImg src={VideoCallImage} />
-    </JoinFormContainer>
+    <Stack spacing={2}>
+      <Card>
+        <CardMedia component="img" image={VideoCallImage} />
+      </Card>
+
+      <TextField
+        required
+        error={isChannelNameError}
+        label="상담소명"
+        value={channelName}
+        onChange={(e) =>
+          dispatch(
+            onChangeChannelName({
+              value: e.target.value,
+              valid: e.target.validity.valid,
+            })
+          )
+        }
+        helperText={
+          isChannelNameError ? "상담소명은 영문, 숫자만 가능합니다." : ""
+        }
+        inputProps={{
+          pattern: "[a-zA-Z0-9]+",
+        }}
+      />
+      <TextField
+        required
+        error={isUidError}
+        label="유저 이름"
+        value={uid}
+        helperText={isUidError ? "유저 이름은 영문, 숫자만 가능합니다." : ""}
+        onChange={(e) => {
+          console.log(e.target.validity);
+          dispatch(
+            onChangeUid({
+              value: e.target.value,
+              valid: e.target.validity.valid,
+            })
+          );
+        }}
+        inputProps={{
+          pattern: "[a-zA-Z0-9]+",
+        }}
+      />
+      <Box display="flex" justifyContent="flex-end">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleJoin}
+          disabled={isUidError || isChannelNameError}
+        >
+          상담 시작하기
+        </Button>
+      </Box>
+    </Stack>
   );
 }
 
-const JoinFormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: 24px;
-`;
-
-const InputGroup = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-`;
-
-const InputLabel = styled.label`
-  width: 80px; // 레이블의 너비를 고정
-  text-align: right; // 텍스트를 오른쪽으로 정렬
-  margin-right: 10px;
-  margin-bottom: 10px;
-`;
-
-const StyledInput = styled.input`
-  flex-grow: 1;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  padding: 10px;
-  border: 2px solid #008080; // Use the color that your Button uses
-  border-radius: 4px;
-  width: 200px;
-  margin-right: 10px; // Only for the first input
-`;
-
-const StyledImg = styled.img`
-  width: 80%;
-  height: 70%;
-  object-fit: contain;
-
-  @media (max-width: 768px) {
-    width: 80vw; // On smaller screens, the image will take up 80% of the viewport width
-  }
-`;
 export default JoinForm;
