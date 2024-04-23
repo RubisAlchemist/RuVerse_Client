@@ -3,11 +3,12 @@ import {
   Button,
   CircularProgress,
   Modal,
+  Stack,
   Typography,
 } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import UploadIcon from "@mui/icons-material/Upload";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Buffer } from "buffer";
@@ -29,6 +30,7 @@ const serverAddress = process.env.REACT_APP_BACKEND_ADDRESS_DEV;
 
 const UploadToS3Modal = () => {
   const { screenRecordBlob, videoRecordBlob } = useContext(RecordContext);
+
   const modal = useSelector((state) => state.upload.modal);
 
   const [isWait, setIsWait] = useState(true);
@@ -355,20 +357,22 @@ const UploadToS3Modal = () => {
     >
       {isWait ? (
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            녹화 업로드
-          </Typography>
-          <Typography
-            id="modal-modal-title"
-            variant="caption"
-            component="p"
-            color="crimson"
-          >
-            업로드 완료 후 퇴장합니다.
-          </Typography>
-          <Button variant="contained" color="info" onClick={handleUpload}>
-            업로드
-          </Button>
+          <Stack spacing={2}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              녹화 업로드
+            </Typography>
+            <Typography
+              id="modal-modal-title"
+              variant="caption"
+              component="p"
+              color="crimson"
+            >
+              업로드 완료 후 퇴장합니다.
+            </Typography>
+            <Button variant="outlined" color="info" onClick={handleUpload}>
+              <UploadIcon fontSize="medium" />
+            </Button>
+          </Stack>
         </Box>
       ) : (
         <Box sx={style}>

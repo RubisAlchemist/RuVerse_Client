@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 import { useReactMediaRecorder } from "react-media-recorder";
@@ -116,10 +116,6 @@ const RecordManager = ({ children }) => {
   const recordingStatus =
     videoStatus === "recording" && screenStatus === "recording";
 
-  console.log(
-    `[RECORDING] videoStatus = ${videoStatus} screenStatus = ${screenStatus}`
-  );
-
   return (
     <RecordProvider
       videoRecordBlob={videoRecordBlob}
@@ -147,20 +143,43 @@ const RecordManager = ({ children }) => {
         onClose={handleRecordError}
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            녹화 오류
-          </Typography>
-          <Typography
-            id="modal-modal-title"
-            variant="caption"
-            component="p"
-            color="crimson"
-          >
+          <Typography variant="h5">녹화오류</Typography>
+
+          <Divider />
+          <Box p={2}>
+            {videoError && (
+              <Typography
+                id="modal-modal-title"
+                variant="caption"
+                component="p"
+                color="crimson"
+              >
+                비디오 녹화 오류: {videoError}
+              </Typography>
+            )}
+            {screenError && (
+              <Typography
+                id="modal-modal-title"
+                variant="caption"
+                component="p"
+                color="crimson"
+              >
+                화면 녹화 오류: {screenError}
+              </Typography>
+            )}
+          </Box>
+          <Typography variant="overline" color="crimson">
             녹화 버튼을 다시 눌러주세요.
           </Typography>
-          <Button variant="outlined" color="error" onClick={handleRecordError}>
-            확인
-          </Button>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleRecordError}
+            >
+              확인
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </RecordProvider>

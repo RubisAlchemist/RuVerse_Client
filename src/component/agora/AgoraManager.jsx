@@ -1,4 +1,4 @@
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import {
   LocalVideoTrack,
   RemoteUser,
@@ -58,9 +58,26 @@ const AgoraManager = ({ config, children }) => {
 
   if (deviceLoading) {
     return (
-      <LoadingContainer>
-        <CircularProgress />
-      </LoadingContainer>
+      <Box
+        component="div"
+        display="flex"
+        width="100%"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        border="1px solid black"
+        p={4}
+      >
+        <Stack spacing={2}>
+          <Box display="flex" justifyContent="center">
+            <CircularProgress value={40} />
+          </Box>
+          <Typography variant="h5" component="h5">
+            채널에 입장중입니다...
+          </Typography>
+        </Stack>
+      </Box>
     );
   }
 
