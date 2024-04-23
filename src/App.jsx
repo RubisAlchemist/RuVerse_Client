@@ -3,9 +3,10 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 
+import { EyetrackingLogger } from "./component/logger/index.js";
 import Home from "./pages/Home.jsx";
 import PermissionPage from "./pages/PermissionPage.jsx";
-import VideoCallPage from "./pages/VideoCallPage.jsx";
+import VideoCallPage from "./pages/videocallPage.jsx";
 
 const theme = createTheme({
   palette: {
@@ -17,16 +18,18 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <Router>
-        <Routes>
-          <Route path="/" exact element={<Home />} />
-          <Route path="/permission" element={<PermissionPage />} />
-          <Route path="/videocallPage" element={<VideoCallPage />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <EyetrackingLogger>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <Router>
+          <Routes>
+            <Route path="/" exact element={<Home />} />
+            <Route path="/permission" element={<PermissionPage />} />
+            <Route path="/videocallPage" element={<VideoCallPage />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </EyetrackingLogger>
   );
 }
 
