@@ -1,10 +1,10 @@
+import { Box } from "@mui/material";
 import AgoraRTC, { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 import React from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import AgoraManager from "../component/agora/AgoraManager.jsx";
 import VirtualBackground from "../component/agora/VirtualBackground.jsx";
-import ChannelJoin from "../component/channel/ChannelJoin.jsx";
 import ChannelLeave from "../component/channel/ChannelLeave.jsx";
 import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
@@ -13,8 +13,8 @@ import RecordManager from "../component/record/RecordManager.jsx";
 
 const VideoCallPage = () => {
   const call = useSelector((state) => state.channel.call);
-  const channelName = useSelector((state) => state.channel.name);
-  const uid = useSelector((state) => state.channel.uid);
+  const channelName = useSelector((state) => state.channel.name.value);
+  const uid = useSelector((state) => state.channel.uid.value);
   const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
 
   const config = {
@@ -29,10 +29,18 @@ const VideoCallPage = () => {
 
   if (!call) {
     return (
-      <FormContainer>
+      <Box
+        component="div"
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        border="1px solid black"
+        p={4}
+      >
         <JoinForm />
-        <ChannelJoin />
-      </FormContainer>
+      </Box>
     );
   }
   /**
@@ -61,13 +69,6 @@ const VideoCallPage = () => {
 };
 
 export default VideoCallPage;
-
-const FormContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-`;
 
 const VideoPageContainer = styled.div`
   display: flex;
