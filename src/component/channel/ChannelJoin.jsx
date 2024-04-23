@@ -1,19 +1,24 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useCurrentLocation from "../../hooks/useCurrentLocation";
 import { setCall } from "../../store/channel/channelSlice";
-import { startCollecting } from "../../store/logger/loggerSlice";
-
+import { setGps } from "../../store/logger/loggerSlice";
+import webgazer from "webgazer";
 const ChannelJoin = () => {
   const dispatch = useDispatch();
   const name = useSelector((state) => state.channel.name);
   const uid = useSelector((state) => state.channel.uid);
 
+  const { location, error } = useCurrentLocation();
+
   const isRequirementsFulfilled = name.length !== 0 && uid.length !== 0;
 
   const handleJoin = () => {
-    dispatch(startCollecting());
+    webgazer.begin();
+
     dispatch(setCall());
+    dispatch(setGps(location));
   };
 
   return (
