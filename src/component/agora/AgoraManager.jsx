@@ -1,3 +1,4 @@
+import { CircularProgress } from "@mui/material";
 import {
   LocalVideoTrack,
   RemoteUser,
@@ -10,9 +11,8 @@ import {
   useRemoteUsers,
 } from "agora-rtc-react";
 import React, { useEffect } from "react";
-import { AgoraProvider } from "../../context/agora-context";
 import styled from "styled-components";
-import { CircularProgress } from "@mui/material";
+import { AgoraProvider } from "../../context/agora-context";
 
 const AgoraManager = ({ config, children }) => {
   const agoraEngine = useRTCClient();
@@ -53,7 +53,8 @@ const AgoraManager = ({ config, children }) => {
   }, []);
 
   // Check if devices are still loading
-  const deviceLoading = isLoadingMic || isLoadingCam;
+  const deviceLoading =
+    isLoadingMic || isLoadingCam || !localCameraTrack || !localMicrophoneTrack;
 
   if (deviceLoading) {
     return (

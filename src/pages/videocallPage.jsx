@@ -6,13 +6,9 @@ import AgoraManager from "../component/agora/AgoraManager.jsx";
 import VirtualBackground from "../component/agora/VirtualBackground.jsx";
 import ChannelJoin from "../component/channel/ChannelJoin.jsx";
 import ChannelLeave from "../component/channel/ChannelLeave.jsx";
+import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
-import {
-  EyetrackingLogger,
-  GpsLogger,
-  StylusLogger,
-  TouchLogger,
-} from "../component/logger/index.js";
+import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
 
 const VideoCallPage = () => {
@@ -44,25 +40,23 @@ const VideoCallPage = () => {
    * 채널 나갈 경우 초기화
    */
   return (
-    <>
-      <TouchLogger>
-        <StylusLogger>
-          <EyetrackingLogger>
-            <AgoraRTCProvider client={client}>
-              <VideoPageContainer>
-                <AgoraManager config={config}>
-                  <ToolBarButtonContainer>
-                    <ChannelLeave />
-                    <RecordManager />
-                    <VirtualBackground />
-                  </ToolBarButtonContainer>
-                </AgoraManager>
-              </VideoPageContainer>
-            </AgoraRTCProvider>
-          </EyetrackingLogger>
-        </StylusLogger>
-      </TouchLogger>
-    </>
+    <TouchLogger>
+      <StylusLogger>
+        <AgoraRTCProvider client={client}>
+          <VideoPageContainer>
+            <AgoraManager config={config}>
+              <ToolBarButtonContainer>
+                <ChannelLeave />
+                <RecordManager>
+                  <UploadToS3Modal />
+                </RecordManager>
+                <VirtualBackground />
+              </ToolBarButtonContainer>
+            </AgoraManager>
+          </VideoPageContainer>
+        </AgoraRTCProvider>
+      </StylusLogger>
+    </TouchLogger>
   );
 };
 
