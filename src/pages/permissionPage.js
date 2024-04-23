@@ -1,12 +1,6 @@
-// import {
-//   notificationKind,
-//   useSystemNotification,
-// } from "../hooks/useSystemNotification";
-import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-
 import {
   CameraAlt,
   Check,
@@ -17,12 +11,6 @@ import {
 import { Button } from "@mui/material";
 import { checkPermission, requestPermission } from "../utils/permissions";
 import { getUserAgent } from "../utils/userAgent";
-// import {
-//   setCameraPermission,
-//   setDevicemotionPermission,
-//   setLocationPermission,
-//   setMicrophonePermission,
-// } from "@store/actions";
 
 const PERMISSION = [
   {
@@ -41,12 +29,10 @@ const PERMISSION = [
     name: "마이크",
   },
 ];
+
 function PermissionPage() {
-  // const dispatch = useDispatch();
-  const userAgent = getUserAgent();
-  // const control = useSelector((state) => state.control);
-  // const { onSendMessage } = useSystemNotification();
   const navigate = useNavigate();
+  const userAgent = getUserAgent();
   const [isGrantedPermission, setIsGrantedPermission] = useState({
     camera: false,
     location: false,
@@ -55,71 +41,46 @@ function PermissionPage() {
   });
   const [allPermissionIsReady, setAllPermissionIsReady] = useState(false);
 
-  const onPermissionChange = (key, isGranted) => {
-    setIsGrantedPermission((prev) => ({ ...prev, [key]: isGranted }));
-  };
-
-  const handleGPSPermissionForIOS = () => {
-    onPermissionChange("location", true);
-    // 필요한 다른 처리 또한 여기에 추가
-  };
-
   useEffect(() => {
     const setGranted = async () => {
       const camera = await checkPermission("camera");
       const location = await checkPermission("geolocation");
       const microphone = await checkPermission("microphone");
 
-      setIsGrantedPermission((prev) => ({
-        ...prev,
+      setIsGrantedPermission({
         camera,
         location,
         microphone,
-      }));
+      });
     };
+
+    setGranted();
+
     const interval = setInterval(() => {
       setGranted();
     }, 1200);
-    // 15초 동안 권한체크를 모두 끝내지 못하면 다음으로 진행 가능
+
     setTimeout(() => {
       setAllPermissionIsReady(true);
     }, 15000);
-    setGranted();
 
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const agentFilter = Object.keys(isGrantedPermission).filter(
-      (key) => !(userAgent !== "iOS" && key === "devicemotion")
-    );
-    const deninedLength = agentFilter.filter(
-      (key) => !isGrantedPermission[key]
-    ).length;
-    // if (!deninedLength) {
-    //   setCameraPermission();
-    //   setMicrophonePermission();
-    //   setLocationPermission();
-    //   setDevicemotionPermission();
-    //   setAllPermissionIsReady(true);
-    //   // onSendMessage({
-    //   //   notificationKind: notificationKind.QUIZSET_PERMISSION_STUDENT_READY,
-    //   // });
-    // }
-  }, [
-    isGrantedPermission,
-    // onSendMessage,
-    userAgent,
-    // control.hasCameraPermission,
-    // control.hasLocationPermission,
-    // control.hasMicrophonePermission,
-    // control.hasDevicemotionPermission,
-  ]);
+  const handlePermissionRequest = (key) => {
+    if (userAgent === "iOS" && key === "location") {
+      setIsGrantedPermission((prev) => ({ ...prev, [key]: true }));
+      // handleGPSPermissionForIOS();
+    } else {
+      requestPermission(key);
+      setIsGrantedPermission((prev) => ({ ...prev, [key]: true }));
+    }
+  };
 
   return (
     <StyledContainer>
       <StyledTitle>
-        포커스팡 이용을 진행하려면 아래 권한들이 필요해요.
+        RuVerse 이용을 진행하려면 아래 권한들이 필요해요.
       </StyledTitle>
       <StyledPermissionWrap>
         {PERMISSION.map((permission) => (
@@ -131,15 +92,7 @@ function PermissionPage() {
               {isGrantedPermission[permission.key] ? (
                 <Check />
               ) : (
-                <Button
-                  onClick={() => {
-                    if (userAgent === "iOS" && permission.key === "location") {
-                      handleGPSPermissionForIOS();
-                    } else {
-                      requestPermission(permission.key);
-                    }
-                  }}
-                >
+                <Button onClick={() => handlePermissionRequest(permission.key)}>
                   권한 설정하기
                 </Button>
               )}
@@ -155,12 +108,7 @@ function PermissionPage() {
               {isGrantedPermission.devicemotion ? (
                 <Check />
               ) : (
-                <Button
-                  onClick={() => {
-                    requestPermission("devicemotion");
-                    onPermissionChange("devicemotion", true);
-                  }}
-                >
+                <Button onClick={() => handlePermissionRequest("devicemotion")}>
                   권한 설정하기
                 </Button>
               )}
@@ -170,8 +118,8 @@ function PermissionPage() {
       </StyledPermissionWrap>
       <StyledButtonWrap>
         {allPermissionIsReady && (
-          <Button onClick={() => navigate("/postureCheck")}>
-            다음으로 가기
+          <Button onClick={() => navigate("/videocallPage")}>
+            온라인 상담하러 가기
           </Button>
         )}
       </StyledButtonWrap>
@@ -189,17 +137,32 @@ const StyledContainer = styled.div`
   padding: 20px;
   width: 100%;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
+
 const StyledTitle = styled.h3`
   font-size: 16px;
   margin-bottom: 28px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
 `;
+
 const StyledPermissionWrap = styled.div`
   width: 100%;
   max-width: 400px;
   border: 1px solid #ccc;
   border-radius: 6px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
 `;
+
 const StyledPermission = styled.div`
   display: flex;
   justify-content: space-between;
@@ -211,7 +174,13 @@ const StyledPermission = styled.div`
   &:last-child {
     border-bottom: 0;
   }
+
+  @media (max-width: 768px) {
+    padding: 12px;
+    font-size: 12px;
+  }
 `;
+
 const StyledName = styled.div`
   display: flex;
   align-items: center;
@@ -219,6 +188,7 @@ const StyledName = styled.div`
     margin-right: 12px;
   }
 `;
+
 const StyledCheckWrap = styled.div`
   display: flex;
   align-items: center;
@@ -226,7 +196,17 @@ const StyledCheckWrap = styled.div`
   width: 100px;
   height: 37px;
   color: #0ba1ae;
+
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 35px;
+  }
 `;
+
 const StyledButtonWrap = styled.div`
   margin-top: 20px;
+
+  @media (max-width: 768px) {
+    margin-top: 15px;
+  }
 `;
