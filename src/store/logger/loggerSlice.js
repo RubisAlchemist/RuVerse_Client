@@ -1,17 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  gps: {
-    currentRef: null,
-    data: [],
-  },
+  gps: [],
   touch: [],
   accelGyro: [],
   stylus: [],
-  eyetracking: {
-    isCollecting: false,
-    data: [],
-  },
+  eyetracking: [],
 };
 
 export const loggerSlice = createSlice({
@@ -19,16 +13,22 @@ export const loggerSlice = createSlice({
   initialState,
   reducers: {
     setGps: (state, action) => {
-      state.gps.data.push(action.payload);
+      const curGps = state.gps;
+      const newGps = action.payload;
+      const exists = curGps.some((item) => {
+        return (
+          item.latitude === newGps.latitude &&
+          item.longitude === newGps.longitude &&
+          item.altitude === newGps.altitude
+        );
+      });
+
+      if (!exists) {
+        curGps.push(newGps);
+      }
     },
     setGpsRef: (state, action) => {
       state.gps.currentRef = action.payload;
-    },
-    stopGps: (state, action) => {
-      const curRef = state.gps.currentRef;
-      if (curRef) {
-        navigator.geolocation.clearWatch(curRef);
-      }
     },
     setTouch: (state, action) => {
       state.touch.push(action.payload);
@@ -40,25 +40,15 @@ export const loggerSlice = createSlice({
       state.stylus.push(action.payload);
     },
     setEyetracking: (state, action) => {
-      if (state.eyetracking.isCollecting) {
-        state.eyetracking.data.push(action.payload);
-      }
-    },
-    startCollecting: (state, action) => {
-      state.eyetracking.isCollecting = true;
-    },
-    stopCollecting: (state, action) => {
-      state.eyetracking.isCollecting = false;
+      state.eyetracking.push(action.payload);
     },
 
     resetLogger: (state, action) => {
-      state.gps.data = [];
-      state.gps.currentRef = null;
-      state.touch = [];
-      state.accelGyro = [];
-      state.stylus = [];
-      state.eyetracking.data = [];
-      state.eyetracking.isCollecting = false;
+      state.gps = initialState.gps;
+      state.touch = initialState.touch;
+      state.accelGyro = initialState.accelGyro;
+      state.stylus = initialState.accelGyro;
+      state.eyetracking = initialState.eyetracking;
     },
   },
 });
@@ -66,15 +56,12 @@ export const loggerSlice = createSlice({
 export const {
   setGps,
   setGpsRef,
-  stopGps,
   setTouch,
   setKeyboard,
   setAccelGyro,
   setStylus,
   setEyetracking,
   resetLogger,
-  startCollecting,
-  stopCollecting,
 } = loggerSlice.actions;
 
 export default loggerSlice.reducer;
