@@ -40,8 +40,8 @@ const UploadToS3Modal = () => {
    * 채널 이름
    * uid
    */
-  const channelName = useSelector((state) => state.channel.name);
-  const uid = useSelector((state) => state.channel.uid);
+  const channelName = useSelector((state) => state.channel.name.value);
+  const uid = useSelector((state) => state.channel.uid.value);
 
   /**
    * Logger 데이터
