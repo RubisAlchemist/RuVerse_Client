@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardMedia,
-  FormControl,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Card, CardMedia, Stack, TextField } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useCurrentLocation from "../../hooks/useCurrentLocation";
 
-import webgazer from "webgazer";
 import VideoCallImage from "../../images/videocallImage.png";
 import {
   onChangeChannelName,
@@ -31,7 +22,7 @@ function JoinForm() {
   const { location, error } = useCurrentLocation();
 
   const handleJoin = () => {
-    webgazer.begin();
+    // webgazer.begin();
     dispatch(setCall());
     dispatch(setGps(location));
   };

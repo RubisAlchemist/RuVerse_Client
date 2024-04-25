@@ -96,16 +96,6 @@ const AgoraManager = ({ config, children }) => {
             margin: "10px auto",
           }}
         />
-        {remoteUsers.map((user) => (
-          <RemoteUser
-            user={user}
-            style={{
-              width: "680px",
-              height: "510px",
-              margin: "10px auto",
-            }}
-          />
-        ))}
       </VideoContainer>
       <ToolBarContainer>{children}</ToolBarContainer>
     </AgoraProvider>
