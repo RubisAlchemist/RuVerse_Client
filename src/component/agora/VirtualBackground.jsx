@@ -16,7 +16,7 @@ const VirtualBackground = () => {
         <div>
           <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             onClick={() => setVirtualBackground(false)}
           >
             가상 화면 비활성화
@@ -26,7 +26,7 @@ const VirtualBackground = () => {
       ) : (
         <Button
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={() => setVirtualBackground(true)}
           disabled={connectionState !== "CONNECTED"}
         >
