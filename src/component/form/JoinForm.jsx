@@ -6,6 +6,7 @@ import {
   Stack,
   TextField,
   Container,
+  ImageList,
 } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,10 +40,6 @@ function JoinForm() {
   return (
     <Container maxWidth="md" className="responsive-container">
       <Stack spacing={2} alignItems="center">
-        <Card>
-          <CardMedia component="img" image={VideoCallImage} />
-        </Card>
-
         <TextField
           required
           error={isChannelNameError}
@@ -64,6 +61,7 @@ function JoinForm() {
           }}
           sx={{ width: "60%" }}
         />
+
         <TextField
           required
           error={isUidError}
@@ -84,6 +82,9 @@ function JoinForm() {
           }}
           sx={{ width: "60%" }}
         />
+        <ImageList cols={1}>
+          <img src={VideoCallImage} alt="" style={{ objectFit: "cover" }} />
+        </ImageList>
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
