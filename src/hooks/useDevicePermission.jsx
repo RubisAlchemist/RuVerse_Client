@@ -1,10 +1,5 @@
+import { CameraAlt, LocationOn, Mic } from "@mui/icons-material";
 import React, { useMemo, useState } from "react";
-import {
-  CameraAlt,
-  LocationOn,
-  Mic,
-  NavigationRounded,
-} from "@mui/icons-material";
 const useDevicePermission = () => {
   const [permissions, setPermissions] = useState([
     {
@@ -30,11 +25,15 @@ const useDevicePermission = () => {
     },
   ]);
 
+  // 모든 권한이 허용 됐는지 확인
   const isAllPermissionsGranted = useMemo(
     () => permissions.every((permission) => permission.isPermitted),
     [permissions]
   );
 
+  /**
+   * @param {string} key : 허용 할 권한의 이름
+   */
   const handlePermissions = async (key) => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((permission) =>
@@ -105,8 +104,10 @@ const useDevicePermission = () => {
 
   /**
    * GPS 권한
+   * gps 권한의 경우 success, error 일 때 처리할 콜백 함수를 넘겨주어야 한다.
    */
 
+  // 성공했을 경우
   const handleSuccess = () => {
     setPermissions((prevPermissions) =>
       prevPermissions.map((permission) =>
@@ -117,6 +118,7 @@ const useDevicePermission = () => {
     );
   };
 
+  // 실패했을 경우
   const handleError = (err) => {
     console.log(err);
   };

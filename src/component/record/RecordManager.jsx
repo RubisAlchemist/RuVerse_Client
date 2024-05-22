@@ -65,6 +65,7 @@ const RecordManager = ({ children }) => {
     },
   });
 
+  // 녹화 시작 할 때 webgazer 실행
   const startRecording = () => {
     try {
       console.log("[WEBGAZER] start");
@@ -78,7 +79,6 @@ const RecordManager = ({ children }) => {
   };
 
   const stopRecording = () => {
-    // start webgazer
     try {
       console.log("[WEBGAZER] end");
       webgazer.pause();
@@ -94,6 +94,7 @@ const RecordManager = ({ children }) => {
   };
 
   useEffect(() => {
+    // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
     if (screenError || videoError) {
       console.log("[RECORDER] 녹화 오류 발생");
       setErrorModal(true);
