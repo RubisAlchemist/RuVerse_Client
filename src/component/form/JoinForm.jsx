@@ -39,50 +39,77 @@ function JoinForm() {
 
   return (
     <Container maxWidth="md" className="responsive-container">
-      <Stack spacing={2} alignItems="center">
-        <TextField
-          required
-          error={isChannelNameError}
-          label="상담소명"
-          value={channelName}
-          onChange={(e) =>
-            dispatch(
-              onChangeChannelName({
-                value: e.target.value,
-                valid: e.target.validity.valid,
-              })
-            )
-          }
-          helperText={isChannelNameError ? "상담소명은 영문만 가능합니다." : ""}
-          inputProps={{
-            pattern: "[a-zA-Z]+",
-          }}
-          sx={{ width: "60%" }}
-        />
+      <Stack
+        spacing={2}
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          width="100%"
+        >
+          <TextField
+            required
+            fullWidth
+            error={isChannelNameError}
+            label="상담소명"
+            value={channelName}
+            onChange={(e) =>
+              dispatch(
+                onChangeChannelName({
+                  value: e.target.value,
+                  valid: e.target.validity.valid,
+                })
+              )
+            }
+            helperText={
+              isChannelNameError ? "상담소명은 영문만 가능합니다." : ""
+            }
+            inputProps={{
+              pattern: "[a-zA-Z]+",
+            }}
+            sx={{ width: "60%" }}
+          />
 
-        <TextField
-          required
-          error={isUidError}
-          label="유저 이름"
-          value={uid}
-          helperText={isUidError ? "유저 이름은 영문만 가능합니다." : ""}
-          onChange={(e) => {
-            console.log(e.target.validity);
-            dispatch(
-              onChangeUid({
-                value: e.target.value,
-                valid: e.target.validity.valid,
-              })
-            );
+          <TextField
+            required
+            error={isUidError}
+            label="유저 이름"
+            value={uid}
+            helperText={isUidError ? "유저 이름은 영문만 가능합니다." : ""}
+            onChange={(e) => {
+              console.log(e.target.validity);
+              dispatch(
+                onChangeUid({
+                  value: e.target.value,
+                  valid: e.target.validity.valid,
+                })
+              );
+            }}
+            inputProps={{
+              pattern: "[a-zA-Z]+",
+            }}
+            sx={{ width: "60%" }}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            width: { xs: "360px", md: "500px" },
+            height: { xs: "360px", md: "500px" },
           }}
-          inputProps={{
-            pattern: "[a-zA-Z]+",
-          }}
-          sx={{ width: "60%" }}
-        />
-        <ImageList cols={1}>
-          <img src={VideoCallImage} alt="" style={{ objectFit: "cover" }} />
-        </ImageList>
+        >
+          <img
+            src={VideoCallImage}
+            alt=""
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
+          />
+        </Box>
+
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
