@@ -146,23 +146,6 @@ const UploadToS3Modal = () => {
   const uploadToS3SmallSize = async (key, file) => {
     console.log("[CALL] uploadToS3SmallSize");
 
-    // const videoKey =
-    //   channelName +
-    //   "_" +
-    //   uid +
-    //   "_" +
-    //   "비디오" +
-    //   new Date().toISOString() +
-    //   ".mp4";
-
-    // let file = new File([blob], videoKey, {
-    //   type: "video/mp4",
-    //   lastModified: Date.now(),
-    // });
-
-    // 로거데이터 업로드 로거 데이타 키값
-    // const loggerDataKey = await uploadLoggerData();
-
     const s3Client = new S3Client({
       region: REGION,
       credentials: {
@@ -196,23 +179,6 @@ const UploadToS3Modal = () => {
   const uploadToS3 = async (key, file) => {
     console.log("[CALL] uploadToS3");
 
-    // const videoKey =
-    //   channelName +
-    //   "_" +
-    //   uid +
-    //   "_" +
-    //   "비디오" +
-    //   new Date().toISOString() +
-    //   ".mp4";
-
-    // let file = new File([blob], videoKey, {
-    //   type: "video/mp4",
-    //   lastModified: Date.now(),
-    // });
-
-    // 로거데이터 업로드
-    // const loggerDataKey = await uploadLoggerData();
-
     const s3Client = new S3Client({
       region: REGION,
       credentials: {
@@ -239,66 +205,6 @@ const UploadToS3Modal = () => {
       //   await uploadDB(channelName, uid, loggerDataKey, videoKey);
     } catch (err) {
       console.log("upload failed");
-      console.log(err);
-    }
-  };
-  /**
-   * 로거 값 json으로 변환해서 S3 전송
-   * @returns 로거 텍스트 파일 키값
-   */
-
-  const uploadLoggerData = async () => {
-    console.log("[UPLOAD LOGGER] 로거 데이터 업로드");
-
-    const loggerData = {
-      gpsData,
-      touchData,
-      accelGyroData,
-      stylusData,
-      eyetrackingData,
-      uid,
-      channelName,
-    };
-
-    console.log(loggerData);
-
-    const loggerKey =
-      channelName +
-      "_" +
-      uid +
-      "_" +
-      "logger_Data" +
-      "_" +
-      new Date().toISOString() +
-      ".json";
-
-    const file = Buffer.from(JSON.stringify(loggerData).toString());
-
-    const s3Client = new S3Client({
-      region: REGION,
-      credentials: {
-        accessKeyId: ACCESS_KEY_ID,
-        secretAccessKey: SECRET_ACCESS_KEY_ID,
-      },
-    });
-
-    try {
-      const response = await s3Client.send(
-        new PutObjectCommand({
-          Bucket: BUCKET_NAME,
-          Body: file,
-          Key: loggerKey,
-          ContentEncoding: "base64",
-          ContentType: "application/json",
-        })
-      );
-
-      console.log(`${loggerKey} uploaded successfully.`);
-      console.log(response);
-
-      return loggerKey;
-    } catch (err) {
-      console.log(`${loggerKey} uploaded failed.`);
       console.log(err);
     }
   };
