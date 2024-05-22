@@ -72,7 +72,7 @@ function JoinForm() {
             inputProps={{
               pattern: "[a-zA-Z]+",
             }}
-            sx={{ width: "60%" }}
+            sx={{ width: "60%", marginBottom: "12px" }}
           />
 
           <TextField
