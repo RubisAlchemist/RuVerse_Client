@@ -10,15 +10,14 @@ import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
 import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
+import AgoraRtmManager from "../component/agora/AgoraRtmManager.jsx";
 
 const VideoCallPage = () => {
   const call = useSelector((state) => state.channel.call);
   const channelName = useSelector((state) => state.channel.name.value);
   const uid = useSelector((state) => state.channel.uid.value);
-  const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
 
   const config = {
-    appId,
     channelName,
     uid,
   };
@@ -35,8 +34,6 @@ const VideoCallPage = () => {
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
-        height="100vh"
-        border="1px solid black"
         p={4}
       >
         <JoinForm />
@@ -51,17 +48,36 @@ const VideoCallPage = () => {
     <TouchLogger>
       <StylusLogger>
         <AgoraRTCProvider client={client}>
-          <VideoPageContainer>
+          <Box
+            sx={{
+              width: "100%",
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid blue",
+            }}
+          >
             <AgoraManager config={config}>
-              <ToolBarButtonContainer>
+              <Box
+                sx={{
+                  position: "fixed",
+                  bottom: 0,
+                  display: "flex",
+                  justifyContent: "space-around",
+                  width: "100%",
+                  bgcolor: "ButtonShadow",
+                  padding: "12px",
+                }}
+              >
                 <ChannelLeave />
                 <RecordManager>
                   <UploadToS3Modal />
                 </RecordManager>
                 <VirtualBackground />
-              </ToolBarButtonContainer>
+              </Box>
             </AgoraManager>
-          </VideoPageContainer>
+          </Box>
+          {/* <AgoraRtmManager config={config} /> */}
         </AgoraRTCProvider>
       </StylusLogger>
     </TouchLogger>
@@ -69,16 +85,3 @@ const VideoCallPage = () => {
 };
 
 export default VideoCallPage;
-
-const VideoPageContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  height: 100vh;
-`;
-
-const ToolBarButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-
-  width: 50%;
-`;

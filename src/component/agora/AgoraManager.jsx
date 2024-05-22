@@ -1,4 +1,5 @@
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Stack, Typography } from "@mui/material";
+import "agora-chat-uikit/style.css";
 import {
   LocalVideoTrack,
   RemoteUser,
@@ -10,11 +11,22 @@ import {
   useRTCClient,
   useRemoteUsers,
 } from "agora-rtc-react";
+
 import React, { useEffect } from "react";
-import styled from "styled-components";
 import { AgoraProvider } from "../../context/agora-context";
 
+const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
+const chatId = process.env.REACT_APP_AGORA_CHAT_APP_ID_KEY;
+
 const AgoraManager = ({ config, children }) => {
+  // const { isLoading, isSuccess, isError, token, error } = useFetchChannelToken(
+  //   config.uid,
+  //   config.channelName
+  // );
+
+  // const { isSuccess: isSuccessFetchChatToken, token: chatToken } =
+  //   useFetchChatToken(config.uid);
+
   const agoraEngine = useRTCClient();
   const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
   const { isLoading: isLoadingMic, localMicrophoneTrack } =
@@ -25,7 +37,7 @@ const AgoraManager = ({ config, children }) => {
   usePublish([localMicrophoneTrack, localCameraTrack]);
 
   useJoin({
-    appid: config.appId,
+    appid: appId,
     uid: config.uid,
     channel: config.channelName,
     token: null,
@@ -56,7 +68,7 @@ const AgoraManager = ({ config, children }) => {
   const deviceLoading =
     isLoadingMic || isLoadingCam || !localCameraTrack || !localMicrophoneTrack;
 
-  if (deviceLoading) {
+  if (false) {
     return (
       <Box
         component="div"
@@ -66,7 +78,6 @@ const AgoraManager = ({ config, children }) => {
         justifyContent="center"
         alignItems="center"
         height="100vh"
-        border="1px solid black"
         p={4}
       >
         <Stack spacing={2}>
@@ -86,52 +97,49 @@ const AgoraManager = ({ config, children }) => {
       localCameraTrack={localCameraTrack}
       localMicrophoneTrack={localMicrophoneTrack}
     >
-      <VideoContainer>
-        <LocalVideoTrack
-          track={localCameraTrack}
-          play={true}
-          style={{
-            width: "680px",
-            height: "510px",
-            margin: "10px auto",
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          width: "100%",
+          height: "90%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            width: { xs: "320px", lg: "500px" },
+            height: { xs: "320px", lg: "410px" },
+            margin: "4px 12px",
           }}
-        />
-      </VideoContainer>
-      <ToolBarContainer>{children}</ToolBarContainer>
+        >
+          <LocalVideoTrack track={localCameraTrack} play={true} />
+        </Box>
+        {remoteUsers.map((user) => (
+          <Box
+            key={user.uid}
+            sx={{
+              width: { xs: "320px", lg: "500px" },
+              height: { xs: "320px", lg: "410px" },
+              margin: "4px 12px",
+            }}
+          >
+            <RemoteUser user={user} playVideo playAudio />
+          </Box>
+        ))}
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          height: "20%",
+        }}
+      >
+        {children}
+      </Box>
     </AgoraProvider>
   );
 };
-
-const VideoContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid red;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-
-  width: 100%;
-  height: 100vh;
-`;
-
-const ToolBarContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-
-  display: flex;
-  justify-content: center;
-
-  width: 100%;
-  padding: 12px;
-`;
 
 export default AgoraManager;
