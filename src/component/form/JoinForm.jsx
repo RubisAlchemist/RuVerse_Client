@@ -1,12 +1,10 @@
 import {
   Box,
   Button,
-  Card,
-  CardMedia,
-  Stack,
-  TextField,
   Container,
   ImageList,
+  Stack,
+  TextField,
 } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +17,6 @@ import {
   onChangeUid,
   setCall,
 } from "../../store/channel/channelSlice";
-import { setGps } from "../../store/logger/loggerSlice";
 
 function JoinForm() {
   const uid = useSelector((state) => state.channel.uid.value);
@@ -29,12 +26,15 @@ function JoinForm() {
 
   const dispatch = useDispatch();
 
-  const { location, error } = useCurrentLocation();
+  const { handleGps } = useCurrentLocation();
 
+  /**
+   * webgazer 현재 보류중
+   */
   const handleJoin = () => {
     // webgazer.begin();
+    handleGps();
     dispatch(setCall());
-    dispatch(setGps(location));
   };
 
   return (
@@ -53,11 +53,9 @@ function JoinForm() {
               })
             )
           }
-          helperText={
-            isChannelNameError ? "상담소명은 영문, 숫자만 가능합니다." : ""
-          }
+          helperText={isChannelNameError ? "상담소명은 영문만 가능합니다." : ""}
           inputProps={{
-            pattern: "[a-zA-Z0-9]+",
+            pattern: "[a-zA-Z]+",
           }}
           sx={{ width: "60%" }}
         />
@@ -67,7 +65,7 @@ function JoinForm() {
           error={isUidError}
           label="유저 이름"
           value={uid}
-          helperText={isUidError ? "유저 이름은 영문, 숫자만 가능합니다." : ""}
+          helperText={isUidError ? "유저 이름은 영문만 가능합니다." : ""}
           onChange={(e) => {
             console.log(e.target.validity);
             dispatch(
@@ -78,7 +76,7 @@ function JoinForm() {
             );
           }}
           inputProps={{
-            pattern: "[a-zA-Z0-9]+",
+            pattern: "[a-zA-Z]+",
           }}
           sx={{ width: "60%" }}
         />
@@ -90,7 +88,12 @@ function JoinForm() {
             variant="contained"
             color="primary"
             onClick={handleJoin}
-            disabled={isUidError || isChannelNameError}
+            disabled={
+              uid === "" ||
+              channelName === "" ||
+              isUidError ||
+              isChannelNameError
+            }
           >
             상담 시작하기
           </Button>
