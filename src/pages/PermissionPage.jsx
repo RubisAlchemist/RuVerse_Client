@@ -1,29 +1,15 @@
-import { CameraAlt, LocationOn, Mic } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Check } from "@mui/icons-material";
+import { Button, CircularProgress } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useDevicePermission from "../hooks/useDevicePermission";
 
 function PermissionPage() {
   const navigate = useNavigate();
 
-  const PERMISSION = [
-    {
-      key: "camera",
-      icon: <CameraAlt />,
-      name: "카메라",
-    },
-    {
-      key: "location",
-      icon: <LocationOn />,
-      name: "GPS",
-    },
-    {
-      key: "microphone",
-      icon: <Mic />,
-      name: "마이크",
-    },
-  ];
+  const { permissions, handlePermissions, isAllPermissionsGranted } =
+    useDevicePermission();
 
   const handleNavigate = () => navigate("/videocallPage");
 
@@ -33,16 +19,29 @@ function PermissionPage() {
         RuVerse 이용을 진행하려면 아래 권한들이 필요해요.
       </StyledTitle>
       <StyledPermissionWrap>
-        {PERMISSION.map((permission) => (
+        {permissions.map((permission) => (
           <StyledPermission key={permission.key}>
             <StyledName>
               {permission.icon} {permission.name} 권한
             </StyledName>
+            <StyledCheckWrap>
+              {permission.isPermitted ? (
+                <Check />
+              ) : permission.loading ? (
+                <CircularProgress size={20} />
+              ) : (
+                <Button onClick={() => handlePermissions(permission.key)}>
+                  <ButtonFont>권한 설정하기</ButtonFont>
+                </Button>
+              )}
+            </StyledCheckWrap>
           </StyledPermission>
         ))}
       </StyledPermissionWrap>
       <StyledButtonWrap>
-        <Button onClick={handleNavigate}>온라인 상담하러 가기</Button>
+        <Button onClick={handleNavigate} disabled={!isAllPermissionsGranted}>
+          온라인 상담하러 가기
+        </Button>
       </StyledButtonWrap>
     </StyledContainer>
   );
@@ -116,14 +115,9 @@ const StyledCheckWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  width: 120px;
   height: 37px;
   color: #0ba1ae;
-
-  @media (max-width: 768px) {
-    width: 80px;
-    height: 35px;
-  }
 `;
 
 const StyledButtonWrap = styled.div`
@@ -131,5 +125,14 @@ const StyledButtonWrap = styled.div`
 
   @media (max-width: 768px) {
     margin-top: 15px;
+  }
+`;
+
+const ButtonFont = styled.p`
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    padding: 12px;
+    font-size: 12px;
   }
 `;
