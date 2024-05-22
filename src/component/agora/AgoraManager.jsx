@@ -68,7 +68,7 @@ const AgoraManager = ({ config, children }) => {
   const deviceLoading =
     isLoadingMic || isLoadingCam || !localCameraTrack || !localMicrophoneTrack;
 
-  if (false) {
+  if (deviceLoading) {
     return (
       <Box
         component="div"
