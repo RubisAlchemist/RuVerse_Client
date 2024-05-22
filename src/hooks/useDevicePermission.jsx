@@ -8,6 +8,7 @@ const useDevicePermission = () => {
       name: "카메라",
       isPermitted: false,
       loading: false,
+      error: false,
     },
     {
       key: "location",
@@ -15,6 +16,7 @@ const useDevicePermission = () => {
       name: "GPS",
       isPermitted: false,
       loading: false,
+      error: false,
     },
     {
       key: "microphone",
@@ -22,6 +24,7 @@ const useDevicePermission = () => {
       name: "마이크",
       isPermitted: false,
       loading: false,
+      error: false,
     },
   ]);
 
@@ -76,7 +79,14 @@ const useDevicePermission = () => {
         );
       }
     } catch (error) {
-      console.error("Error accessing camera:", error);
+      alert("카메라 권한을 허용해 주세요");
+      setPermissions((prevPermissions) =>
+        prevPermissions.map((permission) =>
+          permission.key === "camera"
+            ? { ...permission, isPermitted: false, loading: false }
+            : permission
+        )
+      );
     }
   };
 
@@ -98,7 +108,14 @@ const useDevicePermission = () => {
         );
       }
     } catch (error) {
-      console.error("Error accessing microphone:", error);
+      alert("마이크 권한을 허용해 주세요");
+      setPermissions((prevPermissions) =>
+        prevPermissions.map((permission) =>
+          permission.key === "microphone"
+            ? { ...permission, isPermitted: false, loading: false }
+            : permission
+        )
+      );
     }
   };
 
@@ -120,7 +137,14 @@ const useDevicePermission = () => {
 
   // 실패했을 경우
   const handleError = (err) => {
-    console.log(err);
+    alert("gps 권한을 허용해 주세요");
+    setPermissions((prevPermissions) =>
+      prevPermissions.map((permission) =>
+        permission.key === "location"
+          ? { ...permission, isPermitted: false, loading: false }
+          : permission
+      )
+    );
   };
   const handleGpsPermission = () => {
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {});
