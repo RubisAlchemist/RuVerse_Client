@@ -98,6 +98,8 @@ const RecordManager = ({ children }) => {
 
     if (screenError !== "" || videoError !== "") {
       console.log("[RECORDER] 녹화 오류 발생");
+      console.log(`[RECORDER] screenError: ${screenError}`);
+      console.log(`[RECORDER] videoError: ${videoError}`);
       setErrorModal(true);
     }
   }, [screenError, videoError]);
@@ -125,7 +127,15 @@ const RecordManager = ({ children }) => {
     >
       {children}
       {recordingStatus ? (
-        <Button variant="outlined" color="error" onClick={stopRecording}>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={stopRecording}
+          sx={{
+            width: "120px",
+            height: "50px",
+          }}
+        >
           녹화종료
         </Button>
       ) : (
@@ -134,7 +144,10 @@ const RecordManager = ({ children }) => {
           color="error"
           onClick={startRecording}
           disabled={uploadFinished}
-          size="large"
+          sx={{
+            width: "120px",
+            height: "50px",
+          }}
         >
           녹화 시작
         </Button>

@@ -27,7 +27,14 @@ const ChannelLeave = () => {
   };
 
   return (
-    <Button onClick={handleLeave} disabled={!isSuccessUpload} size="large">
+    <Button
+      onClick={handleLeave}
+      disabled={!isSuccessUpload}
+      sx={{
+        width: "120px",
+        height: "50px",
+      }}
+    >
       채널 나가기
     </Button>
   );

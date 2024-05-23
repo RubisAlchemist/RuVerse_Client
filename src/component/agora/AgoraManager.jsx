@@ -109,8 +109,8 @@ const AgoraManager = ({ config, children }) => {
       >
         <Box
           sx={{
-            width: { xs: "320px", lg: "500px" },
-            height: { xs: "320px", lg: "410px" },
+            width: { xs: "320px", lg: "650px" },
+            height: { xs: "320px", lg: "500px" },
             margin: "4px 12px",
           }}
         >
@@ -120,8 +120,8 @@ const AgoraManager = ({ config, children }) => {
           <Box
             key={user.uid}
             sx={{
-              width: { xs: "320px", lg: "500px" },
-              height: { xs: "320px", lg: "410px" },
+              width: { xs: "320px", lg: "650px" },
+              height: { xs: "320px", lg: "500px" },
               margin: "4px 12px",
             }}
           >
