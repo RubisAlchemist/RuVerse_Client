@@ -10,7 +10,7 @@ import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
 import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
-import AgoraRtmManager from "../component/agora/AgoraRtmManager.jsx";
+// import AgoraRtmManager from "../component/agora/AgoraRtmManager.jsx";
 
 const VideoCallPage = () => {
   const call = useSelector((state) => state.channel.call);
