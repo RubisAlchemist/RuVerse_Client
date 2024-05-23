@@ -95,7 +95,8 @@ const RecordManager = ({ children }) => {
 
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
-    if (screenError || videoError) {
+
+    if (screenError !== "" || videoError !== "") {
       console.log("[RECORDER] 녹화 오류 발생");
       setErrorModal(true);
     }
@@ -133,6 +134,7 @@ const RecordManager = ({ children }) => {
           color="error"
           onClick={startRecording}
           disabled={uploadFinished}
+          size="large"
         >
           녹화 시작
         </Button>
