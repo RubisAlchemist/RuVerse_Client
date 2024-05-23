@@ -73,7 +73,7 @@ const VideoCallPage = () => {
                 <RecordManager>
                   <UploadToS3Modal />
                 </RecordManager>
-                <VirtualBackground />
+                {/* <VirtualBackground /> */}
               </Box>
             </AgoraManager>
           </Box>
