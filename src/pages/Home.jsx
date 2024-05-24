@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import postureImg from "../images/permissionCheckImage.png";
 import { useNavigate } from "react-router-dom";
 
-export const Home = () => {
+const Home = () => {
   const navigate = useNavigate();
 
   return (
@@ -25,6 +25,8 @@ export const Home = () => {
     </StyledContainer>
   );
 };
+
+export default Home;
 
 const StyledContainer = styled.div`
   display: flex;
