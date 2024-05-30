@@ -47,10 +47,10 @@ const UploadToS3Modal = () => {
    * Logger 데이터
    */
   const gpsData = useSelector((state) => state.logger.gps);
-  const touchData = useSelector((state) => state.channel.touch);
-  const accelGyroData = useSelector((state) => state.channel.accelGyro);
-  const stylusData = useSelector((state) => state.channel.stylus);
-  const eyetrackingData = useSelector((state) => state.channel.eyetracking);
+  const touchData = useSelector((state) => state.logger.touch);
+  const accelGyroData = useSelector((state) => state.logger.accelGyro);
+  const stylusData = useSelector((state) => state.logger.stylus);
+  const eyetrackingData = useSelector((state) => state.logger.eyetracking);
 
   const handleUpload = async () => {
     setIsWait(false);
@@ -65,6 +65,7 @@ const UploadToS3Modal = () => {
       uid,
       channelName,
     };
+    console.log(loggerData);
 
     const loggerDataFile = Buffer.from(JSON.stringify(loggerData).toString());
 
