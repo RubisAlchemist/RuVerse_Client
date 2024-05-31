@@ -50,7 +50,7 @@ const RecordManager = ({ children }) => {
     error: screenError,
   } = useReactMediaRecorder({
     screen: true,
-    audio: false,
+    audio: true,
     blobPropertyBag: {
       type: "video/mp4",
     },
