@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { useReactMediaRecorder } from "react-media-recorder";
 import { RecordProvider } from "../../context/record-context";
@@ -43,6 +43,49 @@ const RecordManager = ({ children }) => {
   });
 
   // 화면 녹화
+  const [screenStatus, setScreenStatus] = useState("");
+  const [screenError, setScreenError] = useState("");
+  const screenRecorderRef = useRef(null);
+
+  const startScreenRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: true,
+      });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "video/webm;codecs=vp9,opus",
+      });
+      mediaRecorder.start();
+      setScreenStatus("recording");
+
+      const chunks = [];
+      mediaRecorder.ondataavailable = (e) => {
+        chunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "video/mp4" });
+        console.log("[RECORDER] screen record stop");
+        console.log(`[RECORDER] result: ${blob}`);
+        setScreenRecordBlob(blob);
+      };
+
+      screenRecorderRef.current = mediaRecorder;
+    } catch (err) {
+      console.error("Error accessing screen and audio stream:", err);
+      setScreenError("permission denied");
+    }
+  };
+
+  const stopScreenRecording = () => {
+    if (screenRecorderRef.current) {
+      console.log(`[screenRecorderRef] 종료`);
+      screenRecorderRef.current.stop();
+      setScreenStatus("");
+    }
+  };
+  /*
   const {
     status: screenStatus,
     startRecording: startScreenRecording,
@@ -64,6 +107,8 @@ const RecordManager = ({ children }) => {
       setScreenRecordBlob(blob);
     },
   });
+
+  */
 
   // 녹화 시작 할 때 webgazer 실행
   const startRecording = () => {
