@@ -55,7 +55,7 @@ const RecordManager = ({ children }) => {
         preferCurrentTab: true,
       });
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: "video/webm;codecs=vp9,opus",
+        mimeType: "video/mp4;codecs=vp9,opus",
       });
       mediaRecorder.start();
       setScreenStatus("recording");
