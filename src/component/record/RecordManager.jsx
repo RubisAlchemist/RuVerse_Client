@@ -52,6 +52,7 @@ const RecordManager = ({ children }) => {
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
         audio: true,
+        preferCurrentTab: true,
       });
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "video/webm;codecs=vp9,opus",
