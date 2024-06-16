@@ -10,9 +10,11 @@ import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
 import JoinButton from "../component/channel/JoinButton.jsx";
 import useCurrentLocation from "../hooks/useCurrentLocation.jsx";
-import { setCall } from "../store/channel/channelSlice.js";
-// import AgoraRtmManager from "../component/agora/AgoraRtmManager.jsx";
+import { setCall, unSetCall } from "../store/channel/channelSlice.js";
 
+import webgazer from "webgazer";
+import { resetLogger } from "../store/logger/loggerSlice.js";
+import { resetUpload } from "../store/upload/uploadSlice.js";
 const VideoCallPage = () => {
   const call = useSelector((state) => state.channel.call);
   const cname = useSelector((state) => state.channel.name.value);
@@ -31,6 +33,18 @@ const VideoCallPage = () => {
     // webgazer.begin();
     handleGps();
     dispatch(setCall());
+  };
+
+  /**
+   * 채널 나가기
+   * 로거, 업로드 스토어 초기화
+   */
+  const handleLeave = () => {
+    webgazer.end();
+
+    dispatch(resetLogger());
+    dispatch(resetUpload());
+    dispatch(unSetCall());
   };
 
   const client = useRTCClient(
@@ -91,7 +105,7 @@ const VideoCallPage = () => {
                   padding: "12px",
                 }}
               >
-                <ChannelLeave />
+                <ChannelLeave onClick={handleLeave} />
                 <RecordManager>
                   <UploadToS3Modal />
                 </RecordManager>
