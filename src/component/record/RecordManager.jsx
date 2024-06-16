@@ -145,11 +145,17 @@ const RecordManager = ({ children }) => {
           onClick={startRecording}
           disabled={uploadFinished}
           sx={{
-            width: "120px",
-            height: "50px",
+            width: { xs: "80px", md: "100px", lg: "120px" },
+            height: { xs: "30px", md: "40px", lg: "50px" },
           }}
         >
-          녹화 시작
+          <Typography
+            sx={{
+              fontSize: { xs: "12px", md: "16px", lg: "18px" },
+            }}
+          >
+            녹화 시작
+          </Typography>
         </Button>
       )}
       <Modal

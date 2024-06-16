@@ -4,22 +4,32 @@ import AgoraRTC, { useConnectionState } from "agora-rtc-react";
 import React, { useEffect, useRef, useState } from "react";
 import demoImage from "../../assets/image.webp";
 import { useAgoraContext } from "../../context/useAgoraContext";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 const VirtualBackground = () => {
   const connectionState = useConnectionState();
   const [isVirtualBackground, setVirtualBackground] = useState(false);
 
   return (
-    <div>
+    <>
       {isVirtualBackground ? (
         <div>
           <Button
             variant="contained"
             color="primary"
             onClick={() => setVirtualBackground(false)}
+            sx={{
+              width: { xs: "80px", md: "100px", lg: "120px" },
+              height: { xs: "30px", md: "40px", lg: "50px" },
+            }}
           >
-            가상 화면 비활성화
+            <Typography
+              sx={{
+                fontSize: { xs: "12px", md: "16px", lg: "18px" },
+              }}
+            >
+              가상화면 끄기
+            </Typography>
           </Button>
           <AgoraExtensionComponent />
         </div>
@@ -27,13 +37,23 @@ const VirtualBackground = () => {
         <Button
           variant="contained"
           color="primary"
+          sx={{
+            width: { xs: "80px", md: "100px", lg: "120px" },
+            height: { xs: "30px", md: "40px", lg: "50px" },
+          }}
           onClick={() => setVirtualBackground(true)}
           disabled={connectionState !== "CONNECTED"}
         >
-          가상 화면 활성화
+          <Typography
+            sx={{
+              fontSize: { xs: "12px", md: "16px", lg: "18px" },
+            }}
+          >
+            가상화면
+          </Typography>
         </Button>
       )}
-    </div>
+    </>
   );
 };
 
