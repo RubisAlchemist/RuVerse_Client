@@ -7,6 +7,8 @@ import { EyetrackingLogger } from "./component/logger/index.js";
 import Home from "./pages/Home.jsx";
 import PermissionPage from "./pages/PermissionPage.jsx";
 import VideoCallPage from "./pages/videocallPage.jsx";
+import ChannelPage from "./pages/ChannelPage.jsx";
+import ChannelEntryPage from "./pages/ChannelEntryPage.jsx";
 
 const theme = createTheme({
   palette: {
@@ -25,7 +27,9 @@ function App() {
           <Routes>
             <Route path="/" exact element={<Home />} />
             <Route path="/permission" element={<PermissionPage />} />
+            <Route path="/channelEntry" element={<ChannelEntryPage />} />
             <Route path="/videocallPage" element={<VideoCallPage />} />
+            <Route path="/channel/:cname/:uid" element={<ChannelPage />} />
           </Routes>
         </Router>
       </ThemeProvider>
