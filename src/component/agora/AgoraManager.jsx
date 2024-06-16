@@ -72,7 +72,7 @@ const AgoraManager = ({ config, children }) => {
   const deviceLoading =
     isLoadingMic || isLoadingCam || !localCameraTrack || !localMicrophoneTrack;
 
-  if (deviceLoading) {
+  if (false) {
     return (
       <Box
         component="div"
@@ -107,26 +107,26 @@ const AgoraManager = ({ config, children }) => {
           flexWrap: "wrap",
           width: "100%",
           height: "90%",
-          justifyContent: "center",
-          alignItems: "center",
         }}
       >
         <Box
           sx={{
-            width: { xs: "320px", lg: "650px" },
-            height: { xs: "320px", lg: "500px" },
-            margin: "4px 12px",
+            width: "100%",
+            height: "100%",
           }}
         >
           <LocalVideoTrack track={localCameraTrack} play={true} />
         </Box>
+
         {remoteUsers.map((user) => (
           <Box
             key={user.uid}
             sx={{
-              width: { xs: "320px", lg: "650px" },
-              height: { xs: "320px", lg: "500px" },
-              margin: "4px 12px",
+              position: "absolute",
+              bottom: "10%",
+              right: 0,
+              width: { xs: "40%", lg: "30%" },
+              height: { xs: "20%", md: "30%", lg: "40%" },
             }}
           >
             <RemoteUser user={user} playVideo playAudio />
@@ -137,7 +137,7 @@ const AgoraManager = ({ config, children }) => {
         sx={{
           display: "flex",
           width: "100%",
-          height: "20%",
+          height: "10%",
         }}
       >
         {children}
