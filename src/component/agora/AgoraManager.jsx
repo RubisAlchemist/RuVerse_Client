@@ -14,15 +14,16 @@ import {
 
 import React, { useEffect } from "react";
 import { AgoraProvider } from "../../context/agora-context";
+import useFetchChannelToken from "../../hooks/useFetchChannelToken";
 
-const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
-const chatId = process.env.REACT_APP_AGORA_CHAT_APP_ID_KEY;
+const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
+// const chatId = process.env.REACT_APP_AGORA_CHAT_APP_ID_KEY;
 
 const AgoraManager = ({ config, children }) => {
-  // const { isLoading, isSuccess, isError, token, error } = useFetchChannelToken(
-  //   config.uid,
-  //   config.channelName
-  // );
+  const { isLoading, isSuccess, isError, token, error } = useFetchChannelToken(
+    config.uid,
+    config.cname
+  );
 
   // const { isSuccess: isSuccessFetchChatToken, token: chatToken } =
   //   useFetchChatToken(config.uid);
@@ -36,12 +37,15 @@ const AgoraManager = ({ config, children }) => {
   // Publish local tracks
   usePublish([localMicrophoneTrack, localCameraTrack]);
 
-  useJoin({
-    appid: appId,
-    uid: config.uid,
-    channel: config.channelName,
-    token: null,
-  });
+  useJoin(
+    {
+      appid: appId,
+      uid: config.uid,
+      channel: config.cname,
+      token,
+    },
+    isSuccess
+  );
 
   useClientEvent(agoraEngine, "user-joined", (user) => {
     console.log("The user", user.uid, " has joined the channel");
