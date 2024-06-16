@@ -80,9 +80,7 @@ function JoinForm() {
             error={isUidError}
             label="유저 이름"
             value={uid}
-            helperText={
-              isUidError ? "유저 이름은 영문과 숫자만 가능합니다." : ""
-            }
+            helperText={isUidError ? "유저 이름은 숫자만 가능합니다." : ""}
             onChange={(e) => {
               console.log(e.target.validity);
               dispatch(
@@ -93,7 +91,7 @@ function JoinForm() {
               );
             }}
             inputProps={{
-              pattern: "[a-zA-Z0-9]+",
+              pattern: "[0-9]+",
             }}
             sx={{ width: "60%" }}
           />
