@@ -15,7 +15,7 @@ const ChannelEntryPage = () => {
 
   const handleJoin = () => {
     handleGps();
-    navigate(`/channel/${cname}/${uid}`);
+    navigate(`/channel/${window.btoa(cname)}/${window.btoa(uid)}`);
   };
 
   return (
