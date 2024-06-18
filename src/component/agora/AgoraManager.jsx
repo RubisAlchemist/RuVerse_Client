@@ -47,8 +47,9 @@ const AgoraManager = ({ config, children }) => {
       uid: config.uid,
       channel: config.cname,
       token: null, // 토큰을 사용하지 않을 경우 null
-    }
+    },
     // fetchTokenSuccess // 토큰 불러오기 성공한 뒤 join
+    true
   );
 
   useClientEvent(agoraEngine, "user-joined", (user) => {
