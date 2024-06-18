@@ -114,30 +114,33 @@ const AgoraManager = ({ config, children }) => {
           height: "90%",
         }}
       >
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <LocalVideoTrack track={localCameraTrack} play={true} />
-        </Box>
-
         {remoteUsers.map((user) => (
           <Box
             key={user.uid}
             sx={{
-              position: "absolute",
-              bottom: "10%",
-              right: 0,
-              background: "black",
-              width: { xs: "35%", lg: "25%" },
-              height: { xs: "20%", md: "25%", lg: "30%" },
+              width: "100%",
+              height: "100%",
             }}
           >
             <RemoteUser user={user} playVideo playAudio />
           </Box>
         ))}
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: "10%",
+            right: 0,
+            background: "black",
+            width: { xs: "35%", lg: "25%" },
+            height: { xs: "20%", md: "25%", lg: "30%" },
+          }}
+        >
+          <LocalVideoTrack
+            track={localCameraTrack}
+            play={true}
+            autoPlay={true}
+          />
+        </Box>
       </Box>
       <Box
         sx={{
