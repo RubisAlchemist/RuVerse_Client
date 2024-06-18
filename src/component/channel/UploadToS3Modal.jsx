@@ -217,7 +217,7 @@ const UploadToS3Modal = () => {
     videoKey,
     screenKey
   ) => {
-    const uploadURL = `/${serverAddress}upload`;
+    const uploadURL = `${serverAddress}/upload`;
 
     console.log(uploadURL);
 
