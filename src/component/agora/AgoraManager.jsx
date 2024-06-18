@@ -135,7 +135,11 @@ const AgoraManager = ({ config, children }) => {
             height: { xs: "20%", md: "25%", lg: "30%" },
           }}
         >
-          <LocalVideoTrack track={localCameraTrack} play={true} />
+          <LocalVideoTrack
+            track={localCameraTrack}
+            play={true}
+            autoPlay={true}
+          />
         </Box>
       </Box>
       <Box
