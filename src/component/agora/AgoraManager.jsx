@@ -20,12 +20,12 @@ const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
 
 const AgoraManager = ({ config, children }) => {
   // 서버에서 auth token 불러오기
-  const {
-    isLoading,
-    isSuccess: fetchTokenSuccess,
-    isError: tokenFetchError,
-    token,
-  } = useFetchChannelToken(config.uid, config.cname);
+  // const {
+  //   isLoading,
+  //   isSuccess: fetchTokenSuccess,
+  //   isError: tokenFetchError,
+  //   token,
+  // } = useFetchChannelToken(config.uid, config.cname);
 
   const agoraEngine = useRTCClient();
   // 로컬 사용자 카메라 트랙
@@ -46,9 +46,9 @@ const AgoraManager = ({ config, children }) => {
       appid: appId,
       uid: config.uid,
       channel: config.cname,
-      token, // 토큰을 사용하지 않을 경우 null
-    },
-    fetchTokenSuccess // 토큰 불러오기 성공한 뒤 join
+      token: null, // 토큰을 사용하지 않을 경우 null
+    }
+    // fetchTokenSuccess // 토큰 불러오기 성공한 뒤 join
   );
 
   useClientEvent(agoraEngine, "user-joined", (user) => {
