@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import "agora-chat-uikit/style.css";
 import {
   LocalVideoTrack,
@@ -14,34 +14,42 @@ import {
 
 import React, { useEffect } from "react";
 import { AgoraProvider } from "../../context/agora-context";
+import useFetchChannelToken from "../../hooks/useFetchChannelToken";
 
-const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
-const chatId = process.env.REACT_APP_AGORA_CHAT_APP_ID_KEY;
+const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
 
 const AgoraManager = ({ config, children }) => {
-  // const { isLoading, isSuccess, isError, token, error } = useFetchChannelToken(
-  //   config.uid,
-  //   config.channelName
-  // );
-
-  // const { isSuccess: isSuccessFetchChatToken, token: chatToken } =
-  //   useFetchChatToken(config.uid);
+  // 서버에서 auth token 불러오기
+  const {
+    isLoading,
+    isSuccess: fetchTokenSuccess,
+    isError: tokenFetchError,
+    token,
+  } = useFetchChannelToken(config.uid, config.cname);
 
   const agoraEngine = useRTCClient();
+  // 로컬 사용자 카메라 트랙
   const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
+  // 로컬 사용자 마이크 트랙
   const { isLoading: isLoadingMic, localMicrophoneTrack } =
     useLocalMicrophoneTrack();
+
+  // 채널에 연결된 상대방들
   const remoteUsers = useRemoteUsers();
 
-  // Publish local tracks
+  // 로컬 사용자 비디오, 마이크 상대방에게 전달하기
   usePublish([localMicrophoneTrack, localCameraTrack]);
 
-  useJoin({
-    appid: appId,
-    uid: config.uid,
-    channel: config.channelName,
-    token: null,
-  });
+  // 채널에 입장하는 훅
+  useJoin(
+    {
+      appid: appId,
+      uid: config.uid,
+      channel: config.cname,
+      token, // 토큰을 사용하지 않을 경우 null
+    },
+    fetchTokenSuccess // 토큰 불러오기 성공한 뒤 join
+  );
 
   useClientEvent(agoraEngine, "user-joined", (user) => {
     console.log("The user", user.uid, " has joined the channel");
@@ -59,6 +67,7 @@ const AgoraManager = ({ config, children }) => {
 
   useEffect(() => {
     return () => {
+      // 채널에서 나갈때 카메라, 마이크 트랙 닫기
       localCameraTrack?.close();
       localMicrophoneTrack?.close();
     };
@@ -103,26 +112,27 @@ const AgoraManager = ({ config, children }) => {
           flexWrap: "wrap",
           width: "100%",
           height: "90%",
-          justifyContent: "center",
-          alignItems: "center",
         }}
       >
         <Box
           sx={{
-            width: { xs: "320px", lg: "650px" },
-            height: { xs: "320px", lg: "500px" },
-            margin: "4px 12px",
+            width: "100%",
+            height: "100%",
           }}
         >
           <LocalVideoTrack track={localCameraTrack} play={true} />
         </Box>
+
         {remoteUsers.map((user) => (
           <Box
             key={user.uid}
             sx={{
-              width: { xs: "320px", lg: "650px" },
-              height: { xs: "320px", lg: "500px" },
-              margin: "4px 12px",
+              position: "absolute",
+              bottom: "10%",
+              right: 0,
+              background: "black",
+              width: { xs: "35%", lg: "25%" },
+              height: { xs: "20%", md: "25%", lg: "30%" },
             }}
           >
             <RemoteUser user={user} playVideo playAudio />
@@ -133,7 +143,7 @@ const AgoraManager = ({ config, children }) => {
         sx={{
           display: "flex",
           width: "100%",
-          height: "20%",
+          height: "10%",
         }}
       >
         {children}

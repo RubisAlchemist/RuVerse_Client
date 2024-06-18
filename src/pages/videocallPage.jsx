@@ -1,25 +1,50 @@
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import AgoraRTC, { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 import React from "react";
-import { useSelector } from "react-redux";
-import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 import AgoraManager from "../component/agora/AgoraManager.jsx";
-import VirtualBackground from "../component/agora/VirtualBackground.jsx";
 import ChannelLeave from "../component/channel/ChannelLeave.jsx";
 import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
 import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
-// import AgoraRtmManager from "../component/agora/AgoraRtmManager.jsx";
+import JoinButton from "../component/channel/JoinButton.jsx";
+import useCurrentLocation from "../hooks/useCurrentLocation.jsx";
+import { setCall, unSetCall } from "../store/channel/channelSlice.js";
 
+import webgazer from "webgazer";
+import { resetLogger } from "../store/logger/loggerSlice.js";
+import { resetUpload } from "../store/upload/uploadSlice.js";
 const VideoCallPage = () => {
   const call = useSelector((state) => state.channel.call);
-  const channelName = useSelector((state) => state.channel.name.value);
+  const cname = useSelector((state) => state.channel.name.value);
   const uid = useSelector((state) => state.channel.uid.value);
 
   const config = {
-    channelName,
+    cname,
     uid,
+  };
+
+  const dispatch = useDispatch();
+
+  const { handleGps } = useCurrentLocation();
+
+  const handleJoin = () => {
+    // webgazer.begin();
+    handleGps();
+    dispatch(setCall());
+  };
+
+  /**
+   * 채널 나가기
+   * 로거, 업로드 스토어 초기화
+   */
+  const handleLeave = () => {
+    webgazer.end();
+
+    dispatch(resetLogger());
+    dispatch(resetUpload());
+    dispatch(unSetCall());
   };
 
   const client = useRTCClient(
@@ -29,14 +54,26 @@ const VideoCallPage = () => {
   if (!call) {
     return (
       <Box
-        component="div"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        p={4}
+        sx={{
+          width: "100%",
+          height: "100vh",
+          border: "1px solid blue",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        <JoinForm />
+        <Stack
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <JoinForm />
+          <JoinButton onClick={handleJoin} />
+        </Stack>
       </Box>
     );
   }
@@ -54,7 +91,6 @@ const VideoCallPage = () => {
               height: "100vh",
               display: "flex",
               flexDirection: "column",
-              border: "1px solid blue",
             }}
           >
             <AgoraManager config={config}>
@@ -69,7 +105,7 @@ const VideoCallPage = () => {
                   padding: "12px",
                 }}
               >
-                <ChannelLeave />
+                <ChannelLeave onClick={handleLeave} />
                 <RecordManager>
                   <UploadToS3Modal />
                 </RecordManager>

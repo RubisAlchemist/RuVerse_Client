@@ -1,21 +1,12 @@
-import {
-  Box,
-  Button,
-  Container,
-  ImageList,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, Container, Stack, TextField } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import useCurrentLocation from "../../hooks/useCurrentLocation";
 import "./joinForm.css";
 
 import VideoCallImage from "../../images/videocallImage.png";
 import {
   onChangeChannelName,
   onChangeUid,
-  setCall,
 } from "../../store/channel/channelSlice";
 
 function JoinForm() {
@@ -26,25 +17,9 @@ function JoinForm() {
 
   const dispatch = useDispatch();
 
-  const { handleGps } = useCurrentLocation();
-
-  /**
-   * webgazer 현재 보류중
-   */
-  const handleJoin = () => {
-    // webgazer.begin();
-    handleGps();
-    dispatch(setCall());
-  };
-
   return (
     <Container maxWidth="md" className="responsive-container">
-      <Stack
-        spacing={2}
-        alignItems="center"
-        justifyContent="center"
-        height="100vh"
-      >
+      <Stack spacing={2} alignItems="center" justifyContent="center">
         <Box
           display="flex"
           flexDirection="column"
@@ -80,9 +55,7 @@ function JoinForm() {
             error={isUidError}
             label="유저 이름"
             value={uid}
-            helperText={
-              isUidError ? "유저 이름은 영문과 숫자만 가능합니다." : ""
-            }
+            helperText={isUidError ? "유저 이름은 숫자만 가능합니다." : ""}
             onChange={(e) => {
               console.log(e.target.validity);
               dispatch(
@@ -93,7 +66,7 @@ function JoinForm() {
               );
             }}
             inputProps={{
-              pattern: "[a-zA-Z0-9]+",
+              pattern: "[0-9]+",
             }}
             sx={{ width: "60%" }}
           />
@@ -110,22 +83,6 @@ function JoinForm() {
             alt=""
             style={{ objectFit: "cover", width: "100%", height: "100%" }}
           />
-        </Box>
-
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleJoin}
-            disabled={
-              uid === "" ||
-              channelName === "" ||
-              isUidError ||
-              isChannelNameError
-            }
-          >
-            상담 시작하기
-          </Button>
         </Box>
       </Stack>
     </Container>

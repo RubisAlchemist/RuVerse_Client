@@ -4,22 +4,32 @@ import AgoraRTC, { useConnectionState } from "agora-rtc-react";
 import React, { useEffect, useRef, useState } from "react";
 import demoImage from "../../assets/image.webp";
 import { useAgoraContext } from "../../context/useAgoraContext";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 const VirtualBackground = () => {
   const connectionState = useConnectionState();
   const [isVirtualBackground, setVirtualBackground] = useState(false);
 
   return (
-    <div>
+    <>
       {isVirtualBackground ? (
         <div>
           <Button
             variant="contained"
             color="primary"
             onClick={() => setVirtualBackground(false)}
+            sx={{
+              width: { xs: "80px", md: "100px", lg: "120px" },
+              height: { xs: "30px", md: "40px", lg: "50px" },
+            }}
           >
-            가상 화면 비활성화
+            <Typography
+              sx={{
+                fontSize: { xs: "12px", md: "16px", lg: "18px" },
+              }}
+            >
+              가상화면 끄기
+            </Typography>
           </Button>
           <AgoraExtensionComponent />
         </div>
@@ -27,13 +37,23 @@ const VirtualBackground = () => {
         <Button
           variant="contained"
           color="primary"
+          sx={{
+            width: { xs: "80px", md: "100px", lg: "120px" },
+            height: { xs: "30px", md: "40px", lg: "50px" },
+          }}
           onClick={() => setVirtualBackground(true)}
           disabled={connectionState !== "CONNECTED"}
         >
-          가상 화면 활성화
+          <Typography
+            sx={{
+              fontSize: { xs: "12px", md: "16px", lg: "18px" },
+            }}
+          >
+            가상화면
+          </Typography>
         </Button>
       )}
-    </div>
+    </>
   );
 };
 
@@ -45,11 +65,11 @@ function AgoraExtensionComponent() {
   const processor = useRef();
 
   const [selectedOption, setSelectedOption] = useState("");
+  const [customImage, setCustomImage] = useState(null);
 
   const checkCompatibility = () => {
     if (!extension.current.checkCompatibility()) {
       console.error("Virtual background not supported on this platform.");
-      // You might consider providing more information or guidance here.
     }
   };
 
@@ -57,12 +77,17 @@ function AgoraExtensionComponent() {
     processor.current?.setOptions({ type: "color", color: "#00ff00" });
   };
 
-  const imageBackground = () => {
-    const image = new Image();
-    image.onload = () => {
-      processor.current?.setOptions({ type: "img", source: image });
+  const imageBackground = (imageFile) => {
+    console.log("Setting image background with image:", imageFile);
+    const img = new Image();
+    img.onload = () => {
+      console.log("Image loaded successfully");
+      processor.current?.setOptions({ type: "img", source: img });
     };
-    image.src = demoImage;
+    img.onerror = (error) => {
+      console.error("Error loading image:", error);
+    };
+    img.src = URL.createObjectURL(imageFile);
   };
 
   const blurBackground = () => {
@@ -105,12 +130,12 @@ function AgoraExtensionComponent() {
   }, [agoraContext.localCameraTrack]);
 
   const changeBackground = (selectedOption) => {
+    console.log("Selected background option:", selectedOption);
     if (!processor.current) {
       console.error("Virtual background processor not initialized");
       return;
     }
 
-    // Apply selected option settings here
     switch (selectedOption) {
       case "color":
         setSelectedOption(selectedOption);
@@ -122,10 +147,25 @@ function AgoraExtensionComponent() {
         break;
       case "image":
         setSelectedOption(selectedOption);
-        imageBackground();
+        if (customImage) {
+          imageBackground(customImage);
+        } else {
+          console.error("No custom image selected");
+        }
         break;
       default:
         console.error("Invalid option:", selectedOption);
+    }
+  };
+
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      console.log("Image uploaded:", file);
+      setCustomImage(file);
+      if (selectedOption === "image") {
+        imageBackground(file);
+      }
     }
   };
 
@@ -133,13 +173,19 @@ function AgoraExtensionComponent() {
     <div>
       <select
         value={selectedOption}
-        onChange={(event) => changeBackground(event.target.value)}
+        onChange={(event) => {
+          setSelectedOption(event.target.value);
+          changeBackground(event.target.value);
+        }}
         disabled={connectionState === "DISCONNECTED"}
       >
         <option value="color">Color</option>
         <option value="blur">Blur</option>
         <option value="image">Image</option>
       </select>
+      {selectedOption === "image" && (
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
+      )}
     </div>
   );
 }
