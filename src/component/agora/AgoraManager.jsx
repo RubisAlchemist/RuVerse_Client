@@ -16,7 +16,7 @@ import React, { useEffect } from "react";
 import { AgoraProvider } from "../../context/agora-context";
 import useFetchChannelToken from "../../hooks/useFetchChannelToken";
 
-const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY;
+const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
 
 const AgoraManager = ({ config, children }) => {
   // 서버에서 auth token 불러오기
