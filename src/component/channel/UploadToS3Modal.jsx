@@ -44,6 +44,12 @@ const UploadToS3Modal = () => {
   const uid = useSelector((state) => state.channel.uid.value);
 
   /**
+   * 아고라 업로드 정보
+   */
+  const resourceId = useSelector((state) => state.agora.resourceId);
+  const sid = useSelector((state) => state.agora.sid);
+
+  /**
    * Logger 데이터
    */
   const gpsData = useSelector((state) => state.logger.gps);
@@ -134,7 +140,15 @@ const UploadToS3Modal = () => {
       await uploadToS3SmallSize(screenKey, screenFile);
     }
 
-    await uploadDB(channelName, uid, loggerKey, videoKey, screenKey);
+    const agoraScreenKey = `${sid}_${channelName}_0.mp4`;
+    await uploadDB(
+      channelName,
+      uid,
+      loggerKey,
+      videoKey,
+      screenKey,
+      agoraScreenKey
+    );
 
     // 업로드 완료한 경우
     dispatch(uploadSuccess());
@@ -215,9 +229,10 @@ const UploadToS3Modal = () => {
     uid,
     loggerDataKey,
     videoKey,
-    screenKey
+    screenKey,
+    agoraScreenKey
   ) => {
-    const uploadURL = `${serverAddress}/upload`;
+    const uploadURL = `${serverAddress}upload`;
 
     console.log(uploadURL);
 
@@ -228,6 +243,7 @@ const UploadToS3Modal = () => {
       loggerDataKey,
       videoKey,
       screenKey,
+      agoraScreenKey,
     };
 
     try {
