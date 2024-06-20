@@ -282,8 +282,8 @@ const RecordManager2 = ({ children }) => {
       const response = await agoraClient.post(
         `/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/web/stop`,
         {
-          cname,
-          uid,
+          cname: window.atob(cname), // 녹화할 채널 이름
+          uid: window.atob(uid), // 녹화 요청한 유저 uid
           clientRequest: {},
         }
       );
@@ -311,13 +311,13 @@ const RecordManager2 = ({ children }) => {
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
 
-    if (screenError !== "" || videoError !== "") {
+    if (screenError !== "" || videoError !== "" || !isError) {
       console.log("[RECORDER] 녹화 오류 발생");
       console.log(`[RECORDER] screenError: ${screenError}`);
       console.log(`[RECORDER] videoError: ${videoError}`);
       setErrorModal(true);
     }
-  }, [screenError, videoError]);
+  }, [screenError, videoError, isError]);
 
   const handleRecordError = () => {
     if (videoStatus === "recording") {
@@ -325,7 +325,7 @@ const RecordManager2 = ({ children }) => {
     }
 
     if (screenStatus === "recording") {
-      stopVideoRecording();
+      stopScreenRecording();
     }
 
     webgazer.end();
