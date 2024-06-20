@@ -311,13 +311,13 @@ const RecordManager2 = ({ children }) => {
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
 
-    if (screenError !== "" || videoError !== "") {
+    if (screenError !== "" || videoError !== "" || !isError) {
       console.log("[RECORDER] 녹화 오류 발생");
       console.log(`[RECORDER] screenError: ${screenError}`);
       console.log(`[RECORDER] videoError: ${videoError}`);
       setErrorModal(true);
     }
-  }, [screenError, videoError]);
+  }, [screenError, videoError, isError]);
 
   const handleRecordError = () => {
     if (videoStatus === "recording") {
@@ -325,7 +325,7 @@ const RecordManager2 = ({ children }) => {
     }
 
     if (screenStatus === "recording") {
-      stopVideoRecording();
+      stopScreenRecording();
     }
 
     webgazer.end();
