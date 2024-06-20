@@ -115,17 +115,19 @@ const AgoraManager = ({ config, children }) => {
           height: "90%",
         }}
       >
-        {remoteUsers.map((user) => (
-          <Box
-            key={user.uid}
-            sx={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <RemoteUser user={user} playVideo playAudio />
-          </Box>
-        ))}
+        {remoteUsers
+          .filter((user) => user.hasVideo)
+          .map((user) => (
+            <Box
+              key={user.uid}
+              sx={{
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <RemoteUser user={user} playVideo playAudio />
+            </Box>
+          ))}
         <Box
           sx={{
             position: "absolute",

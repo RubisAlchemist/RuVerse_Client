@@ -7,6 +7,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { openModal } from "../../store/upload/uploadSlice";
 import webgazer from "webgazer";
+import RecordButton from "./RecordButton";
+import RecordResultModal from "./RecordResultModal";
 
 const RecordManager = ({ children }) => {
   // 업로드 할 비디오, 화면 녹화 블롭 파일
@@ -127,99 +129,17 @@ const RecordManager = ({ children }) => {
     >
       {children}
       {recordingStatus ? (
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={stopRecording}
-          sx={{
-            width: "120px",
-            height: "50px",
-          }}
-        >
-          녹화종료
-        </Button>
+        <RecordButton variant="outlined" color="error" onClick={stopRecording}>
+          녹화 종료
+        </RecordButton>
       ) : (
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={startRecording}
-          disabled={uploadFinished}
-          sx={{
-            width: { xs: "80px", md: "100px", lg: "120px" },
-            height: { xs: "30px", md: "40px", lg: "50px" },
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: { xs: "12px", md: "16px", lg: "18px" },
-            }}
-          >
-            녹화 시작
-          </Typography>
-        </Button>
+        <RecordButton variant="outlined" color="error" onClick={startRecording}>
+          녹화 시작
+        </RecordButton>
       )}
-      <Modal
-        open={errorModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        onClose={handleRecordError}
-      >
-        <Box sx={style}>
-          <Typography variant="h5">녹화오류</Typography>
-
-          <Divider />
-          <Box p={2}>
-            {videoError && (
-              <Typography
-                id="modal-modal-title"
-                variant="caption"
-                component="p"
-                color="crimson"
-              >
-                비디오 녹화 오류: {videoError}
-              </Typography>
-            )}
-            {screenError && (
-              <Typography
-                id="modal-modal-title"
-                variant="caption"
-                component="p"
-                color="crimson"
-              >
-                화면 녹화 오류: {screenError}
-              </Typography>
-            )}
-          </Box>
-          <Typography variant="overline" color="crimson">
-            녹화 버튼을 다시 눌러주세요.
-          </Typography>
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={handleRecordError}
-            >
-              확인
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+      <RecordResultModal open={errorModal} onClose={handleRecordError} />
     </RecordProvider>
   );
-};
-
-const style = {
-  display: "flex",
-  flexDirection: "column",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
 };
 
 export default RecordManager;

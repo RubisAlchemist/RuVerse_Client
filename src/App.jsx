@@ -9,6 +9,7 @@ import PermissionPage from "./pages/PermissionPage.jsx";
 import VideoCallPage from "./pages/videocallPage.jsx";
 import ChannelPage from "./pages/ChannelPage.jsx";
 import ChannelEntryPage from "./pages/ChannelEntryPage.jsx";
+import AgoraRecordPage from "./pages/AgoraRecordPage.jsx";
 
 const theme = createTheme({
   palette: {
@@ -30,6 +31,10 @@ function App() {
             <Route path="/channelEntry" element={<ChannelEntryPage />} />
             <Route path="/videocallPage" element={<VideoCallPage />} />
             <Route path="/channel/:cname/:uid" element={<ChannelPage />} />
+            <Route
+              path="/channel/:cname/:uid/record"
+              element={<AgoraRecordPage />}
+            />
           </Routes>
         </Router>
       </ThemeProvider>

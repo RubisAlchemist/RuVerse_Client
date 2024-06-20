@@ -7,10 +7,10 @@ import VirtualBackground from "../component/agora/VirtualBackground";
 import ChannelLeave from "../component/channel/ChannelLeave";
 import UploadToS3Modal from "../component/channel/UploadToS3Modal";
 import { StylusLogger, TouchLogger } from "../component/logger";
-import RecordManager from "../component/record/RecordManager";
 
 import { useDispatch } from "react-redux";
 import webgazer from "webgazer";
+import RecordManager2 from "../component/record/RecordManager2";
 import { resetLogger } from "../store/logger/loggerSlice";
 import { resetUpload } from "../store/upload/uploadSlice";
 const ChannelPage = () => {
@@ -104,9 +104,10 @@ const ChannelPage = () => {
                 }}
               >
                 <ChannelLeave onClick={handleLeave} />
-                <RecordManager>
+
+                <RecordManager2>
                   <UploadToS3Modal />
-                </RecordManager>
+                </RecordManager2>
                 <VirtualBackground />
               </Box>
             </AgoraManager>
