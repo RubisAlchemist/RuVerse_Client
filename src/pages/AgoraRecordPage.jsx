@@ -28,18 +28,18 @@ const AgoraRecordPage = () => {
       // localUser uid base64 decode
       const localUid = window.atob(searchParams.get("local"));
       // remoteUser uid base64 decode
-      const remoteUid = window.atob(searchParams.get("remote"));
+      // const remoteUid = window.atob(searchParams.get("remote"));
       console.log(cname);
       console.log(uid);
-      console.log(localUid);
-      console.log(remoteUid);
+      console.log(`[LOCAL UID] ${localUid}`);
+      // console.log(remoteUid);
 
       // 복호화한 값들이 정규식과 일치하지 않을 경우 Error
       if (
         !cnameRegex.test(cname) ||
         !uidRegex.test(uid) ||
-        !uidRegex.test(localUid) ||
-        !uidRegex.test(remoteUid)
+        !uidRegex.test(localUid)
+        // !uidRegex.test(remoteUid)
       ) {
         setError(true);
         return null;
@@ -50,7 +50,7 @@ const AgoraRecordPage = () => {
         cname,
         uid,
         localUid,
-        remoteUid,
+        // remoteUid,
       };
     } catch (err) {
       console.log(err);

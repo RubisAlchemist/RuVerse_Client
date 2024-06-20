@@ -26,7 +26,8 @@ const RecordManager2 = ({ children }) => {
 
   const [errorModal, setErrorModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setError] = useState(null);
+  const [error, setError] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   // 비디오 오디오 녹화
   const {
@@ -96,13 +97,14 @@ const RecordManager2 = ({ children }) => {
         setIsLoading(false);
       } catch (error) {
         setErrorModal(true);
-        setError(error.message);
+        setIsError(true);
         setIsLoading(false);
         setError(error.message);
       }
     } catch (error) {
       setErrorModal(true);
       setError(error.message);
+      setIsError(true);
       setIsLoading(false);
       setError(error.message);
     }
@@ -311,7 +313,7 @@ const RecordManager2 = ({ children }) => {
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
 
-    if (screenError !== "" || videoError !== "" || !isError) {
+    if (screenError !== "" || videoError !== "" || isError) {
       console.log("[RECORDER] 녹화 오류 발생");
       console.log(`[RECORDER] screenError: ${screenError}`);
       console.log(`[RECORDER] videoError: ${videoError}`);
