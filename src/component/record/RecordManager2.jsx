@@ -282,8 +282,8 @@ const RecordManager2 = ({ children }) => {
       const response = await agoraClient.post(
         `/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/web/stop`,
         {
-          cname,
-          uid,
+          cname: window.atob(cname), // 녹화할 채널 이름
+          uid: window.atob(uid), // 녹화 요청한 유저 uid
           clientRequest: {},
         }
       );
