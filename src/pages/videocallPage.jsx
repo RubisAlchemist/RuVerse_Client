@@ -4,11 +4,11 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AgoraManager from "../component/agora/AgoraManager.jsx";
 import ChannelLeave from "../component/channel/ChannelLeave.jsx";
+import JoinButton from "../component/channel/JoinButton.jsx";
 import UploadToS3Modal from "../component/channel/UploadToS3Modal.jsx";
 import JoinForm from "../component/form/JoinForm.jsx";
 import { StylusLogger, TouchLogger } from "../component/logger/index.js";
 import RecordManager from "../component/record/RecordManager.jsx";
-import JoinButton from "../component/channel/JoinButton.jsx";
 import useCurrentLocation from "../hooks/useCurrentLocation.jsx";
 import { setCall, unSetCall } from "../store/channel/channelSlice.js";
 
