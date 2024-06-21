@@ -1,14 +1,13 @@
-import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
-import { useReactMediaRecorder } from "react-media-recorder";
-import { RecordProvider } from "../../context/record-context";
 import { useState } from "react";
+import { useReactMediaRecorder } from "react-media-recorder";
 import { useDispatch, useSelector } from "react-redux";
-import { openModal } from "../../store/upload/uploadSlice";
 import webgazer from "webgazer";
+import { RecordProvider } from "../../context/record-context";
+import { openModal } from "../../store/upload/uploadSlice";
 import RecordButton from "./RecordButton";
-import RecordResultModal from "./RecordResultModal";
+import RecordErrorModal from "./RecordErrorModal";
 
 const RecordManager = ({ children }) => {
   // 업로드 할 비디오, 화면 녹화 블롭 파일
@@ -17,9 +16,6 @@ const RecordManager = ({ children }) => {
 
   const [errorModal, setErrorModal] = useState(false);
 
-  const uploadFinished = useSelector(
-    (state) => state.upload.status.UPLOAD_SUCCESS
-  );
   const dispatch = useDispatch();
 
   // 비디오 오디오 녹화
@@ -137,7 +133,7 @@ const RecordManager = ({ children }) => {
           녹화 시작
         </RecordButton>
       )}
-      <RecordResultModal open={errorModal} onClose={handleRecordError} />
+      <RecordErrorModal open={errorModal} onClose={handleRecordError} />
     </RecordProvider>
   );
 };

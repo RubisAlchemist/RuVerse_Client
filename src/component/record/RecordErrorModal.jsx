@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import React from "react";
 
-const RecordResultModal = ({
+const RecordErrorModal = ({
   open,
   onClose,
   videoError,
@@ -77,4 +77,4 @@ const RecordResultModal = ({
   );
 };
 
-export default RecordResultModal;
+export default RecordErrorModal;
