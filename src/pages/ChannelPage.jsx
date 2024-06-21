@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import AgoraManager from "../component/agora/AgoraManager";
 import VirtualBackground from "../component/agora/VirtualBackground";
 import ChannelLeave from "../component/channel/ChannelLeave";
-import UploadToS3Modal from "../component/channel/UploadToS3Modal";
+import UploadToS3Modal2 from "../component/channel/UploadToS3Modal2";
 import { StylusLogger, TouchLogger } from "../component/logger";
 
 import { useDispatch } from "react-redux";
@@ -106,7 +106,7 @@ const ChannelPage = () => {
                 <ChannelLeave onClick={handleLeave} />
 
                 <RecordManager2>
-                  <UploadToS3Modal />
+                  <UploadToS3Modal2 />
                 </RecordManager2>
                 <VirtualBackground />
               </Box>
