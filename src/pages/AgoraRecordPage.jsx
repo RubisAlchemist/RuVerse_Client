@@ -7,6 +7,9 @@ import AgoraRTC, { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 const AgoraRecordPage = () => {
   const { cname: cnameBase64, uid: uidBase64 } = useParams();
 
+  /**
+   * @param {string} local - 녹화 요청을 보낸 사용자의 uid
+   */
   const [searchParams] = useSearchParams();
 
   const [isError, setError] = useState(false);
@@ -24,6 +27,7 @@ const AgoraRecordPage = () => {
       // cname base64 decode
       const cname = window.atob(cnameBase64);
       // uid base64 decode
+
       const uid = window.atob(uidBase64);
       // localUser uid base64 decode
       const localUid = window.atob(searchParams.get("local"));
