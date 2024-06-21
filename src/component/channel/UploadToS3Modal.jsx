@@ -1,3 +1,6 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import UploadIcon from "@mui/icons-material/Upload";
 import {
   Box,
   Button,
@@ -6,21 +9,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import UploadIcon from "@mui/icons-material/Upload";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
 import { Buffer } from "buffer";
-import { useState } from "react";
-import { useContext } from "react";
+import React, { useContext, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RecordContext } from "../../context/record-context";
-import {
-  closeModal,
-  startUpload,
-  uploadSuccess,
-} from "../../store/upload/uploadSlice";
-import { unSetCall } from "../../store/channel/channelSlice";
+import { closeModal, uploadSuccess } from "../../store/upload/uploadSlice";
+import { agoraClient } from "../../apis/agora";
 
 const REGION = process.env.REACT_APP_REGION;
 const ACCESS_KEY_ID = process.env.REACT_APP_ACCESS_KEY_ID;
@@ -29,7 +23,7 @@ const BUCKET_NAME = process.env.REACT_APP_BUCKET_NAME;
 const serverAddress = process.env.REACT_APP_BACKEND_ADDRESS_DEV;
 
 const UploadToS3Modal = () => {
-  const { screenRecordBlob, videoRecordBlob } = useContext(RecordContext);
+  const { videoRecordBlob } = useContext(RecordContext);
 
   const modal = useSelector((state) => state.upload.modal);
 
@@ -78,15 +72,7 @@ const UploadToS3Modal = () => {
     const loggerDataSizeMB = loggerDataFile.length / (1024 * 1024);
     console.log(`[HANDLE_UPLOAD] logger data size = ${loggerDataSizeMB}`);
 
-    const loggerKey =
-      channelName +
-      "_" +
-      uid +
-      "_" +
-      "logger_Data" +
-      "_" +
-      new Date().toISOString() +
-      ".json";
+    const loggerKey = `${channelName}_${uid}_logger_Data_${new Date().toISOString()}.json`;
 
     if (loggerDataSizeMB >= 200) {
       await uploadToS3(loggerKey, loggerDataFile);
@@ -96,14 +82,7 @@ const UploadToS3Modal = () => {
     // 비디오 업로드
     const videoRecordSizeMB = videoRecordBlob.size / (1024 * 1024);
 
-    const videoKey =
-      channelName +
-      "_" +
-      uid +
-      "_" +
-      "비디오" +
-      new Date().toISOString() +
-      ".mp4";
+    const videoKey = `${channelName}_${uid}_비디오${new Date().toISOString()}.mp4`;
 
     let videoFile = new File([videoRecordBlob], videoKey, {
       type: "video/mp4",
@@ -117,9 +96,11 @@ const UploadToS3Modal = () => {
     }
 
     // 스크린 업로드
-    console.log(`[HANDLE_UPLOAD] screen blob size = ${screenRecordBlob.size}`);
-    const screenRecordSizeMB = videoRecordBlob.size / (1024 * 1024);
+    // console.log(`[HANDLE_UPLOAD] screen blob size = ${screenRecordBlob.size}`);
+    // const screenRecordSizeMB = videoRecordBlob.size / (1024 * 1024);
 
+    /*
+    스크린 녹화는 아고라 cloud recording 사용함에 따라 주석 처리
     const screenKey =
       channelName +
       "_" +
@@ -128,7 +109,7 @@ const UploadToS3Modal = () => {
       "스크린" +
       new Date().toISOString() +
       ".mp4";
-
+    
     let screenFile = new File([screenRecordBlob], screenKey, {
       type: "video/mp4",
       lastModified: Date.now(),
@@ -138,17 +119,26 @@ const UploadToS3Modal = () => {
       await uploadToS3(screenKey, screenFile);
     } else {
       await uploadToS3SmallSize(screenKey, screenFile);
+  }
+  
+  */
+
+    // 아고라 네이밍 컨벤션에 따른 스크린 녹화 키 설정
+    // https://docs.agora.io/en/cloud-recording/develop/manage-files
+    const screenKey = `${sid}_${channelName}_0.mp4`;
+    try {
+      const response = await stopAgoraRecording(
+        channelName,
+        uid,
+        resourceId,
+        sid
+      );
+    } catch (error) {
+      console.log("[REQUEST STOP RECORDING] failed");
+      console.log(error.message);
     }
 
-    const agoraScreenKey = `${sid}_${channelName}_0.mp4`;
-    await uploadDB(
-      channelName,
-      uid,
-      loggerKey,
-      videoKey,
-      screenKey,
-      agoraScreenKey
-    );
+    await uploadDB(channelName, uid, loggerKey, videoKey, screenKey);
 
     // 업로드 완료한 경우
     dispatch(uploadSuccess());
@@ -224,13 +214,53 @@ const UploadToS3Modal = () => {
     }
   };
 
+  // 아고라 cloud recording stop 요청
+  // stop 이후 S3 업로드 진행됨
+  const stopAgoraRecording = async (cname, uid, resourceId, sid) => {
+    console.log(`[REQUEST STOP RECORDING] cname: ${cname} uid: ${uid}`);
+
+    if (!resourceId || !sid) {
+      throw new Error(
+        `chaennel: ${cname} uid: ${uid}에 대한 resourceId 또는 sid가 존재하지 않습니다.`
+      );
+    }
+
+    try {
+      const response = await agoraClient.post(
+        `/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/web/stop`,
+        {
+          cname: cname, // 녹화할 채널 이름
+          uid: uid, // 녹화 요청한 유저 uid
+          clientRequest: {},
+        }
+      );
+      console.log(
+        `[REQUEST STOP RECORDING SUCCESS] cname: ${cname} uid: ${uid}`
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(`[CALL STOP RECORDING FAILED]`);
+      console.log(error);
+      if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        // console.log(error.response.headers);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+      // console.log(error.config);
+      throw new Error(error.message);
+    }
+  };
+
   const uploadDB = async (
     channelName,
     uid,
     loggerDataKey,
     videoKey,
-    screenKey,
-    agoraScreenKey
+    screenKey
   ) => {
     const uploadURL = `${serverAddress}upload`;
 
@@ -243,7 +273,6 @@ const UploadToS3Modal = () => {
       loggerDataKey,
       videoKey,
       screenKey,
-      agoraScreenKey,
     };
 
     try {

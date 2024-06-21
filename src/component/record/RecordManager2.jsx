@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 
+import { CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { useReactMediaRecorder } from "react-media-recorder";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,16 +8,15 @@ import { useParams } from "react-router-dom";
 import webgazer from "webgazer";
 import { agoraClient } from "../../apis/agora";
 import { RecordProvider } from "../../context/record-context";
+import { setResourceId, setSid } from "../../store/agora/channelSlice";
 import { openModal } from "../../store/upload/uploadSlice";
 import RecordButton from "./RecordButton";
-import RecordResultModal from "./RecordResultModal";
-import { setResourceId, setSid } from "../../store/agora/channelSlice";
-import { CircularProgress } from "@mui/material";
+import RecordErrorModal from "./RecordErrorModal";
 
 const RecordManager2 = ({ children }) => {
   // 업로드 할 비디오, 화면 녹화 블롭 파일
   const [videoRecordBlob, setVideoRecordBlob] = useState(null);
-  const [screenRecordBlob, setScreenRecordBlob] = useState(null);
+  // const [screenRecordBlob, setScreenRecordBlob] = useState(null);
 
   const dispatch = useDispatch();
   const resourceId = useSelector((state) => state.agora.resourceId);
@@ -52,6 +52,8 @@ const RecordManager2 = ({ children }) => {
   });
 
   // 로컬 화면 녹화
+  // 아고라 cloud recording 기능 사용으로 인한 주석 처리
+  /*
   const {
     status: screenStatus,
     startRecording: startScreenRecording,
@@ -73,6 +75,7 @@ const RecordManager2 = ({ children }) => {
       setScreenRecordBlob(blob);
     },
   });
+  */
 
   // 녹화 시작 할 때 webgazer 실행
   const startRecording = async () => {
@@ -85,7 +88,7 @@ const RecordManager2 = ({ children }) => {
       console.log(err);
     }
     startVideoRecording();
-    startScreenRecording();
+    // startScreenRecording();
 
     try {
       const resourceId = await acquire(cname, uid);
@@ -119,17 +122,8 @@ const RecordManager2 = ({ children }) => {
       console.log(err);
     }
     stopVideoRecording();
-    stopScreenRecording();
-
-    try {
-      const response = await stop(cname, uid, resourceId, sid);
-    } catch (error) {
-      setErrorModal(true);
-      setError(error.message);
-    }
-
-    // 녹화 종료 후 업로드 모달 오픈
     dispatch(openModal());
+    // stopScreenRecording();
   };
 
   /**
@@ -271,91 +265,48 @@ const RecordManager2 = ({ children }) => {
     }
   };
 
-  const stop = async (cname, uid, resourceId, sid) => {
-    console.log(`[REQUEST STOP RECORDING] cname: ${cname} uid: ${uid}`);
-
-    if (!resourceId || !sid) {
-      throw new Error(
-        `chaennel: ${cname} uid: ${uid}에 대한 resourceId 또는 sid가 존재하지 않습니다.`
-      );
-    }
-
-    try {
-      const response = await agoraClient.post(
-        `/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/web/stop`,
-        {
-          cname: window.atob(cname), // 녹화할 채널 이름
-          uid: window.atob(uid), // 녹화 요청한 유저 uid
-          clientRequest: {},
-        }
-      );
-      console.log(
-        `[REQUEST STOP RECORDING SUCCESS] cname: ${cname} uid: ${uid}`
-      );
-      console.log(response);
-    } catch (error) {
-      console.log(`[CALL STOP RECORDING FAILED]`);
-      console.log(error);
-      if (error.response) {
-        console.log(error.response.data);
-        console.log(error.response.status);
-        // console.log(error.response.headers);
-      } else if (error.request) {
-        console.log(error.request);
-      } else {
-        console.log("Error", error.message);
-      }
-      // console.log(error.config);
-      throw new Error(error.message);
-    }
-  };
-
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
 
-    if (screenError !== "" || videoError !== "" || isError) {
+    if (videoError !== "" || isError) {
       console.log("[RECORDER] 녹화 오류 발생");
-      console.log(`[RECORDER] screenError: ${screenError}`);
+      console.log(`[RECORDER] screenError: ${error}`);
       console.log(`[RECORDER] videoError: ${videoError}`);
       setErrorModal(true);
     }
-  }, [screenError, videoError, isError]);
+  }, [videoError, isError, error]);
 
   const handleRecordError = () => {
     if (videoStatus === "recording") {
       stopVideoRecording();
     }
 
-    if (screenStatus === "recording") {
-      stopScreenRecording();
-    }
-
     webgazer.end();
     setErrorModal(false);
   };
 
-  const recordingStatus =
-    videoStatus === "recording" && screenStatus === "recording";
+  const recordingStatus = videoStatus === "recording" && !isLoading;
 
   return (
     <RecordProvider
       videoRecordBlob={videoRecordBlob}
-      screenRecordBlob={screenRecordBlob}
+      // screenRecordBlob={screenRecordBlob}
     >
       {children}
-      {isLoading ? (
-        <CircularProgress />
-      ) : recordingStatus ? (
+
+      {recordingStatus ? (
         <RecordButton variant="outlined" color="error" onClick={stopRecording}>
           녹화 종료
         </RecordButton>
+      ) : isLoading ? (
+        <CircularProgress />
       ) : (
         <RecordButton variant="outlined" color="error" onClick={startRecording}>
           녹화 시작
         </RecordButton>
       )}
 
-      <RecordResultModal open={errorModal} onClose={handleRecordError} />
+      <RecordErrorModal open={errorModal} onClose={handleRecordError} />
     </RecordProvider>
   );
 };
