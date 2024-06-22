@@ -125,7 +125,7 @@ const AgoraManager = ({ config, children }) => {
                 height: "100%",
               }}
             >
-              <RemoteUser user={user} playVideo playAudio />
+              <RemoteUser user={user} playVideo playAudio autoPlay={true} />
             </Box>
           ))}
         <Box
