@@ -1,7 +1,6 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import "agora-chat-uikit/style.css";
 import {
-  LocalVideoTrack,
   RemoteUser,
   useClientEvent,
   useJoin,
@@ -14,9 +13,7 @@ import {
 
 import React, { useEffect, useState } from "react";
 import { AgoraProvider } from "../../context/agora-context";
-import useFetchChannelToken from "../../hooks/useFetchChannelToken";
-import VirtualBackgroundManager from "./VirtualBackgroundManager";
-import RemoteUserWrapper from "./RemoteUserWrapper";
+import LocalUserWrapper from "./LocalUserWrapper";
 
 const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
 
@@ -38,8 +35,6 @@ const AgoraManager2 = ({ config, children }) => {
 
   // 채널에 연결된 상대방들
   const remoteUsers = useRemoteUsers();
-
-  const [targetVideo, setTargetVideo] = useState(false);
 
   // 로컬 사용자 비디오, 마이크 상대방에게 전달하기
   usePublish([localMicrophoneTrack, localCameraTrack]);
@@ -129,7 +124,7 @@ const AgoraManager2 = ({ config, children }) => {
                 height: "100%",
               }}
             >
-              <RemoteUserWrapper key={user.uid} user={user} />>
+              <RemoteUser user={user} playVideo playAudio autoPlay={true} />;
             </Box>
           ))}
         <Box
@@ -142,11 +137,7 @@ const AgoraManager2 = ({ config, children }) => {
             height: { xs: "20%", md: "25%", lg: "30%" },
           }}
         >
-          <LocalVideoTrack
-            track={localCameraTrack}
-            play={true}
-            autoPlay={true}
-          />
+          <LocalUserWrapper localCameraTrack={localCameraTrack} />
         </Box>
       </Box>
       <Box

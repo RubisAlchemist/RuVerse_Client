@@ -1,9 +1,10 @@
 import VirtualBackgroundExtension from "agora-extension-virtual-background";
-import AgoraRTC, { RemoteUser } from "agora-rtc-react";
+import AgoraRTC, { LocalVideoTrack } from "agora-rtc-react";
 import React, { useEffect, useRef } from "react";
 import remoteBackgroundImage from "../../assets/base-img.png";
 import wasm from "../../wasms/agora-wasm.wasm?url";
-const RemoteUserWrapper = ({ user }) => {
+
+const LocalUserWrapper = ({ localCameraTrack }) => {
   const extension = useRef(new VirtualBackgroundExtension());
   const processor = useRef();
 
@@ -16,20 +17,20 @@ const RemoteUserWrapper = ({ user }) => {
   useEffect(() => {
     console.log("[VIRTUAL BACKGROUND MANAGER]");
 
-    console.log(user._videoTrack);
+    console.log(localCameraTrack.videoTrack);
     const initializeVirtualBackgroundProcessor = async () => {
       AgoraRTC.registerExtensions([extension.current]);
 
       checkCompatibility();
 
-      if (user.videoTrack) {
+      if (localCameraTrack) {
         console.log("Initializing virtual background processor...");
         try {
           processor.current = extension.current.createProcessor();
           await processor.current.init(wasm);
-          user.videoTrack
+          localCameraTrack
             .pipe(processor.current)
-            .pipe(user.videoTrack.processorDestination);
+            .pipe(localCameraTrack.processorDestination);
           const img = new Image();
           img.onload = () => {
             console.log("Image loaded successfully");
@@ -47,21 +48,21 @@ const RemoteUserWrapper = ({ user }) => {
       }
     };
 
-    if (user.hasVideo) {
-      void initializeVirtualBackgroundProcessor();
-    }
+    void initializeVirtualBackgroundProcessor();
 
     return () => {
       const disableVirtualBackground = async () => {
         processor.current?.unpipe();
-        user.videoTrack?.unpipe();
+        localCameraTrack?.unpipe();
         await processor.current?.disable();
       };
       void disableVirtualBackground();
     };
-  }, [user, user.hasVideo, user.videoTrack]);
+  }, [localCameraTrack]);
 
-  return <RemoteUser user={user} playVideo playAudio autoPlay={true} />;
+  return (
+    <LocalVideoTrack track={localCameraTrack} play={true} autoPlay={true} />
+  );
 };
 
-export default RemoteUserWrapper;
+export default LocalUserWrapper;
