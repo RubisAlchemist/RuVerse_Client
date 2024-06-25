@@ -10,6 +10,7 @@ import { StylusLogger, TouchLogger } from "../component/logger";
 
 import { useDispatch } from "react-redux";
 import webgazer from "webgazer";
+import AgoraManager2 from "../component/agora/AgoraManager2";
 import RecordManager2 from "../component/record/RecordManager2";
 import { resetLogger } from "../store/logger/loggerSlice";
 import { resetUpload } from "../store/upload/uploadSlice";
@@ -91,7 +92,7 @@ const ChannelPage = () => {
               height: "100vh",
             }}
           >
-            <AgoraManager config={config}>
+            <AgoraManager2 config={config}>
               <Box
                 sx={{
                   width: "100%",
@@ -110,7 +111,7 @@ const ChannelPage = () => {
                 </RecordManager2>
                 <VirtualBackground />
               </Box>
-            </AgoraManager>
+            </AgoraManager2>
           </Box>
         </AgoraRTCProvider>
       </StylusLogger>
