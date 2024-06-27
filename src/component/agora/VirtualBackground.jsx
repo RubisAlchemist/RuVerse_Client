@@ -2,18 +2,25 @@ import VirtualBackgroundExtension from "agora-extension-virtual-background";
 import wasm from "../../wasms/agora-wasm.wasm?url";
 import AgoraRTC, { useConnectionState } from "agora-rtc-react";
 import React, { useEffect, useRef, useState } from "react";
-import demoImage from "../../assets/image.webp";
+import remoteBackgroundImage from "../../assets/base-img.png";
+import { Box } from "@mui/material";
+
 import { useAgoraContext } from "../../context/useAgoraContext";
 import { Button, Typography } from "@mui/material";
 
 const VirtualBackground = () => {
   const connectionState = useConnectionState();
-  const [isVirtualBackground, setVirtualBackground] = useState(false);
+  const [isVirtualBackground, setVirtualBackground] = useState(true);
 
   return (
     <>
       {isVirtualBackground ? (
-        <div>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Button
             variant="contained"
             color="primary"
@@ -32,7 +39,7 @@ const VirtualBackground = () => {
             </Typography>
           </Button>
           <AgoraExtensionComponent />
-        </div>
+        </Box>
       ) : (
         <Button
           variant="contained"
@@ -64,7 +71,7 @@ function AgoraExtensionComponent() {
   const extension = useRef(new VirtualBackgroundExtension());
   const processor = useRef();
 
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("image");
   const [customImage, setCustomImage] = useState(null);
 
   const checkCompatibility = () => {
@@ -87,7 +94,7 @@ function AgoraExtensionComponent() {
     img.onerror = (error) => {
       console.error("Error loading image:", error);
     };
-    img.src = URL.createObjectURL(imageFile);
+    img.src = remoteBackgroundImage;
   };
 
   const blurBackground = () => {
@@ -108,9 +115,11 @@ function AgoraExtensionComponent() {
           agoraContext.localCameraTrack
             .pipe(processor.current)
             .pipe(agoraContext.localCameraTrack.processorDestination);
-          processor.current.setOptions({ type: "color", color: "#00ff00" });
+
+          imageBackground();
+
           await processor.current.enable();
-          setSelectedOption("color");
+          setSelectedOption("image");
         } catch (error) {
           console.error("Error initializing virtual background:", error);
         }
@@ -147,11 +156,7 @@ function AgoraExtensionComponent() {
         break;
       case "image":
         setSelectedOption(selectedOption);
-        if (customImage) {
-          imageBackground(customImage);
-        } else {
-          console.error("No custom image selected");
-        }
+        imageBackground();
         break;
       default:
         console.error("Invalid option:", selectedOption);
@@ -172,6 +177,7 @@ function AgoraExtensionComponent() {
   return (
     <div>
       <select
+        defaultValue={"image"}
         value={selectedOption}
         onChange={(event) => {
           setSelectedOption(event.target.value);
@@ -181,11 +187,10 @@ function AgoraExtensionComponent() {
       >
         <option value="color">Color</option>
         <option value="blur">Blur</option>
-        <option value="image">Image</option>
+        <option value="image" selected>
+          Image
+        </option>
       </select>
-      {selectedOption === "image" && (
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-      )}
     </div>
   );
 }

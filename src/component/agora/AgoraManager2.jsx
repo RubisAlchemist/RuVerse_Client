@@ -1,6 +1,7 @@
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import "agora-chat-uikit/style.css";
 import {
+  LocalVideoTrack,
   RemoteUser,
   useClientEvent,
   useJoin,
@@ -11,9 +12,8 @@ import {
   useRemoteUsers,
 } from "agora-rtc-react";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { AgoraProvider } from "../../context/agora-context";
-import LocalUserWrapper from "./LocalUserWrapper";
 
 const appId = process.env.REACT_APP_AGORA_RTC_APP_ID_KEY_NOT_AUTH;
 
@@ -137,7 +137,11 @@ const AgoraManager2 = ({ config, children }) => {
             height: { xs: "20%", md: "25%", lg: "30%" },
           }}
         >
-          <LocalUserWrapper localCameraTrack={localCameraTrack} />
+          <LocalVideoTrack
+            track={localCameraTrack}
+            play={true}
+            autoPlay={true}
+          />
         </Box>
       </Box>
       <Box
