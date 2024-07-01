@@ -2,7 +2,6 @@ import { Box, Typography } from "@mui/material";
 import AgoraRTC, { AgoraRTCProvider, useRTCClient } from "agora-rtc-react";
 import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AgoraManager from "../component/agora/AgoraManager";
 import VirtualBackground from "../component/agora/VirtualBackground";
 import ChannelLeave from "../component/channel/ChannelLeave";
 import UploadToS3Modal2 from "../component/channel/UploadToS3Modal2";
@@ -14,6 +13,7 @@ import AgoraManager2 from "../component/agora/AgoraManager2";
 import RecordManager2 from "../component/record/RecordManager2";
 import { resetLogger } from "../store/logger/loggerSlice";
 import { resetUpload } from "../store/upload/uploadSlice";
+import { reset } from "../store/agora/channelSlice";
 const ChannelPage = () => {
   const [isError, setError] = useState(false);
 
@@ -61,6 +61,7 @@ const ChannelPage = () => {
   const handleLeave = () => {
     webgazer.end();
 
+    dispatch(reset());
     dispatch(resetLogger());
     dispatch(resetUpload());
     navigate("/channelEntry", { replace: true });

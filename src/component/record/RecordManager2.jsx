@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import webgazer from "webgazer";
 import { agoraClient } from "../../apis/agora";
 import { RecordProvider } from "../../context/record-context";
-import { setResourceId, setSid } from "../../store/agora/channelSlice";
+import { reset, setResourceId, setSid } from "../../store/agora/channelSlice";
 import { openModal } from "../../store/upload/uploadSlice";
 import RecordButton from "./RecordButton";
 import RecordErrorModal from "./RecordErrorModal";
@@ -265,6 +265,47 @@ const RecordManager2 = ({ children }) => {
     }
   };
 
+  // 아고라 cloud recording stop 요청
+  // stop 이후 S3 업로드 진행됨
+  const stopAgoraRecording = async (cname, uid, resourceId, sid) => {
+    console.log(`[REQUEST STOP RECORDING] cname: ${cname} uid: ${uid}`);
+
+    if (!resourceId || !sid) {
+      throw new Error(
+        `chaennel: ${cname} uid: ${uid}에 대한 resourceId 또는 sid가 존재하지 않습니다.`
+      );
+    }
+
+    try {
+      const response = await agoraClient.post(
+        `/cloud_recording/resourceid/${resourceId}/sid/${sid}/mode/web/stop`,
+        {
+          cname: cname, // 녹화할 채널 이름
+          uid: uid, // 녹화 요청한 유저 uid
+          clientRequest: {},
+        }
+      );
+      console.log(
+        `[REQUEST STOP RECORDING SUCCESS] cname: ${cname} uid: ${uid}`
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(`[CALL STOP RECORDING FAILED]`);
+      console.log(error);
+      if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        // console.log(error.response.headers);
+      } else if (error.request) {
+        console.log(error.request);
+      } else {
+        console.log("Error", error.message);
+      }
+      // console.log(error.config);
+      throw new Error(error.message);
+    }
+  };
+
   useEffect(() => {
     // 화면 또는 스크린 공유를 하지 않았을 경우 오류 발생
 
@@ -272,14 +313,20 @@ const RecordManager2 = ({ children }) => {
       console.log("[RECORDER] 녹화 오류 발생");
       console.log(`[RECORDER] screenError: ${error}`);
       console.log(`[RECORDER] videoError: ${videoError}`);
+
       setErrorModal(true);
     }
   }, [videoError, isError, error]);
 
-  const handleRecordError = () => {
+  const handleRecordError = async () => {
     if (videoStatus === "recording") {
       stopVideoRecording();
     }
+
+    if (resourceId !== null && sid !== null) {
+      await stopAgoraRecording(cname, uid, resourceId, sid);
+    }
+    dispatch(reset());
 
     webgazer.end();
     setErrorModal(false);
