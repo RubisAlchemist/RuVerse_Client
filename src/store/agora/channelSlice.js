@@ -15,10 +15,14 @@ export const agoraSlice = createSlice({
     setSid: (state, action) => {
       state.sid = action.payload;
     },
+    reset: (state) => {
+      state.resourceId = null;
+      state.sid = null;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setResourceId, setSid } = agoraSlice.actions;
+export const { setResourceId, setSid, reset } = agoraSlice.actions;
 
 export default agoraSlice.reducer;
