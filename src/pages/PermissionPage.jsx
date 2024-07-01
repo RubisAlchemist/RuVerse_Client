@@ -11,7 +11,7 @@ function PermissionPage() {
   const { permissions, handlePermissions, isAllPermissionsGranted } =
     useDevicePermission();
 
-  const handleNavigate = () => navigate("/videocallPage");
+  const handleNavigate = () => navigate("/channelEntry");
 
   return (
     <StyledContainer>
