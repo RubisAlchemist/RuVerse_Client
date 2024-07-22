@@ -55,7 +55,7 @@ const ChannelPage = () => {
   );
 
   /**
-   * 채널 나가기
+   * 상담 끝내기
    * 로거, 업로드 스토어 초기화
    */
   const handleLeave = () => {

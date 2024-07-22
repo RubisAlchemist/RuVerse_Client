@@ -61,7 +61,7 @@ const AudioRecorder = () => {
   return (
     <>
       {status === "recording" ? (
-        <Button onClick={stopRecording} color="secondary" variant="contained">
+        <Button onClick={stopRecording} color="primary" variant="contained">
           <Typography
             sx={{
               fontSize: { xs: "12px", md: "16px", lg: "18px" },
@@ -71,7 +71,7 @@ const AudioRecorder = () => {
           </Typography>
         </Button>
       ) : (
-        <Button onClick={startRecording} color="secondary" variant="contained">
+        <Button onClick={startRecording} color="primary" variant="contained">
           <Typography
             sx={{
               fontSize: { xs: "12px", md: "16px", lg: "18px" },

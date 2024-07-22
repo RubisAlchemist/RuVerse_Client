@@ -28,7 +28,7 @@ const ChannelLeave = ({ onClick }) => {
           fontSize: { xs: "12px", md: "16px", lg: "18px" },
         }}
       >
-        채널 나가기
+        상담 끝내기
       </Typography>
     </Button>
   );
