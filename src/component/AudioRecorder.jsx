@@ -43,8 +43,8 @@ const AudioRecorder = () => {
         setCurrent((prev) => prev + 1);
       } catch (err) {
         setError(err);
-        isError(true);
-        isSuccess(false);
+        setIsError(true);
+        setIsSuccess(false);
         console.log(err);
       }
       setIsLoading(false);
