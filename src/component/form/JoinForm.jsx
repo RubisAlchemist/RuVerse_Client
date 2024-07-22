@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import "./joinForm.css";
 
 import VideoCallImage from "../../images/videocallImage.png";
-import {
-  onChangeChannelName,
-  onChangeUid,
-} from "../../store/channel/channelSlice";
+import { onChangeUname } from "../../store/channel/channelSlice";
 
 function JoinForm() {
+  /*
   const uid = useSelector((state) => state.channel.uid.value);
   const isUidError = useSelector((state) => state.channel.uid.isError);
   const channelName = useSelector((state) => state.channel.name.value);
   const isChannelNameError = useSelector((state) => state.channel.name.isError);
+   */
+  const uname = useSelector((state) => state.channel.uname.value);
+  const isUnameError = useSelector((state) => state.channel.uname.isError);
 
   const dispatch = useDispatch();
 
@@ -27,6 +28,7 @@ function JoinForm() {
           alignItems="center"
           width="100%"
         >
+          {/* 
           <TextField
             required
             fullWidth
@@ -49,24 +51,27 @@ function JoinForm() {
             }}
             sx={{ width: "60%", marginBottom: "12px" }}
           />
+           */}
 
           <TextField
             required
-            error={isUidError}
+            error={isUnameError}
             label="유저 이름"
-            value={uid}
-            helperText={isUidError ? "유저 이름은 숫자만 가능합니다." : ""}
+            value={uname}
+            helperText={
+              isUnameError ? "유저 이름은 숫자, 영문만 가능합니다." : ""
+            }
             onChange={(e) => {
               console.log(e.target.validity);
               dispatch(
-                onChangeUid({
+                onChangeUname({
                   value: e.target.value,
                   valid: e.target.validity.valid,
                 })
               );
             }}
             inputProps={{
-              pattern: "[0-9]+",
+              pattern: "[A-Za-z0-9]+",
             }}
             sx={{ width: "60%" }}
           />

@@ -9,6 +9,10 @@ const initialState = {
     value: "",
     isError: false,
   },
+  uname: {
+    value: "",
+    isError: false,
+  },
   call: false,
 };
 
@@ -23,6 +27,15 @@ export const channelSlice = createSlice({
         state.uid.isError = false;
       } else {
         state.uid.isError = true;
+      }
+    },
+    onChangeUname: (state, action) => {
+      const { value, valid } = action.payload;
+      state.uname.value = value;
+      if (valid) {
+        state.uname.isError = false;
+      } else {
+        state.uname.isError = true;
       }
     },
     onChangeChannelName: (state, action) => {
@@ -45,7 +58,12 @@ export const channelSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { onChangeUid, onChangeChannelName, setCall, unSetCall } =
-  channelSlice.actions;
+export const {
+  onChangeUid,
+  onChangeChannelName,
+  onChangeUname,
+  setCall,
+  unSetCall,
+} = channelSlice.actions;
 
 export default channelSlice.reducer;

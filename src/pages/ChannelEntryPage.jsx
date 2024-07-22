@@ -10,12 +10,12 @@ const ChannelEntryPage = () => {
   const navigate = useNavigate();
   const { handleGps } = useCurrentLocation();
 
-  const uid = useSelector((state) => state.channel.uid.value);
-  const cname = useSelector((state) => state.channel.name.value);
+  const uname = useSelector((state) => state.channel.uname.value);
+  // const cname = useSelector((state) => state.channel.name.value);
 
   const handleJoin = () => {
     handleGps();
-    navigate(`/channel/${window.btoa(cname)}/${window.btoa(uid)}`);
+    navigate(`/channel/${uname}`);
   };
 
   return (

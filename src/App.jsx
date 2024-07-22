@@ -4,12 +4,8 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 
 import { EyetrackingLogger } from "./component/logger/index.js";
-import Home from "./pages/Home.jsx";
-import PermissionPage from "./pages/PermissionPage.jsx";
-import VideoCallPage from "./pages/videocallPage.jsx";
-import ChannelPage from "./pages/ChannelPage.jsx";
 import ChannelEntryPage from "./pages/ChannelEntryPage.jsx";
-import AgoraRecordPage from "./pages/AgoraRecordPage.jsx";
+import VideoInteractPage from "./pages/VideoInteractPage.jsx";
 
 const theme = createTheme({
   palette: {
@@ -26,6 +22,7 @@ function App() {
         <GlobalStyle />
         <Router>
           <Routes>
+            {/* 
             <Route path="/" exact element={<Home />} />
             <Route path="/permission" element={<PermissionPage />} />
             <Route path="/channelEntry" element={<ChannelEntryPage />} />
@@ -35,6 +32,9 @@ function App() {
               path="/channel/:cname/:uid/record"
               element={<AgoraRecordPage />}
             />
+            */}
+            <Route path="/" element={<ChannelEntryPage />} />
+            <Route path="/channel/:uname" element={<VideoInteractPage />} />
           </Routes>
         </Router>
       </ThemeProvider>
